@@ -30,7 +30,7 @@ class Grid {
 
 class TabGrid extends StatelessWidget {
   final IconData? icon;
-  final List<UserVideo>? list;
+  final List<UserVideos>? list;
   BuildContext context;
   final Function? onTap;
   final IconData? viewIcon;
@@ -75,7 +75,7 @@ class TabGrid extends StatelessWidget {
                       User user = User.fromMap(
                           jsonDecode(result) as Map<String, dynamic>);
                       if (userId == user.id) {
-                        showDeleteSheet(list![index].id, list![index]);
+                        showDeleteSheet(list![index].id!, list![index]);
                       }
                     },
                     child: FadedScaleAnimation(
@@ -83,7 +83,7 @@ class TabGrid extends StatelessWidget {
                         decoration: BoxDecoration(
                           image: DecorationImage(
                               image: NetworkImage(Constraints.COVER_IMAGE_URL +
-                                  list![index].coverImage),
+                                  list![index].coverImage!),
                               fit: BoxFit.fill),
                           borderRadius: BorderRadius.circular(5),
                         ),
@@ -126,7 +126,7 @@ class TabGrid extends StatelessWidget {
           );
   }
 
-  void showDeleteSheet(String id, UserVideo userVideo) {
+  void showDeleteSheet(String id, UserVideos userVideo) {
     showModalBottomSheet(
         context: context,
         builder: (context) => Container(
@@ -260,7 +260,7 @@ class TabGrid extends StatelessWidget {
     }
   }
 
-  void showPopup(UserVideo userVideo) {
+  void showPopup(UserVideos userVideo) {
     showDialog(
         context: context,
         builder: (context) {
@@ -379,8 +379,8 @@ class TabGrid extends StatelessWidget {
         });
   }
 
-  Future updateVideoView(String? userUploadOption, UserVideo userVideo) async {
-    Response res = await Apis().updateReelView(userUploadOption!, userVideo.id);
+  Future updateVideoView(String? userUploadOption, UserVideos userVideo) async {
+    Response res = await Apis().updateReelView(userUploadOption!, userVideo.id!);
     var statusCode = res.statusCode;
     print(res.body);
     print(statusCode);

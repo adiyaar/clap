@@ -24,7 +24,7 @@ class Search extends StatefulWidget {
 class _SearchState extends State<Search> {
   final TextEditingController _controller = TextEditingController();
   List<User> users = [];
-  List<UserVideo> videos = [];
+  List<UserVideos> videos = [];
   List<UserPost> posts = [];
   bool isSearching = false;
   bool isLoading = false;
@@ -206,7 +206,7 @@ class _SearchState extends State<Search> {
             if (index == 0) {
               users = re.map<User>((e) => User.fromMap(e)).toList();
             } else if (index == 1) {
-              videos = re.map<UserVideo>((e) => UserVideo.fromJson(e)).toList();
+              videos = re.map<UserVideos>((e) => UserVideos.fromJson(e)).toList();
             } else {
               posts = re.map<UserPost>((e) => UserPost.fromJson(e)).toList();
             }
@@ -214,7 +214,7 @@ class _SearchState extends State<Search> {
         if (index == 0) {
           return re.map<User>((e) => User.fromMap(e)).toList();
         } else if (index == 1) {
-          return re.map<UserVideo>((e) => UserVideo.fromJson(e)).toList();
+          return re.map<UserVideos>((e) => UserVideos.fromJson(e)).toList();
         } else {
           return re.map<UserPost>((e) => UserPost.fromJson(e)).toList();
         }

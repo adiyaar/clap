@@ -46,8 +46,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
   String? celUserId;
   late String? currentUserId;
   us.User? userDetails;
-  List<UserVideo> list = [];
-  List<UserVideo> likedVideoList = [];
+  List<UserVideos> list = [];
+  List<UserVideos> likedVideoList = [];
   @override
   void initState() {
     Future.delayed(Duration(seconds: 1), () {
@@ -843,18 +843,16 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   Future getVideoList(String userId) async {
-    List<UserVideo> userVideoList = await ApiHandle.getVideo(userId);
+    List<UserVideos> userVideoList = await ApiHandle.getVideo(userId);
     if (mounted) {
       setState(() {
         list = userVideoList;
-
-        print(" Length is ${list!.length}");
       });
     }
   }
 
   Future getLikedVideoList(String userId) async {
-    List<UserVideo> userVideoList = await ApiHandle.getLikedVideo(userId);
+    List<UserVideos> userVideoList = await ApiHandle.getLikedVideo(userId);
     if (mounted) {
       setState(() {
         likedVideoList = userVideoList;

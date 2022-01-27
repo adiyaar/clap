@@ -52,7 +52,7 @@ class ApiHandle {
 
   //get Video
   //get User Video
-  static Future<List<UserVideo>> getVideo(String userId) async {
+  static Future<List<UserVideos>> getVideo(String userId) async {
     Response response = await Apis().getVideo(userId);
 
     if (response.statusCode == 200) {
@@ -61,10 +61,10 @@ class ApiHandle {
       String msg = data['msg'];
       if (res == "success") {
         var re = data['data'] as List;
-        print("sdsd");
+        
         print(re.length);
 
-        return re.map<UserVideo>((e) => UserVideo.fromJson(e)).toList();
+        return re.map<UserVideos>((e) => UserVideos.fromJson(e)).toList();
         //return MySlider.fromJson(data['data'] as Map<String, dynamic>);
         /* for (int i = 0; i < sliders.length; i++) {
           MySlider slider = sliders[i];
@@ -81,7 +81,7 @@ class ApiHandle {
     }
   }
 
-  static Future<List<UserVideo>> getLikedVideo(String userId) async {
+  static Future<List<UserVideos>> getLikedVideo(String userId) async {
     Response response = await Apis().getLikedVideo(userId);
 
     if (response.statusCode == 200) {
@@ -93,7 +93,7 @@ class ApiHandle {
         print("sdsd");
         print(re.length);
 
-        return re.map<UserVideo>((e) => UserVideo.fromJson(e)).toList();
+        return re.map<UserVideos>((e) => UserVideos.fromJson(e)).toList();
         //return MySlider.fromJson(data['data'] as Map<String, dynamic>);
         /* for (int i = 0; i < sliders.length; i++) {
           MySlider slider = sliders[i];
@@ -110,7 +110,7 @@ class ApiHandle {
     }
   }
 
-  static Future<List<UserVideo>> getFollowersVideo(String userId) async {
+  static Future<List<UserVideos>> getFollowersVideo(String userId) async {
     Response response = await Apis().getFollowersVideo(userId);
 
     if (response.statusCode == 200) {
@@ -122,7 +122,7 @@ class ApiHandle {
         print("sdsd");
         print(re.length);
 
-        return re.map<UserVideo>((e) => UserVideo.fromJson(e)).toList();
+        return re.map<UserVideos>((e) => UserVideos.fromJson(e)).toList();
         //return MySlider.fromJson(data['data'] as Map<String, dynamic>);
         /* for (int i = 0; i < sliders.length; i++) {
           MySlider slider = sliders[i];
@@ -139,7 +139,7 @@ class ApiHandle {
     }
   }
 
-  static Future<List<UserVideo>> getReleatedVideo(
+  static Future<List<UserVideos>> getReleatedVideo(
       String userId, String gender) async {
     Response response = await Apis().getRelatedVideo(userId, gender);
 
@@ -152,7 +152,7 @@ class ApiHandle {
         print("sdsd");
         print(re.length);
 
-        return re.map<UserVideo>((e) => UserVideo.fromJson(e)).toList();
+        return re.map<UserVideos>((e) => UserVideos.fromJson(e)).toList();
         //return MySlider.fromJson(data['data'] as Map<String, dynamic>);
         /* for (int i = 0; i < sliders.length; i++) {
           MySlider slider = sliders[i];

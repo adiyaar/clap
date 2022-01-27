@@ -50,8 +50,8 @@ class _MyProfileBodyState extends State<MyProfileBody>
     with WidgetsBindingObserver {
   use.User? userDtails;
   bool isLoading = true;
-  List<UserVideo>? list;
-  List<UserVideo> likedVideo = [];
+  List<UserVideos>? list;
+  List<UserVideos> likedVideo = [];
   bool isCelebrity = false;
   String age = "";
 
@@ -541,7 +541,7 @@ class _MyProfileBodyState extends State<MyProfileBody>
   //getVideo
   Future getVideoList(String userId) async {
     print("reels calls");
-    List<UserVideo> userVideoList = await ApiHandle.getVideo(userId);
+    List<UserVideos> userVideoList = await ApiHandle.getVideo(userId);
     print(" Length is ${userVideoList.length}");
     if (mounted) {
       setState(() {
@@ -551,7 +551,7 @@ class _MyProfileBodyState extends State<MyProfileBody>
   }
 
   Future getLikedVideoList(String userId) async {
-    List<UserVideo> userVideoList = await ApiHandle.getLikedVideo(userId);
+    List<UserVideos> userVideoList = await ApiHandle.getLikedVideo(userId);
     if (mounted) {
       setState(() {
         likedVideo = userVideoList;

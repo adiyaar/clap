@@ -11,7 +11,7 @@ import 'package:video_player/video_player.dart';
 RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
 class FollowingTabPage extends StatelessWidget {
-  final List<UserVideo> videos;
+  final List<UserVideos> videos;
   final List<String> images;
   final bool isFollowing;
   final int? variable;
@@ -24,12 +24,12 @@ class FollowingTabPage extends StatelessWidget {
 }
 
 class FollowingTabBody extends StatefulWidget {
-  final List<UserVideo> videos;
+  final List<UserVideos> videos;
   final List<String> images;
 
   final bool isFollowing;
   final int? variable;
-  List<UserVideo> list = [];
+  
   FollowingTabBody(this.videos, this.images, this.isFollowing, this.variable);
 
   @override
@@ -74,7 +74,7 @@ class _FollowingTabBodyState extends State<FollowingTabBody> {
       controller: _pageController,
       itemBuilder: (context, position) {
         return VideoPage(
-          widget.videos[position].videoName,
+          widget.videos[position].videoName!,
           widget.images[position],
           pageIndex: position,
           currentPageIndex: current,

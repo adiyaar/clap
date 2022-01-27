@@ -50,8 +50,8 @@ class HomeBody extends StatefulWidget {
 
 class _HomeBodyState extends State<HomeBody> {
   bool isLoading = true;
-  List<UserVideo> list = [];
-  List<UserVideo> relatedList = [];
+  List<UserVideos> list = [];
+  List<UserVideos> relatedList = [];
   // var _controller = Get.put(PlayerScreenController());
   @override
   void initState() {
@@ -141,7 +141,7 @@ class _HomeBodyState extends State<HomeBody> {
   Future getVideoList() async {
     var result = await MyPrefManager.prefInstance().getData("user");
     User user = User.fromMap(jsonDecode(result) as Map<String, dynamic>);
-    List<UserVideo> userVideoList = await ApiHandle.getFollowersVideo(user.id);
+    List<UserVideos> userVideoList = await ApiHandle.getFollowersVideo(user.id);
     setState(() {
       isLoading = false;
       list = userVideoList;
@@ -153,7 +153,7 @@ class _HomeBodyState extends State<HomeBody> {
     print("related video");
     var result = await MyPrefManager.prefInstance().getData("user");
     User user = User.fromMap(jsonDecode(result) as Map<String, dynamic>);
-    List<UserVideo> userVideoList =
+    List<UserVideos> userVideoList =
         await ApiHandle.getReleatedVideo(user.id, user.gender);
     setState(() {
       // print(userVideoList.length);

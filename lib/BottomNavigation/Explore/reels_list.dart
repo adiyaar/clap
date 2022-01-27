@@ -10,7 +10,7 @@ import 'package:qvid/utils/constaints.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ReelsList extends StatefulWidget {
-  List<UserVideo> reels;
+  List<UserVideos> reels;
   bool isSearchingStatus;
   bool isLoading;
   ReelsList(
@@ -45,7 +45,7 @@ class _ReelsListState extends State<ReelsList> {
                                         variable: 1)));
                           },
                           child: Container(
-                            child: widget.reels[index].coverImage.isEmpty
+                            child: widget.reels[index].coverImage!.isEmpty
                                 ? Image.asset(
                                     "assets/images/banner 1.png",
                                     height: 200,
@@ -54,7 +54,7 @@ class _ReelsListState extends State<ReelsList> {
                                 : CachedNetworkImage(
                                     height: 200,
                                     imageUrl: Constraints.COVER_IMAGE_URL +
-                                        widget.reels[index].coverImage,
+                                        widget.reels[index].coverImage!,
                                     fit: BoxFit.fill,
                                     placeholder: (context, value) =>
                                         Shimmer.fromColors(

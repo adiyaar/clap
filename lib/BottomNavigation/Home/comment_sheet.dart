@@ -33,11 +33,11 @@ bool isComment = false;
 bool tappedLike = false;
 bool tappeddislike = false;
 ScrollController _controller = ScrollController();
-void commentSheet(BuildContext context, [User? user, UserVideo? video]) async {
+void commentSheet(BuildContext context, [User? user, UserVideos? video]) async {
   // List<VideoComment> comments = await getVideoComment(video!.id);
   var contr = Get.put(UserVideoComment());
   print(video!.userId);
-  contr.setUserId(video.id);
+  contr.setUserId(video.id!);
 
   await showModalBottomSheet(
       //enableDrag: true,
@@ -202,8 +202,8 @@ void commentSheet(BuildContext context, [User? user, UserVideo? video]) async {
                                                     print('h');
                                                     print(tappedLike);
                                                     commentLike(
-                                                        video.userId,
-                                                        video.id,
+                                                        video.userId!,
+                                                        video.id!,
                                                         contr.commentList[index]
                                                             .id,
                                                         video);
@@ -272,7 +272,7 @@ void commentSheet(BuildContext context, [User? user, UserVideo? video]) async {
                                                                           FocusScope.of(context)
                                                                               .unfocus();
                                                                           recomment(
-                                                                              video.userId,
+                                                                              video.userId!,
                                                                               contr.commentList[index].id,
                                                                               video,
                                                                               replycomment!);
@@ -399,7 +399,7 @@ void commentSheet(BuildContext context, [User? user, UserVideo? video]) async {
                             _comment.text = "";
                             FocusScope.of(context).unfocus();
                             commentVideo(
-                                video.userId, video.id, comment!, video);
+                                video.userId!, video.id!, comment!, video);
                           }
                         },
                         child: Icon(
@@ -432,7 +432,7 @@ int daysBetween(DateTime from, DateTime to) {
 }
 
 Future<void> commentVideo(
-    String userId, String videoId, String comment, UserVideo video) async {
+    String userId, String videoId, String comment, UserVideos video) async {
   print(userId + videoId + comment);
   var result = await MyPrefManager.prefInstance().getData("user");
   User user = User.fromMap(jsonDecode(result) as Map<String, dynamic>);
@@ -446,9 +446,7 @@ Future<void> commentVideo(
       MyToast(message: msg).toast;
       isComment = false;
 
-      Get.find<UserVideoComment>().setUserId(video.id);
-      Timer(Duration(milliseconds: 300),
-          () => _controller.jumpTo(_controller.position.maxScrollExtent));
+      Get.find<UserVideoComment>().setUserId(video.id!);
     } else {
       MyToast(message: msg).toast;
     }
@@ -458,7 +456,7 @@ Future<void> commentVideo(
 }
 
 Future<void> commentLike(
-    String userId, String videoId, String commentId, UserVideo video) async {
+    String userId, String videoId, String commentId, UserVideos video) async {
   print(userId + videoId + commentId);
   var result = await MyPrefManager.prefInstance().getData("user");
   User user = User.fromMap(jsonDecode(result) as Map<String, dynamic>);
@@ -472,9 +470,9 @@ Future<void> commentLike(
       MyToast(message: msg).toast;
       // isComment = false;
       tappedLike = true;
-      Get.find<UserVideoComment>().setUserId(video.id);
-      Timer(Duration(milliseconds: 300),
-          () => _controller.jumpTo(_controller.position.maxScrollExtent));
+      Get.find<UserVideoComment>().setUserId(video.id!);
+      // Timer(Duration(milliseconds: 300),
+      //     () => _controller.jumpTo(_controller.position.maxScrollExtent));
     } else {
       MyToast(message: msg).toast;
     }
@@ -483,7 +481,7 @@ Future<void> commentLike(
   }
 }
 
-Future<void> recomment(String userId, String commentId, UserVideo video,
+Future<void> recomment(String userId, String commentId, UserVideos video,
     String replyingComment) async {
   print(userId + commentId);
   var result = await MyPrefManager.prefInstance().getData("user");
@@ -499,9 +497,9 @@ Future<void> recomment(String userId, String commentId, UserVideo video,
       MyToast(message: msg).toast;
       // isComment = false;
 
-      Get.find<UserVideoComment>().setUserId(video.id);
-      Timer(Duration(milliseconds: 300),
-          () => _controller.jumpTo(_controller.position.maxScrollExtent));
+      Get.find<UserVideoComment>().setUserId(video.id!);
+      // Timer(Duration(milliseconds: 300),
+      //     () => _controller.jumpTo(_controller.position.maxScrollExtent));
     } else {
       MyToast(message: msg).toast;
     }

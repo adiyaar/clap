@@ -32,7 +32,7 @@ import 'package:video_player/video_player.dart';
 List<VideoComment> videoComments = [];
 
 class FollowingTabPage1 extends StatelessWidget {
-  final List<UserVideo> videos;
+  final List<UserVideos> videos;
   final List<String> images;
   final bool isFollowing;
 
@@ -63,7 +63,7 @@ class FollowingTabPage1 extends StatelessWidget {
 
 // ignore: must_be_immutable
 class FollowingTab1Body extends StatefulWidget {
-  final List<UserVideo> videos;
+  final List<UserVideos> videos;
   final List<String> images;
 
   final bool isFollowing;
@@ -89,6 +89,7 @@ class _FollowingTab1BodyState extends State<FollowingTab1Body> {
     if (isOnPageTurning &&
         _pageController!.page == _pageController!.page!.roundToDouble()) {
       print('Here2');
+
       setState(() {
         current = _pageController!.page!.toInt();
 
@@ -128,7 +129,7 @@ class _FollowingTab1BodyState extends State<FollowingTab1Body> {
       scrollDirection: Axis.vertical,
       controller: _pageController,
       itemBuilder: (context, position) {
-        return VideoPage(widget.videos[position].videoName,
+        return VideoPage(widget.videos[position].videoName!,
             isPaused: isOnPageTurning,
             pageIndex: position,
             currentPageIndex: current,
@@ -143,7 +144,6 @@ class _FollowingTab1BodyState extends State<FollowingTab1Body> {
         setState(() {
           firstTimeLoading = true;
         });
-        getUserMatchPost(widget.videos[i].id);
       },
       itemCount: widget.videos.length,
     );
@@ -157,7 +157,7 @@ class VideoPage extends StatefulWidget {
   int? currentPageIndex;
   final bool? isPaused;
   final bool? isFollowing;
-  final UserVideo? userVideo;
+  final UserVideos? userVideo;
 
   VideoPage(this.video,
       {this.pageIndex,
@@ -243,7 +243,7 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
     print("likestatus ${widget.userVideo!.likeStatus}");
 
     _controller = VideoPlayerController.network(
-        Constraints.Video_URL + widget.userVideo!.videoName)
+        Constraints.Video_URL + widget.userVideo!.videoName!)
       ..initialize().then((value) {
         setState(() {
           _controller.setLooping(true);
@@ -255,8 +255,6 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
           isLoading = false;
         });
       });
-
-    getUserMatchPost(widget.userVideo!.id);
   }
 
   @override
@@ -315,8 +313,6 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
       });
     }
 
-    Get.put(UserVideoComment());
-
     return WillPopScope(
       onWillPop: () {
         _controller.value.isPlaying == true ? _controller.pause() : "";
@@ -368,19 +364,20 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       Text(
-                                        widget.userVideo!.description.trim(),
+                                        widget.userVideo!.userName!,
                                         style: TextStyle(
                                             color: Colors.white,
-                                            fontSize: 17,
                                             fontWeight: FontWeight.w700),
                                       ),
+
                                       SizedBox(
                                         height: 10,
                                       ),
                                       Text(
-                                        widget.userVideo!.date,
+                                        widget.userVideo!.description!.trim(),
                                         style: TextStyle(
                                             color: Colors.white,
+                                            fontSize: 17,
                                             fontWeight: FontWeight.w700),
                                       ),
                                       SizedBox(
@@ -472,7 +469,7 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                                         NetworkImage(Constraints
                                                                 .IMAGE_BASE_URL +
                                                             widget.userVideo!
-                                                                .userProfilePic)),
+                                                                .image!)),
                                               ),
                                               SizedBox(
                                                 height: 30,
@@ -490,7 +487,7 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                                   User user = await ApiHandle
                                                       .fetchUser();
                                                   likeVideo(user.id,
-                                                      widget.userVideo!.id);
+                                                      widget.userVideo!.id!);
                                                 },
                                                 child: Container(
                                                   child: Icon(
@@ -574,16 +571,14 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                                                                 Padding(
                                                                               padding: EdgeInsets.only(bottom: 100.0),
                                                                               child: ListView.builder(
+                                                                                  shrinkWrap: true,
                                                                                   physics: BouncingScrollPhysics(),
-                                                                                  itemCount: videoComments.length,
+                                                                                  itemCount: widget.userVideo!.comments!.length,
                                                                                   // controller: _controller,
                                                                                   itemBuilder: (context, index) {
                                                                                     return Column(
                                                                                       crossAxisAlignment: CrossAxisAlignment.start,
                                                                                       children: <Widget>[
-                                                                                        SizedBox(
-                                                                                          height: 10,
-                                                                                        ),
                                                                                         Padding(
                                                                                           padding: const EdgeInsets.all(8.0),
                                                                                           child: Column(
@@ -595,7 +590,7 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                                                                                   ),
                                                                                                   CircleAvatar(
                                                                                                     backgroundImage: NetworkImage(
-                                                                                                      Constraints.IMAGE_BASE_URL + videoComments[index].image!,
+                                                                                                      Constraints.IMAGE_BASE_URL + widget.userVideo!.comments![index].image!,
                                                                                                     ),
                                                                                                   ),
                                                                                                   SizedBox(
@@ -609,11 +604,11 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                                                                                       padding: const EdgeInsets.only(left: 8.0, top: 5.0),
                                                                                                       child: Column(
                                                                                                         children: [
-                                                                                                          Align(alignment: Alignment.centerLeft, child: Text("@${videoComments[index].name!}", style: TextStyle(color: Colors.grey, fontSize: 13))),
+                                                                                                          Align(alignment: Alignment.centerLeft, child: Text("@${widget.userVideo!.comments![index].name!}", style: TextStyle(color: Colors.grey, fontSize: 13))),
                                                                                                           SizedBox(
                                                                                                             height: 5,
                                                                                                           ),
-                                                                                                          Align(alignment: Alignment.centerLeft, child: Text(videoComments[index].comment!, style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold))),
+                                                                                                          Align(alignment: Alignment.centerLeft, child: Text(widget.userVideo!.comments![index].comment!.trim(), style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold))),
                                                                                                         ],
                                                                                                       ),
                                                                                                     ),
@@ -631,14 +626,14 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                                                                                           setState(() {
                                                                                                             tappedLikeIcon = !tappedLikeIcon;
                                                                                                           });
-                                                                                                          commentLike(widget.userVideo!.userId, widget.userVideo!.id, contr.commentList[index].id, widget.userVideo!);
+                                                                                                          commentLike(widget.userVideo!.userId!, widget.userVideo!.id!, widget.userVideo!.comments![index].id!, widget.userVideo!);
                                                                                                         },
                                                                                                         child: Icon(
                                                                                                           Icons.favorite_rounded,
                                                                                                           color: tappedLikeIcon == true ? Colors.red : Colors.white,
                                                                                                         ),
                                                                                                       ),
-                                                                                                      Text(videoComments[index].likesCount!,
+                                                                                                      Text(widget.userVideo!.comments![index].likes!,
                                                                                                           style: TextStyle(
                                                                                                             color: Colors.white,
                                                                                                           ))
@@ -649,108 +644,106 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                                                                               Column(
                                                                                                 children: [
                                                                                                   Padding(
-                                                                                                    padding: const EdgeInsets.only(left: 98.0),
+                                                                                                    padding: const EdgeInsets.only(left: 78.0),
                                                                                                     child: Row(
                                                                                                       children: [
                                                                                                         Text(
-                                                                                                          "16d",
+                                                                                                          widget.userVideo!.comments![index].date!,
                                                                                                           style: TextStyle(color: Colors.grey),
                                                                                                         ),
                                                                                                         SizedBox(
                                                                                                           width: 18,
                                                                                                         ),
                                                                                                         TextButton(
-                                                                                                          onPressed: () {
-                                                                                                            showModalBottomSheet(
-                                                                                                                context: context,
-                                                                                                                builder: (_) => Container(
-                                                                                                                      color: backgroundColor,
-                                                                                                                      width: MediaQuery.of(context).size.width,
-                                                                                                                      child: EntryField(
-                                                                                                                        controller: _replyComment,
-                                                                                                                        counter: null,
-                                                                                                                        padding: MediaQuery.of(context).viewInsets,
-                                                                                                                        hint: "Replying to ${contr.commentList[index].name!}",
-                                                                                                                        fillColor: Colors.grey.shade100,
-                                                                                                                        prefix: Padding(
-                                                                                                                          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                                                                                                                          child: user!.image.isEmpty
-                                                                                                                              ? CircleAvatar(
-                                                                                                                                  backgroundImage: AssetImage('assets/images/user.webp'),
-                                                                                                                                )
-                                                                                                                              : CircleAvatar(
-                                                                                                                                  backgroundImage: NetworkImage(Constraints.IMAGE_BASE_URL + user!.image),
-                                                                                                                                ),
-                                                                                                                        ),
-                                                                                                                        suffixIcon: GestureDetector(
-                                                                                                                          onTap: () {
-                                                                                                                            if (_replyComment.text.isNotEmpty) {
-                                                                                                                              FocusScope.of(context).unfocus();
-                                                                                                                              recomment(widget.userVideo!.userId, contr.commentList[index].id, widget.userVideo!, _replyComment.text);
-                                                                                                                              _replyComment.text = "";
-                                                                                                                              Navigator.pop(context);
-                                                                                                                            } else {
-                                                                                                                              MyToast(message: "Please Write a Comment");
-                                                                                                                            }
-                                                                                                                          },
-                                                                                                                          child: Icon(
-                                                                                                                            Icons.send,
-                                                                                                                            color: mainColor,
+                                                                                                            onPressed: () {
+                                                                                                              showModalBottomSheet(
+                                                                                                                  context: context,
+                                                                                                                  builder: (_) => Container(
+                                                                                                                        color: backgroundColor,
+                                                                                                                        width: MediaQuery.of(context).size.width,
+                                                                                                                        child: EntryField(
+                                                                                                                          controller: _replyComment,
+                                                                                                                          counter: null,
+                                                                                                                          padding: MediaQuery.of(context).viewInsets,
+                                                                                                                          hint: "Replying to ${widget.userVideo!.comments![index].name!}",
+                                                                                                                          fillColor: Colors.grey.shade100,
+                                                                                                                          prefix: Padding(
+                                                                                                                            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                                                                                                            child: user!.image.isEmpty
+                                                                                                                                ? CircleAvatar(
+                                                                                                                                    backgroundImage: AssetImage('assets/images/user.webp'),
+                                                                                                                                  )
+                                                                                                                                : CircleAvatar(
+                                                                                                                                    backgroundImage: NetworkImage(Constraints.IMAGE_BASE_URL + user!.image),
+                                                                                                                                  ),
+                                                                                                                          ),
+                                                                                                                          suffixIcon: GestureDetector(
+                                                                                                                            onTap: () {
+                                                                                                                              if (_replyComment.text.isNotEmpty) {
+                                                                                                                                FocusScope.of(context).unfocus();
+                                                                                                                                recomment(widget.userVideo!.userId!, widget.userVideo!.comments![index].id!, widget.userVideo!, _replyComment.text);
+                                                                                                                                _replyComment.text = "";
+                                                                                                                                Navigator.pop(context);
+                                                                                                                              } else {
+                                                                                                                                MyToast(message: "Please Write a Comment");
+                                                                                                                              }
+                                                                                                                            },
+                                                                                                                            child: Icon(
+                                                                                                                              Icons.send,
+                                                                                                                              color: mainColor,
+                                                                                                                            ),
                                                                                                                           ),
                                                                                                                         ),
-                                                                                                                      ),
-                                                                                                                    ));
-                                                                                                          },
-                                                                                                          child: Text('Reply'),
-                                                                                                        )
+                                                                                                                      ));
+                                                                                                            },
+                                                                                                            child: Text(
+                                                                                                              '${widget.userVideo!.comments![index].recomment!.length}  Reply',
+                                                                                                              style: TextStyle(color: Colors.white),
+                                                                                                            )),
                                                                                                       ],
                                                                                                     ),
                                                                                                   ),
                                                                                                 ],
                                                                                               ),
-                                                                                              contr.commentList[index].replyComment.length > 0
-                                                                                                  ? Container(
-                                                                                                      margin: EdgeInsets.only(left: 50),
-                                                                                                      child: ListView.builder(
-                                                                                                          shrinkWrap: true,
-                                                                                                          itemCount: contr.commentList[index].replyComment.length,
-                                                                                                          itemBuilder: (context, i) {
-                                                                                                            return ListTile(
-                                                                                                              leading: CircleAvatar(
-                                                                                                                radius: 12,
-                                                                                                                backgroundImage: NetworkImage(
-                                                                                                                  Constraints.IMAGE_BASE_URL + contr.commentList[index].replyComment[i].image!,
-                                                                                                                ),
-                                                                                                              ),
-                                                                                                              title: Text(
-                                                                                                                contr.commentList[index].replyComment[i].name,
-                                                                                                                style: TextStyle(color: Colors.white),
-                                                                                                              ),
-                                                                                                              subtitle: Column(
-                                                                                                                children: [
-                                                                                                                  Text(
-                                                                                                                    contr.commentList[index].replyComment[i].text,
-                                                                                                                    style: TextStyle(color: Colors.white),
-                                                                                                                  ),
-                                                                                                                ],
-                                                                                                              ),
-                                                                                                              trailing: IconButton(
-                                                                                                                icon: Icon(
-                                                                                                                  Icons.thumb_up,
-                                                                                                                  color: tappedDislikeIcon == true ? Colors.red : Colors.white,
-                                                                                                                  size: 20,
-                                                                                                                ),
-                                                                                                                onPressed: () {
-                                                                                                                  setState(() {
-                                                                                                                    tappedDislikeIcon = !tappedDislikeIcon;
-                                                                                                                  });
-                                                                                                                  MyToast(message: "Liked Successfully");
-                                                                                                                },
-                                                                                                              ),
-                                                                                                            );
-                                                                                                          }),
-                                                                                                    )
-                                                                                                  : SizedBox()
+                                                                                              // videoComments[index].replyComment!.length >= 0
+                                                                                              //     ? Container(
+                                                                                              //         margin: EdgeInsets.only(left: 50),
+                                                                                              //         child: ListView.builder(
+                                                                                              //             shrinkWrap: true,
+                                                                                              //             itemCount: videoComments[index].replyComment!.length,
+                                                                                              //             itemBuilder: (context, i) {
+                                                                                              //               return ListTile(
+                                                                                              //                 leading: CircleAvatar(
+                                                                                              //                   radius: 12,
+                                                                                              //                   backgroundImage: NetworkImage(
+                                                                                              //                     Constraints.IMAGE_BASE_URL + videoComments[index].replyComment![i].image!,
+                                                                                              //                   ),
+                                                                                              //                 ),
+                                                                                              //                 title: Text(
+                                                                                              //                   videoComments[index].replyComment![i].name!,
+                                                                                              //                   style: TextStyle(color: Colors.white),
+                                                                                              //                 ),
+                                                                                              //                 subtitle: Text(
+                                                                                              //                   videoComments[index].replyComment![i].text!,
+                                                                                              //                   style: TextStyle(color: Colors.white),
+                                                                                              //                 ),
+                                                                                              //                 trailing: IconButton(
+                                                                                              //                   icon: Icon(
+                                                                                              //                     Icons.favorite,
+                                                                                              //                     color: tappedDislikeIcon == true ? Colors.red : Colors.white,
+                                                                                              //                     size: 20,
+                                                                                              //                   ),
+                                                                                              //                   onPressed: () {
+                                                                                              //                     setState(() {
+                                                                                              //                       tappedDislikeIcon = !tappedDislikeIcon;
+                                                                                              //                     });
+                                                                                              //                     MyToast(message: "Liked Successfully");
+                                                                                              //                   },
+                                                                                              //                 ),
+                                                                                              //               );
+                                                                                              //             }),
+                                                                                              //       )
+                                                                                              //     : SizedBox()
                                                                                             ],
                                                                                           ),
                                                                                         ),
@@ -814,7 +807,7 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                                                                 //isComment = true;
 
                                                                                 FocusScope.of(context).unfocus();
-                                                                                commentVideo(widget.userVideo!.userId, widget.userVideo!.id, _comment.text, widget.userVideo!);
+                                                                                commentVideo(widget.userVideo!.userId!, widget.userVideo!.id!, _comment.text, widget.userVideo!);
                                                                                 _comment.text = "";
                                                                               } else {
                                                                                 MyToast(message: "Write Your Comment");
@@ -840,7 +833,7 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                                 ),
                                               ),
                                               Text(
-                                                widget.userVideo!.comment,
+                                                widget.userVideo!.comment!,
                                                 style: TextStyle(
                                                     color: Colors.white),
                                               ),
@@ -938,8 +931,9 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                                                           MaterialPageRoute(builder:
                                                                               (context) {
                                                                         return AddDuet(
+                                                                          
                                                                             videoName:
-                                                                                widget.userVideo!.videoName,
+                                                                                widget.userVideo!.videoName!,
                                                                             duetVideoPlayer: _controller);
                                                                       }));
                                                                     },
@@ -1071,28 +1065,6 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
 //gte Comment
 //get List of comment
 
-  Future<List<VideoComment>> getUserMatchPost(String userId) async {
-    dynamic response = await Apis().getVideoComment(userId);
-
-    if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
-      String res = data['res'];
-      String msg = data['msg'];
-      if (res == "success") {
-        var re = data['data'] as List;
-        videoComments.addAll(
-            re.map<VideoComment>((e) => VideoComment.fromJson(e)).toList());
-        return videoComments;
-      } else {
-        print("error");
-        MyToast(message: msg).toast;
-        return [];
-      }
-    } else {
-      throw Exception('Failed to load album');
-    }
-  }
-
   shareApp() {
     Share.share('Bollywood clap https://example.com');
   }
@@ -1103,27 +1075,5 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
         isStatus = false;
       });
     });
-  }
-}
-
-Future<List<VideoComment>> getUserMatchPost(String userId) async {
-  dynamic response = await Apis().getVideoComment(userId);
-
-  if (response.statusCode == 200) {
-    var data = jsonDecode(response.body);
-    String res = data['res'];
-    String msg = data['msg'];
-    if (res == "success") {
-      var re = data['data'] as List;
-      videoComments.addAll(
-          re.map<VideoComment>((e) => VideoComment.fromJson(e)).toList());
-      return videoComments;
-    } else {
-      print("error");
-      MyToast(message: msg).toast;
-      return [];
-    }
-  } else {
-    throw Exception('Failed to load album');
   }
 }

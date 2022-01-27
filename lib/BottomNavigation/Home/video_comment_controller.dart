@@ -23,8 +23,7 @@ class UserVideoComment extends GetxController {
       String msg = data['msg'];
       if (res == "success") {
         var re = data['data'] as List;
-        print("sdsd");
-        print(re.length);
+        
         commentList.clear();
         commentList.value =
             re.map<VideoComment>((e) => VideoComment.fromJson(e)).toList();

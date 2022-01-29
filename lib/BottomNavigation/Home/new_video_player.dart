@@ -21,6 +21,7 @@ import 'package:qvid/Theme/colors.dart';
 import 'package:qvid/apis/api.dart';
 import 'package:qvid/controller/player_screen_controller.dart';
 import 'package:qvid/helper/api_handle.dart';
+import 'package:qvid/helper/my_preference.dart';
 import 'package:qvid/model/user.dart';
 import 'package:qvid/model/user_video.dart';
 import 'package:qvid/model/video_comment.dart';
@@ -134,10 +135,8 @@ class _FollowingTab1BodyState extends State<FollowingTab1Body> {
             pageIndex: position,
             currentPageIndex: current,
             isFollowing: widget.isFollowing,
-            userVideo: firstTimeLoading == true
-                ? position != widget.videoIndex!
-                    ? widget.videos[position]
-                    : widget.videos[widget.videoIndex!]
+            userVideo: position != widget.videoIndex!
+                ? widget.videos[position]
                 : widget.videos[widget.videoIndex!]);
       },
       onPageChanged: (i) {
@@ -171,7 +170,6 @@ class VideoPage extends StatefulWidget {
 }
 
 class _VideoPageState extends State<VideoPage> with RouteAware {
-  var contr = Get.put(UserVideoComment());
   void _showOverlayMuteButton(BuildContext context) async {
     OverlayState? overlayState = Overlay.of(context);
     OverlayEntry overlayEntry;
@@ -222,17 +220,6 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
   TextEditingController _replyComment = TextEditingController();
 
   late VideoPlayerController _controller;
-  void checkVideo() {
-    // Implement your calls inside these conditions' bodies :
-    if (_controller.value.position ==
-        Duration(seconds: 0, minutes: 0, hours: 0)) {
-      print('video Started');
-    }
-
-    if (_controller.value.position == _controller.value.duration) {
-      print('video Ended');
-    }
-  }
 
   @override
   void initState() {
@@ -648,11 +635,11 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                                                                                     child: Row(
                                                                                                       children: [
                                                                                                         Text(
-                                                                                                          widget.userVideo!.comments![index].date!,
+                                                                                                          '2 hrs',
                                                                                                           style: TextStyle(color: Colors.grey),
                                                                                                         ),
                                                                                                         SizedBox(
-                                                                                                          width: 18,
+                                                                                                          width: 10,
                                                                                                         ),
                                                                                                         TextButton(
                                                                                                             onPressed: () {
@@ -697,9 +684,177 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                                                                                                       ));
                                                                                                             },
                                                                                                             child: Text(
-                                                                                                              '${widget.userVideo!.comments![index].recomment!.length}  Reply',
+                                                                                                              'Reply',
                                                                                                               style: TextStyle(color: Colors.white),
                                                                                                             )),
+                                                                                                        widget.userVideo!.comments![index].recomment!.length > 0
+                                                                                                            ? TextButton(
+                                                                                                                onPressed: () {
+                                                                                                                  showModalBottomSheet(
+                                                                                                                      context: context,
+                                                                                                                      builder: (_) => Container(
+                                                                                                                            height: MediaQuery.of(context).size.height / 1.5,
+                                                                                                                            color: backgroundColor,
+                                                                                                                            child: Column(
+                                                                                                                              mainAxisAlignment: MainAxisAlignment.start,
+                                                                                                                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                                                                                                                              children: [
+                                                                                                                                Padding(
+                                                                                                                                  padding: EdgeInsets.all(20.0),
+                                                                                                                                  child: Text(
+                                                                                                                                    "Replied Comments",
+                                                                                                                                    style: Theme.of(context).textTheme.headline6!.copyWith(color: Colors.white),
+                                                                                                                                  ),
+                                                                                                                                ),
+                                                                                                                                Expanded(
+                                                                                                                                  child: Padding(
+                                                                                                                                    padding: EdgeInsets.only(bottom: 100.0),
+                                                                                                                                    child: ListView.builder(
+                                                                                                                                        shrinkWrap: true,
+                                                                                                                                        physics: BouncingScrollPhysics(),
+                                                                                                                                        itemCount: widget.userVideo!.comments![index].recomment!.length,
+                                                                                                                                        // controller: _controller,
+                                                                                                                                        itemBuilder: (context, index) {
+                                                                                                                                          return Column(
+                                                                                                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                                                                            children: <Widget>[
+                                                                                                                                              Padding(
+                                                                                                                                                padding: const EdgeInsets.all(8.0),
+                                                                                                                                                child: Column(
+                                                                                                                                                  children: [
+                                                                                                                                                    Row(
+                                                                                                                                                      children: [
+                                                                                                                                                        SizedBox(
+                                                                                                                                                          width: 25,
+                                                                                                                                                        ),
+                                                                                                                                                        CircleAvatar(
+                                                                                                                                                          backgroundImage: NetworkImage(
+                                                                                                                                                            Constraints.IMAGE_BASE_URL + widget.userVideo!.comments![index].recomment![index].image!,
+                                                                                                                                                          ),
+                                                                                                                                                        ),
+                                                                                                                                                        SizedBox(
+                                                                                                                                                          width: 15,
+                                                                                                                                                        ),
+                                                                                                                                                        Container(
+                                                                                                                                                          height: 60.0,
+                                                                                                                                                          width: MediaQuery.of(context).size.width / 1.8,
+                                                                                                                                                          decoration: BoxDecoration(color: Colors.grey.shade900, borderRadius: BorderRadius.circular(5.0)),
+                                                                                                                                                          child: Padding(
+                                                                                                                                                            padding: const EdgeInsets.only(left: 8.0, top: 5.0),
+                                                                                                                                                            child: Column(
+                                                                                                                                                              children: [
+                                                                                                                                                                Align(alignment: Alignment.centerLeft, child: Text("@${widget.userVideo!.comments![index].recomment![index].name!}", style: TextStyle(color: Colors.grey, fontSize: 13))),
+                                                                                                                                                                SizedBox(
+                                                                                                                                                                  height: 5,
+                                                                                                                                                                ),
+                                                                                                                                                                Align(alignment: Alignment.centerLeft, child: Text(widget.userVideo!.comments![index].recomment![index].text!.trim(), style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold))),
+                                                                                                                                                              ],
+                                                                                                                                                            ),
+                                                                                                                                                          ),
+                                                                                                                                                        ),
+                                                                                                                                                        SizedBox(
+                                                                                                                                                          width: 40,
+                                                                                                                                                        ),
+                                                                                                                                                        Column(
+                                                                                                                                                          children: [
+                                                                                                                                                            GestureDetector(
+                                                                                                                                                              onTap: () {
+                                                                                                                                                                // commentLike(widget.userVideo!.userId!, widget.userVideo!.id!, widget.userVideo!.comments![index].id!, widget.userVideo!);
+                                                                                                                                                              },
+                                                                                                                                                              child: Icon(
+                                                                                                                                                                Icons.favorite_rounded,
+                                                                                                                                                                color: tappedLikeIcon == true ? Colors.red : Colors.white,
+                                                                                                                                                              ),
+                                                                                                                                                            ),
+                                                                                                                                                            Text(widget.userVideo!.comments![index].recomment![index].likes!,
+                                                                                                                                                                style: TextStyle(
+                                                                                                                                                                  color: Colors.white,
+                                                                                                                                                                ))
+                                                                                                                                                          ],
+                                                                                                                                                        ),
+                                                                                                                                                      ],
+                                                                                                                                                    ),
+                                                                                                                                                    Column(
+                                                                                                                                                      children: [
+                                                                                                                                                        Padding(
+                                                                                                                                                          padding: const EdgeInsets.only(left: 78.0),
+                                                                                                                                                          child: Row(
+                                                                                                                                                            children: [
+                                                                                                                                                              Text(
+                                                                                                                                                                '2 hrs',
+                                                                                                                                                                style: TextStyle(color: Colors.grey),
+                                                                                                                                                              ),
+                                                                                                                                                              SizedBox(
+                                                                                                                                                                width: 10,
+                                                                                                                                                              ),
+                                                                                                                                                              TextButton(
+                                                                                                                                                                  onPressed: () {
+                                                                                                                                                                    showModalBottomSheet(
+                                                                                                                                                                        context: context,
+                                                                                                                                                                        builder: (_) => Container(
+                                                                                                                                                                              color: backgroundColor,
+                                                                                                                                                                              width: MediaQuery.of(context).size.width,
+                                                                                                                                                                              child: EntryField(
+                                                                                                                                                                                controller: _replyComment,
+                                                                                                                                                                                counter: null,
+                                                                                                                                                                                padding: MediaQuery.of(context).viewInsets,
+                                                                                                                                                                                hint: "Replying to ${widget.userVideo!.comments![index].recomment![index].name!}",
+                                                                                                                                                                                fillColor: Colors.grey.shade100,
+                                                                                                                                                                                prefix: Padding(
+                                                                                                                                                                                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                                                                                                                                                                  child: user!.image.isEmpty
+                                                                                                                                                                                      ? CircleAvatar(
+                                                                                                                                                                                          backgroundImage: AssetImage('assets/images/user.webp'),
+                                                                                                                                                                                        )
+                                                                                                                                                                                      : CircleAvatar(
+                                                                                                                                                                                          backgroundImage: NetworkImage(Constraints.IMAGE_BASE_URL + user!.image),
+                                                                                                                                                                                        ),
+                                                                                                                                                                                ),
+                                                                                                                                                                                suffixIcon: GestureDetector(
+                                                                                                                                                                                  onTap: () {
+                                                                                                                                                                                    if (_replyComment.text.isNotEmpty) {
+                                                                                                                                                                                      FocusScope.of(context).unfocus();
+                                                                                                                                                                                      recomment(widget.userVideo!.userId!, widget.userVideo!.comments![index].recomment![index].id!, widget.userVideo!, _replyComment.text);
+                                                                                                                                                                                      _replyComment.text = "";
+                                                                                                                                                                                      Navigator.pop(context);
+                                                                                                                                                                                    } else {
+                                                                                                                                                                                      MyToast(message: "Please Write a Comment");
+                                                                                                                                                                                    }
+                                                                                                                                                                                  },
+                                                                                                                                                                                  child: Icon(
+                                                                                                                                                                                    Icons.send,
+                                                                                                                                                                                    color: mainColor,
+                                                                                                                                                                                  ),
+                                                                                                                                                                                ),
+                                                                                                                                                                              ),
+                                                                                                                                                                            ));
+                                                                                                                                                                  },
+                                                                                                                                                                  child: Text(
+                                                                                                                                                                    'Reply',
+                                                                                                                                                                    style: TextStyle(color: Colors.white),
+                                                                                                                                                                  )),
+                                                                                                                                                            ],
+                                                                                                                                                          ),
+                                                                                                                                                        ),
+                                                                                                                                                      ],
+                                                                                                                                                    ),
+                                                                                                                                                  ],
+                                                                                                                                                ),
+                                                                                                                                              ),
+                                                                                                                                            ],
+                                                                                                                                          );
+                                                                                                                                        }),
+                                                                                                                                  ),
+                                                                                                                                )
+                                                                                                                              ],
+                                                                                                                            ),
+                                                                                                                          ));
+                                                                                                                },
+                                                                                                                child: Text(
+                                                                                                                  'View Replies',
+                                                                                                                  style: TextStyle(color: Colors.white),
+                                                                                                                ))
+                                                                                                            : SizedBox()
                                                                                                       ],
                                                                                                     ),
                                                                                                   ),
@@ -930,11 +1085,18 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                                                           context,
                                                                           MaterialPageRoute(builder:
                                                                               (context) {
-                                                                        return AddDuet(
-                                                                          
-                                                                            videoName:
-                                                                                widget.userVideo!.videoName!,
-                                                                            duetVideoPlayer: _controller);
+                                                                        return DuetPage(
+                                                                          duetPlayer:
+                                                                              _controller,
+                                                                          videoName: widget
+                                                                              .userVideo!
+                                                                              .videoName!,
+                                                                        );
+                                                                        // return AddDuet(
+
+                                                                        //     videoName:
+                                                                        //         widget.userVideo!.videoName!,
+                                                                        //     duetVideoPlayer: _controller);
                                                                       }));
                                                                     },
                                                                   ),

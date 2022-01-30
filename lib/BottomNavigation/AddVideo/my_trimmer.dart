@@ -7,6 +7,7 @@ import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 //import 'package:progress_dialog/progress_dialog.dart';
 import 'package:qvid/BottomNavigation/AddVideo/add_video_filter.dart';
+import 'package:qvid/BottomNavigation/AddVideo/post_info.dart';
 import 'package:qvid/BottomNavigation/MyProfile/gallery/audios.dart';
 import 'package:qvid/BottomNavigation/MyProfile/gallery/videos.dart';
 import 'package:qvid/BottomNavigation/MyProfile/my_profile_page.dart';
@@ -374,6 +375,376 @@ class _TrimmerViewState extends State<TrimmerView> {
             ));
   }
 }
+
+// TRImmer duet
+
+class TrimmerDuetVideo extends StatefulWidget {
+  final File file1; // video downloaded
+  final File file2; // recorded
+  int i;
+
+  TrimmerDuetVideo(this.file2, this.i, this.file1);
+
+  @override
+  _TrimmerDuetVideoState createState() => _TrimmerDuetVideoState();
+}
+
+class _TrimmerDuetVideoState extends State<TrimmerDuetVideo> {
+  final Trimmer _trimmer = Trimmer();
+  final Trimmer _trimmer2 = Trimmer();
+
+  double _startValue = 0.0;
+  double _endValue = 0.0;
+  TextEditingController _caption = TextEditingController();
+  bool _isPlaying = false;
+  bool _progressVisibility = false;
+
+  bool isDialog = false;
+
+  Future<String?> _saveVideo() async {
+    setState(() {
+      _progressVisibility = true;
+    });
+
+    String? _value;
+    //String tempPath = (await getLocalOrTempDir()).path;
+    await _trimmer
+        .saveTrimmedVideo(
+            startValue: _startValue,
+            endValue: _endValue,
+            customVideoFormat: ".mp4",
+            videoFolderName: "filterdVideos",
+            storageDir: StorageDir.externalStorageDirectory)
+        .then((value) {
+      setState(() {
+        _progressVisibility = false;
+        _value = value;
+      });
+    });
+
+    return _value;
+  }
+
+  void _loadVideo() {
+    _trimmer.loadVideo(videoFile: widget.file2);
+    _trimmer2.loadVideo(videoFile: widget.file1);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchThumbnil();
+    _loadVideo();
+  }
+
+  @override
+  void dispose() {
+    _trimmer.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: backgroundColor,
+      appBar: AppBar(
+        backgroundColor: backgroundColor,
+        title: Text("Trim your video here..."),
+      ),
+      body: Builder(
+        builder: (context) => Center(
+          child: Container(
+            padding: EdgeInsets.only(bottom: 20.0),
+            color: Colors.black,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                Visibility(
+                  visible: _progressVisibility,
+                  child: LinearProgressIndicator(
+                    backgroundColor: Colors.red,
+                  ),
+                ),
+                /*  Visibility(
+                  visible: widget.i == 2 || widget.i == 3 ? true : false,
+                  child: Container(
+                      margin: EdgeInsets.all(10),
+                      child: TextField(
+                        controller: _caption,
+                        decoration: InputDecoration(
+                          hintText: "Enter Caption",
+                          hintStyle: TextStyle(color: Colors.white),
+                          alignLabelWithHint: true,
+                          labelText: "Enter Caption",
+                          labelStyle: TextStyle(color: disabledTextColor),
+                          enabledBorder: const OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                color: Colors.grey, width: 0.0),
+                          ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: const BorderSide(
+                                color: Colors.grey, width: 0.0),
+                          ),
+                        ),
+                        keyboardType: TextInputType.multiline,
+                        onChanged: (value) {
+                          setState(() {});
+                        },
+                      )),
+                ), */
+                Expanded(
+                  child: Row(
+                    children: [
+                      Container(
+                          width: MediaQuery.of(context).size.width / 2,
+                          child: VideoViewer(trimmer: _trimmer2)),
+                      Container(
+                          width: MediaQuery.of(context).size.width / 2,
+                          child: VideoViewer(trimmer: _trimmer)),
+                    ],
+                  ),
+                ),
+                Center(
+                  child: TrimEditor(
+                    trimmer: _trimmer,
+                    viewerHeight: 50.0,
+                    viewerWidth: MediaQuery.of(context).size.width,
+                    //maxVideoLength: Duration(seconds: widget.i == 3 ? 30 : 0),
+                    onChangeStart: (value) {
+                      _startValue = value;
+                    },
+                    onChangeEnd: (value) {
+                      _endValue = value;
+                    },
+                    onChangePlaybackState: (value) {
+                      setState(() {
+                        _isPlaying = value;
+                      });
+                    },
+                  ),
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        child: _isPlaying
+                            ? Icon(
+                                Icons.pause,
+                                size: 80.0,
+                                color: Colors.white,
+                              )
+                            : Icon(
+                                Icons.play_arrow,
+                                size: 80.0,
+                                color: Colors.white,
+                              ),
+                        onPressed: () async {
+                          bool playbackState =
+                              await _trimmer.videPlaybackControl(
+                            startValue: _startValue,
+                            endValue: _endValue,
+                          );
+                          setState(() {
+                            _isPlaying = playbackState;
+                          });
+                        },
+                      ),
+                    ),
+                    Visibility(
+                      visible: widget.i == 1 ? true : false,
+                      child: Padding(
+                        padding: EdgeInsets.only(right: 15),
+                        child: ElevatedButton(
+                          onPressed: _progressVisibility
+                              ? null
+                              : () async {
+                                  setState(() {
+                                    isDialog = true;
+                                    showLoade();
+                                  });
+                                  _saveVideo().then((outputPath) {
+                                    setState(() {
+                                      isDialog = false;
+                                      showLoade();
+                                    });
+                                    print('OUTPUT PATH: $outputPath');
+                                    _trimmer.dispose();
+                                    _trimmer2.dispose();
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => PostInfo(
+                                                filePath: widget.file1.path)));
+                                    /*   final snackBar = SnackBar(
+                                    content: Text('Video Saved successfully'));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  snackBar,
+                                ); */
+                                  });
+                                },
+                          child: Text("POST"),
+                        ),
+                      ),
+                    ),
+                    Visibility(
+                      visible: widget.i == 2 || widget.i == 3 ? true : false,
+                      child: Padding(
+                        padding: EdgeInsets.only(right: 15),
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            _saveVideo().then((outputPath) {
+                              _trimmer.dispose();
+                              widget.i == 2
+                                  ? fetchThumbnil().then((path) =>
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  UpdateOption(
+                                                    path: path,
+                                                    outputPath: outputPath!,
+                                                    caption: _caption.text,
+                                                    videoId: "",
+                                                    viewOption: "",
+                                                    i: 1,
+                                                  ))))
+                                  : showPopup(outputPath!);
+                            });
+                          },
+                          child: Text("Upload"),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  showLoade() async {
+    /*  final ProgressDialog pr = ProgressDialog(context, isDismissible: false);
+    pr.style(message: "Loading...");
+    isDialog == true ? await pr.show() : await pr.hide(); */
+  }
+
+  Future<String> fetchThumbnil() async {
+    final fileName = await VideoThumbnail.thumbnailFile(
+      video: widget.file2.path,
+      thumbnailPath: (await getTemporaryDirectory()).path,
+      imageFormat: ImageFormat.WEBP,
+      maxHeight:
+          64, // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
+      quality: 75,
+    );
+
+    print("hi this is new thubmnail $fileName");
+    return fileName!;
+  }
+
+  Future uploadAudio(String path, String caption) async {
+    print("path is $path");
+    File trimmedAudioFile = File(path);
+    var result = await MyPrefManager.prefInstance().getData("user");
+    User user = User.fromMap(jsonDecode(result) as Map<String, dynamic>);
+    Response res = await Apis().uploadAudio(user.id, trimmedAudioFile, caption);
+    var statusCode = res.statusCode;
+    print(res.body);
+    print(statusCode);
+    if (statusCode == 200) {
+      var response = jsonDecode(res.body);
+      print(response);
+      String re = response["res"];
+      String msg = response["msg"];
+      if (re == "success") {
+        MyToast(message: msg).toast;
+        Future.delayed(Duration(seconds: 1), () {
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (BuildContext context) => MyProfilePage()));
+        });
+      } else {
+        MyToast(message: msg).toast;
+      }
+    }
+  }
+
+  void showPopup(String path) {
+    showDialog(
+        context: context,
+        builder: (context) => Dialog(
+              child: Container(
+                  color: cardColor,
+                  height: 200,
+                  width: 200,
+                  child: Column(
+                    children: [
+                      GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Align(
+                              alignment: Alignment.topRight,
+                              child: Icon(Icons.close,
+                                  color: Colors.red, size: 30))),
+                      Container(
+                          margin: EdgeInsets.all(10),
+                          child: TextField(
+                            controller: _caption,
+                            decoration: InputDecoration(
+                              hintText: "Enter Caption",
+                              hintStyle: TextStyle(color: Colors.white),
+                              alignLabelWithHint: true,
+                              labelText: "Enter Caption",
+                              labelStyle: TextStyle(color: disabledTextColor),
+                              enabledBorder: const OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                    color: Colors.grey, width: 0.0),
+                              ),
+                              focusedBorder: const OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                    color: Colors.grey, width: 0.0),
+                              ),
+                            ),
+                            keyboardType: TextInputType.multiline,
+                            onChanged: (value) {
+                              setState(() {});
+                            },
+                          )),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          showDialog(
+                              context: context,
+                              builder: (context) => FutureProgressDialog(
+                                  uploadAudio(path, _caption.text)));
+                        },
+                        child: Container(
+                          margin: EdgeInsets.all(10),
+                          padding: EdgeInsets.all(15),
+                          alignment: Alignment.center,
+                          width: MediaQuery.of(context).size.width,
+                          child: Text(
+                            "Upload",
+                            style: TextStyle(fontSize: 16, color: Colors.white),
+                          ),
+                          decoration: BoxDecoration(
+                              color: buttonColor,
+                              borderRadius: BorderRadius.circular(10)),
+                        ),
+                      ),
+                    ],
+                  )),
+            ));
+  }
+}
+
+//
 
 class UpdateOption extends StatefulWidget {
   String? path;

@@ -491,8 +491,8 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
 // DUET _ PAGE
 
 class DuetPage extends StatefulWidget {
-  VideoPlayerController? duetPlayer;
-  String? videoName;
+  final VideoPlayerController? duetPlayer;
+  final String? videoName;
   DuetPage({Key? key, @required this.duetPlayer, @required this.videoName})
       : super(key: key);
 
@@ -571,20 +571,30 @@ class _DuetPageState extends State<DuetPage> with WidgetsBindingObserver {
     overlayEntry.remove();
   }
 
-  var dir;
+  String duetfilePath = '';
+  Directory? dir;
+  Future<String> getFilePath(uniqueFileName) async {
+    String path = '';
+
+    dir = await getApplicationDocumentsDirectory();
+
+    path = '${dir!.path}/$uniqueFileName.mp4';
+
+    return path;
+  }
+
   void downloadDuetVideo() async {
     try {
       dir = await getApplicationDocumentsDirectory();
 
+      duetfilePath = await getFilePath(DateTime.now().microsecond.toString());
+
       await Dio().download(
           'http://emergenceinfotech.in/ClapNew/API/v1/Uploads/Video/' +
               widget.videoName!,
-          "${dir.path}/${widget.videoName}.mp4",
-          onReceiveProgress: (rec, total) async {
+          duetfilePath, onReceiveProgress: (rec, total) async {
         if (total == rec) {
-          print('Downloading');
-          print('${dir.path}/${widget.videoName}.mp4');
-          print([total, rec]);
+          print('Downloaded');
         }
       });
     } catch (e) {
@@ -595,7 +605,9 @@ class _DuetPageState extends State<DuetPage> with WidgetsBindingObserver {
   @override
   void initState() {
     WidgetsBinding.instance!.addObserver(this);
+
     openCamera();
+
     _cameraController = CameraController(cameras![0], ResolutionPreset.high);
     cameraValue = _cameraController!.initialize();
     downloadDuetVideo();
@@ -627,7 +639,7 @@ class _DuetPageState extends State<DuetPage> with WidgetsBindingObserver {
       onWillPop: () => _onBackPressed(),
       child: Scaffold(
         body: Stack(
-          overflow: Overflow.visible,
+          overflow: Overflow.clip,
           children: [
             Positioned(
               child: InkWell(
@@ -711,31 +723,33 @@ class _DuetPageState extends State<DuetPage> with WidgetsBindingObserver {
                                   isRecoring = false;
                                 });
                                 _showOverlayProgress(context);
-                                var newDirectory =
+                                Directory? newDirectory =
                                     await getApplicationDocumentsDirectory();
-                                print(newDirectory.path);
+
                                 File fileupdated = File(newDirectory.path);
 
-                                Future.delayed(Duration(seconds: 5), () {
-                                  // Do something
-                                  String commandToExecute =
-                                      '-i ${dir.path}/${widget.videoName} -i $filePath -filter_complex \'[0:0][1:0]concat=n=2:v=1:a=0[out]\' -map \'[out]\' $fileupdated';
+                                // Do something
+                                // String b =
+                                //     '-i new1.mp4 -i new2.mp4 -i new3.mp4 -i new4.mp4 -filter_complex \ "[0]setdar=16/9[a];[1]setdar=16/9[b];[2]setdar=16/9[c];[3]setdar=16/9[d]; \ [a][b][c][d]concat=n=4:v=1:a=1" output.mp4';
 
-                                  FlutterFFmpeg()
-                                      .execute(commandToExecute)
-                                      .then((value) {
-                                    print(value);
-                                    value == 0
-                                        ? Navigator.push(
-                                            context,
-                                            CupertinoPageRoute(
-                                                builder: (context) =>
-                                                    VideoViewPage(
-                                                      path: newDirectory.path,
-                                                      fileView: fileupdated,
-                                                    )))
-                                        : MyToast(message: value.toString());
-                                  });
+                                // String a =
+                                //     '-i ${dir!.path}/videos.mp4 -i ${videoFilePath.path} -filter_complex "[0:v]scale=1024:576:force_original_aspect_ratio=1[v0]; [1:v]scale=1024:576:force_original_aspect_ratio=1[v1]; [v0][0:a][v1][1:a]concat=n=2:v=1:a=1[v][a]" -map [v] -map [a] ${newDirectory.path}/${DateTime.now().millisecond.toString()}.mp4';
+                                // // String commandToExecute =
+                                // // '-i ${dir!.path}/${widget.videoName} -i ${videoFilePath.path} -filter_complex \'[0:0][1:0]concat=n=2:v=1:a=0[out]\' -map \'[out]\' ${newDirectory.path}/output.mp4';
+
+                                // FlutterFFmpeg().execute(a).then((value) {
+                                //   print(value);
+                                //   print("Value of the command");
+                                //   value == 0
+                                Future.delayed(Duration(seconds: 2), () {
+                                  Navigator.push(
+                                      context,
+                                      CupertinoPageRoute(
+                                          builder: (context) => VideoDuetView(
+                                                pathDownloaded: duetfilePath,
+                                                pathRecorded:
+                                                    videoFilePath.path,
+                                              )));
                                 });
                               },
                               child: Icon(
@@ -1006,600 +1020,6 @@ class _DuetPageState extends State<DuetPage> with WidgetsBindingObserver {
               left: MediaQuery.of(context).size.width - 350,
               top: MediaQuery.of(context).size.height - 100,
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class AddDuet extends StatefulWidget {
-  final VideoPlayerController duetVideoPlayer;
-  final String videoName;
-  AddDuet({Key? key, required this.duetVideoPlayer, required this.videoName})
-      : super(key: key);
-
-  @override
-  _AddDuetState createState() => _AddDuetState();
-}
-
-class _AddDuetState extends State<AddDuet> {
-  CameraController? controller;
-  String FileDuet = '';
-  late List<CameraDescription> cameras;
-  String? videoPath;
-  double videoLength = 30.0;
-  var selectedCamera = 1;
-  bool videoRecorded = false;
-  bool isVideoRecorded = false;
-  bool showProgress = false;
-  bool cameraCrash = false;
-  double videoProgressPercent = 0.0;
-
-  void openCamera(int index) async {
-    cameras = await availableCameras();
-    print(cameras.length);
-
-    controller =
-        CameraController(cameras[selectedCamera], ResolutionPreset.max);
-
-    controller!.initialize().then((_) {
-      if (!mounted) {
-        return;
-      }
-      setState(() {});
-    });
-  }
-
-  Future _openGallery() async {
-    FilePickerResult? result = await FilePicker.platform
-        .pickFiles(type: FileType.video, allowCompression: true);
-    File? file;
-
-    if (result != null) {
-      file = File(result.files.single.path!);
-    }
-    if (file != null) {
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => TrimmerView(file!, 1)));
-    }
-  }
-
-  void _startRecordering() async {
-    downloadDuetVideo();
-
-    setState(() {
-      videoRecorded = true;
-      isVideoRecorded = true;
-    });
-    _startVideoRecording().then((String filePath) {
-      if (filePath.isNotEmpty) {
-        setState(() {
-          showProgress = true;
-          startTimer();
-        });
-      }
-    });
-  }
-
-  //start video recording
-
-  void downloadDuetVideo() async {
-    try {
-      var dir = await getExternalStorageDirectory();
-      print("path ${dir!.path}");
-      await Dio().download(
-          'http://emergenceinfotech.in/ClapNew/API/v1/Uploads/Video/' +
-              widget.videoName,
-          "${dir.path}/${widget.videoName}.mp4",
-          onReceiveProgress: (rec, total) async {
-        print("Rec: $rec , Total: $total");
-
-        if (total == rec) {
-          final String videoDUet = '${dir.path}/VideosDuet';
-          await Directory(videoDUet).create(recursive: true);
-          final String currentTime =
-              DateTime.now().millisecondsSinceEpoch.toString();
-          FileDuet = '$videoDUet/$currentTime.mp4';
-        }
-      });
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  Future<String> _startVideoRecording() async {
-    if (!controller!.value.isInitialized) {
-      return "";
-    }
-
-    //play asset audio player
-    //_assetsAudioPlayer.play();
-
-    // Do nothing if a recording is on progress
-    if (controller!.value.isRecordingVideo) {
-      return "";
-    }
-
-    final Directory? appDirectory = await getExternalStorageDirectory();
-    final String videoDirectory = '${appDirectory!.path}/Videos';
-
-    print("VideoDirectory" + videoDirectory);
-    await Directory(videoDirectory).create(recursive: true);
-    /*final String currentTime =
-        "$countVideos" + DateTime.now().millisecondsSinceEpoch.toString();*/
-    final String currentTime = DateTime.now().millisecondsSinceEpoch.toString();
-    final String filePath = '$videoDirectory/$currentTime.mp4';
-
-    try {
-      await controller!.startVideoRecording();
-      downloadDuetVideo();
-
-      videoPath = filePath;
-
-      //check video path
-      print(videoPath);
-    } on CameraException catch (e) {
-      _showCameraException(e);
-      return "";
-    }
-
-    return filePath;
-  }
-
-  //show camera exception
-
-  void _showCameraException(CameraException e) {
-    String errorText = 'Error: ${e.code}\nError Message: ${e.description}';
-    print(errorText);
-    setState(() {
-      cameraCrash = true;
-    });
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => Dialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-        elevation: 0.0,
-        backgroundColor: Colors.transparent,
-        //show here exception widget
-        child: Text("Camera stop working"),
-      ),
-    );
-  }
-
-  Timer? timer;
-  // Default 30 secs
-  startTimer({videoDuration = 10.0}) {
-    timer = Timer.periodic(new Duration(milliseconds: 100), (timer) {
-      setState(() {
-        videoProgressPercent += 1 / (videoDuration * 10);
-
-        if (videoProgressPercent >= 1) {
-          videoProgressPercent = 1;
-          timer.cancel();
-          _onStopButtonPressed();
-        }
-      });
-    });
-  }
-
-//handle stop button
-
-  _onStopButtonPressed() {
-    setState(() {
-      //work of upload here...
-      showProgress = false;
-      videoRecorded = false;
-    });
-    _stopVideoRecording().then((String outputVideo) async {
-      setState(() {
-        print("dissmiss dialog");
-      });
-      if (mounted)
-        setState(() {
-          showDialog(
-              context: context,
-              builder: (context) {
-                return FutureProgressDialog(
-                  playVideo(outputVideo),
-                  message: Text("Loading..."),
-                );
-              });
-        });
-    });
-  }
-
-  late String reelPath;
-  //stop video here
-  Future<String> _stopVideoRecording() async {
-    print("sdsds");
-    setState(() {
-      print("_loadingStreamCtrl.true");
-    });
-
-    if (!controller!.value.isRecordingVideo) {
-      return "";
-    }
-    try {
-      XFile videoFile = await controller!.stopVideoRecording();
-      videoPath = videoFile.path;
-      print(videoFile.path);
-    } on CameraException catch (e) {
-      _showCameraException(e);
-      return "";
-    }
-
-    final Directory? appDirectory = await getExternalStorageDirectory();
-    final String outputDirectory = '${appDirectory!.path}/outputVideos';
-    await Directory(outputDirectory).create(recursive: true);
-    final String currentTime = DateTime.now().millisecondsSinceEpoch.toString();
-    final String outputVideo = '$outputDirectory/$currentTime.mp4';
-    final String outputDuet = '$outputDirectory/duet.mp4';
-    print(outputVideo);
-    String responseVideo = "";
-
-    final info = await VideoCompress.compressVideo(
-      videoPath!,
-      quality: VideoQuality.MediumQuality,
-      deleteOrigin: true,
-    );
-
-    setState(() {
-      if (info != null) {
-        videoPath = info.path;
-        reelPath = info.path!;
-      }
-    });
-
-    final filter =
-        " [0:v]scale=480:640,setsar=1[l];[1:v]scale=480:640,setsar=1[r];[l][r]hstack;[0][1]amix -vsync 0 ";
-
-    FlutterFFmpeg()
-        .execute(" -y -i " +
-            FileDuet +
-            " -i " +
-            videoPath! +
-            " -filter_complex" +
-            filter +
-            outputDuet)
-        .then((value) => print('Executed'));
-
-    setState(() {});
-
-    /*if (audioFile != "") {
-      _flutterFFmpeg
-          .execute(
-              "-i $videoPath -i $audioFile -c:v libx264 -c:a aac -ac 2 -ar 22050 -map 0:v:0 -map 1:a:0 -shortest $outputVideo")
-          .then((rc) => print("FFmpeg process exited with rc $rc"));
-
-      */ /*setState(() {
-        videoPath = outputVideo;
-      });*/ /*
-    } else {
-      _flutterFFmpeg
-          .execute("-i $videoPath -vcodec libx265 -crf 28 $outputVideo")
-          .then((rc) => print("FFmpeg process exited with rc $rc"));
-
-      */ /*setState(() {
-        videoPath = outputVideo;
-      });*/ /*
-    }*/
-    /*_flutterFFmpeg
-        .execute("-i $videoPath -ss 00:00:01.000 -vframes 1 $thumbNail")
-        .then((rc) => print("FFmpeg process exited with rcthumb $rc"));
-    _flutterFFmpeg
-        .execute(
-            "-ss 0 -t 3 -i $videoPath -vf 'fps=10,scale=320:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse' -loop 0 $thumbGif")
-        .then((rc) async {
-      print("FFmpeg process exited with rcgif $rc");
-
-      setState(() {
-        isConverting = false;
-        thumbFile = thumbNail;
-        gifFile = thumbGif;
-      });
-    });*/
-    if (outputDuet != '') {
-      print("dsdsds" + responseVideo);
-    }
-
-    return outputDuet;
-  }
-
-//handle resume here
-
-  void onResumeButtonPressed() {
-    //assetsAudioPlayer.play();
-    resumeVideoRecording().then((_) {
-      if (mounted)
-        setState(() {
-          videoRecorded = true;
-          startTimer();
-        });
-    });
-  }
-
-  Future<void> resumeVideoRecording() async {
-    if (!controller!.value.isRecordingVideo) {
-      return;
-    }
-
-    try {
-      await controller!.resumeVideoRecording();
-    } on CameraException catch (e) {
-      _showCameraException(e);
-      rethrow;
-    }
-  }
-
-//handle pause action button
-  void onPauseButtonPressed() async {
-    pauseVideoRecording().then((_) {
-      if (mounted)
-        setState(() {
-          videoRecorded = false;
-          timer!.cancel();
-        });
-    });
-  }
-
-  Future<void> pauseVideoRecording() async {
-    if (!controller!.value.isRecordingVideo) {
-      return null;
-    }
-
-    try {
-      await controller!.pauseVideoRecording();
-    } on CameraException catch (e) {
-      _showCameraException(e);
-      rethrow;
-    }
-  }
-
-//for stop video recording
-
-  Future<void> playVideo(String filePath) async {
-    Future.delayed(Duration(seconds: 5), () {
-      Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => AddVideoFilter(videoPath: filePath)));
-    });
-  }
-
-  @override
-  void initState() {
-    openCamera(selectedCamera);
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        color: Colors.black,
-        child: Stack(
-          children: [
-            Positioned(
-              child: InkWell(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: Icon(
-                  Icons.close,
-                  color: Colors.white,
-                  size: 31,
-                ),
-              ),
-              left: 25,
-              top: 40,
-            ),
-            Positioned(
-              child: InkWell(
-                onTap: () {
-                  setState(() {
-                    if (selectedCamera == 0) {
-                      selectedCamera = 1;
-                    } else {
-                      selectedCamera = 0;
-                    }
-                    openCamera(selectedCamera);
-                  });
-                },
-                child: Icon(
-                  Icons.cameraswitch,
-                  color: Colors.white,
-                  size: 31,
-                ),
-              ),
-              right: 25,
-              top: 40,
-            ),
-            Positioned(
-                child: Text(
-                  "Flip",
-                  style: TextStyle(color: Colors.white),
-                ),
-                right: 28,
-                top: 75),
-            /*Positioned(child: Icon(Icons.speed,color: Colors.white,size: 31,),
-              right: 25,
-              top: 100,)
-            ,
-            Positioned(child: Text("Speed",style: TextStyle(color: Colors.white),),
-                right: 23,
-                top:130),*/
-            Positioned(
-              child: Icon(
-                Icons.timer,
-                color: Colors.white,
-                size: 31,
-              ),
-              right: 25,
-              top: 100,
-            ),
-            Positioned(
-                child: Text(
-                  "Timer",
-                  style: TextStyle(color: Colors.white),
-                ),
-                right: 23,
-                top: 130),
-            Positioned(
-              child: Container(
-                height: 40,
-                width: 40,
-                decoration: BoxDecoration(color: Colors.white),
-              ),
-              left: MediaQuery.of(context).size.width - 350,
-              top: MediaQuery.of(context).size.height - 100,
-            ),
-            Positioned(
-              child: Container(
-                height: 80,
-                width: 80,
-                child: CircularProgressIndicator(
-                  color: Colors.red,
-                  value: videoProgressPercent,
-                ),
-              ),
-              left: MediaQuery.of(context).size.width - 245,
-              top: MediaQuery.of(context).size.height - 110,
-            ),
-            Positioned(
-                child: InkWell(
-                  onTap: () {
-                    _startRecordering();
-                  },
-                  child: Icon(
-                    Icons.fiber_manual_record_rounded,
-                    color: Colors.yellow,
-                    size: 80,
-                  ),
-                ),
-                left: MediaQuery.of(context).size.width - 245,
-                top: MediaQuery.of(context).size.height - 110),
-            Positioned(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                      //color: Colors.red,
-                      width: MediaQuery.of(context).size.width / 2,
-                      height: 350,
-                      child: GestureDetector(
-                          onTap: () {
-                            widget.duetVideoPlayer.value.isPlaying
-                                ? widget.duetVideoPlayer.pause()
-                                : widget.duetVideoPlayer.play();
-                          },
-                          child: VideoPlayer(widget.duetVideoPlayer))),
-                  Container(
-                      // color: Colors.green,
-                      width: MediaQuery.of(context).size.width / 2,
-                      child: controller == null
-                          ? SizedBox()
-                          : CameraPreview(controller!),
-                      height: 350),
-                ],
-              ),
-              top: MediaQuery.of(context).size.height - 500,
-            ),
-            Positioned(
-              child: Icon(
-                Icons.tag_faces,
-                color: Colors.white,
-                size: 31,
-              ),
-              right: 25,
-              top: 155,
-            ),
-            Positioned(
-                child: Text(
-                  "Beautify",
-                  style: TextStyle(color: Colors.white),
-                ),
-                right: 17,
-                top: 183),
-            Positioned(
-              child: InkWell(
-                onTap: () {
-                  showDialog(
-                      context: context,
-                      builder: (ctxt) => new AlertDialog(
-                            scrollable: true,
-                            title: Text("Choose Flash Mode"),
-                            content: Container(
-                              height: 70,
-                              child: Column(
-                                children: [
-                                  InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        controller!
-                                            .setFlashMode(FlashMode.always);
-                                      });
-                                      Navigator.pop(context);
-                                    },
-                                    child: Text(
-                                      'On',
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        controller!.setFlashMode(FlashMode.off);
-                                      });
-                                      Navigator.pop(context);
-                                    },
-                                    child: Text(
-                                      'Off',
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        controller!
-                                            .setFlashMode(FlashMode.auto);
-                                      });
-                                      Navigator.pop(context);
-                                    },
-                                    child: Text(
-                                      'Auto',
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ));
-                },
-                child: Icon(
-                  Icons.flash_on,
-                  color: Colors.white,
-                  size: 31,
-                ),
-              ),
-              right: 25,
-              top: 210,
-            ),
-            Positioned(
-                child: Text(
-                  "Flash",
-                  style: TextStyle(color: Colors.white),
-                ),
-                right: 23,
-                top: 238),
           ],
         ),
       ),

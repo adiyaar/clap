@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
@@ -19,16 +20,19 @@ import 'package:qvid/widget/toast.dart';
 import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:async';
+import 'package:blinking_text/blinking_text.dart';
 
-List<CameraDescription>? cameras;
+late List<CameraDescription> cameras;
 
 class AddVideo extends StatefulWidget {
+  final int duration;
+  AddVideo(this.duration);
   @override
   _AddVideoState createState() => _AddVideoState();
 }
 
 class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
-  CameraController? _cameraController;
+  late CameraController _cameraController;
   Future<void>? cameraValue;
 
   bool isRecoring = false;
@@ -38,6 +42,8 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
   String videoPath = '';
   Directory? videoRecordingPath;
 
+  double transform = 0;
+
   void openCamera() async {
     cameras = await availableCameras();
   }
@@ -45,44 +51,46 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
   void _showOverlayProgress(BuildContext context) async {
     OverlayState? overlayState = Overlay.of(context);
     OverlayEntry overlayEntry;
-    overlayEntry = OverlayEntry(builder: (context) {
+    overlayEntry = OverlayEntry(
+
+        builder: (context) {
+
       return Center(child: CircularProgressIndicator());
     });
 
     overlayState!.insert(overlayEntry);
 
-    await Future.delayed(Duration(seconds: 5));
+    await Future.delayed(Duration(seconds: 2));
     overlayEntry.remove();
   }
 
   @override
   void initState() {
     WidgetsBinding.instance!.addObserver(this);
-    openCamera();
-    _cameraController = CameraController(cameras![0], ResolutionPreset.high);
-    cameraValue = _cameraController!.initialize();
 
+    openCamera();
+    _cameraController = CameraController(cameras[0], ResolutionPreset.high);
+    cameraValue = _cameraController.initialize();
     super.initState();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+    if (!_cameraController.value.isInitialized) {
       return;
     }
     if (state == AppLifecycleState.inactive) {
-      _cameraController?.dispose();
+      _cameraController.dispose();
     } else if (state == AppLifecycleState.resumed) {
-      if (_cameraController != null) {
-        // openCamera(selectedCamera);
-      }
+      _cameraController.initialize();
     }
+
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance!.removeObserver(this);
-    _cameraController!.dispose();
+    _cameraController.dispose();
     super.dispose();
   }
 
@@ -98,6 +106,7 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
             color: Colors.black,
             child: Stack(
               overflow: Overflow.clip,
+              fit: StackFit.loose,
               children: [
                 Container(
                   width: MediaQuery.of(context).size.width,
@@ -109,7 +118,7 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
                           return Container(
                               width: MediaQuery.of(context).size.width,
                               height: MediaQuery.of(context).size.height,
-                              child: CameraPreview(_cameraController!));
+                              child: _cameraController.value.isInitialized ?   CameraPreview(_cameraController) : CircularProgressIndicator());
                         } else {
                           return Center(
                             child: CircularProgressIndicator(),
@@ -129,175 +138,32 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
                   top: 40,
                 ),
                 Positioned(
-                  child: InkWell(
-                    onTap: () {},
-                    child: Icon(
-                      Icons.cameraswitch,
-                      color: Colors.white,
-                      size: 31,
+                  child: IconButton(
+                    icon: Transform.rotate(
+                      angle: transform,
+                      child: Icon(
+                        Icons.flip_camera_ios,
+                        color: Colors.white,
+                        size: 31,
+                      ),
                     ),
+                    onPressed: () async {
+                      setState(() {
+                        iscamerafront = !iscamerafront;
+                        transform = transform + pi;
+                      });
+                      int cameraPos = iscamerafront ? 0 : 1;
+                      _cameraController = CameraController(
+                          cameras[cameraPos], ResolutionPreset.high);
+                      cameraValue = _cameraController.initialize();
+                    },
                   ),
-                  right: 25,
-                  top: 40,
+                  right: 16,
+                  top: 140,
                 ),
                 Positioned(
                     child: Text(
                       "Flip",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    right: 28,
-                    top: 75),
-                Positioned(
-                  child: InkWell(
-                    onTap: () {
-                      showModalBottomSheet(
-                          context: context,
-                          builder: (ctxt) => Container(
-                                height: MediaQuery.of(context).size.height / 3,
-                                color: Colors.black,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text('Choose Recording Speed',
-                                        style: TextStyle(color: Colors.white)),
-                                    SizedBox(height: 20),
-                                    InkWell(
-                                      onTap: () {
-                                        // setState(() {
-                                        //   // controller!
-                                        //   //     .setFlashMode(FlashMode.always);
-                                        // });
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text(
-                                        '0.5x',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        // setState(() {
-                                        //   controller!
-                                        //       .setFlashMode(FlashMode.off);
-                                        // });
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text(
-                                        '1x',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        // setState(() {
-                                        //   controller!
-                                        //       .setFlashMode(FlashMode.auto);
-                                        // });
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text(
-                                        '2x',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ));
-                    },
-                    child: Icon(
-                      Icons.speed,
-                      color: Colors.white,
-                      size: 31,
-                    ),
-                  ),
-                  right: 25,
-                  top: 100,
-                ),
-                Positioned(
-                    child: Text(
-                      "Speed",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    right: 23,
-                    top: 130),
-                Positioned(
-                  child: InkWell(
-                    onTap: () {
-                      showModalBottomSheet(
-                          context: context,
-                          builder: (ctxt) => Container(
-                                color: Colors.black,
-                                height: MediaQuery.of(context).size.height / 3,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text('Choose Video Duration',
-                                        style: TextStyle(color: Colors.white)),
-                                    SizedBox(height: 20),
-                                    InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          // videoLength = 15.00;
-                                        });
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text(
-                                        '15s',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          // videoLength = 29.00;
-                                        });
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text(
-                                        '29s',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          // videoLength = 60.0;
-                                        });
-                                        Navigator.pop(context);
-                                      },
-                                      child: Text(
-                                        '1m',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ));
-                    },
-                    child: Icon(
-                      Icons.timer,
-                      color: Colors.white,
-                      size: 31,
-                    ),
-                  ),
-                  right: 25,
-                  top: 155,
-                ),
-                Positioned(
-                    child: Text(
-                      "Timer",
                       style: TextStyle(color: Colors.white),
                     ),
                     right: 23,
@@ -333,8 +199,8 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
                           flash = !flash;
                         });
                         flash
-                            ? _cameraController!.setFlashMode(FlashMode.torch)
-                            : _cameraController!.setFlashMode(FlashMode.off);
+                            ? _cameraController.setFlashMode(FlashMode.torch)
+                            : _cameraController.setFlashMode(FlashMode.off);
                       }),
                   right: 19,
                   top: 253,
@@ -351,13 +217,13 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
                       ? InkWell(
                           onTap: () async {
                             if (isRecordingPause == false) {
-                              await _cameraController!.pauseVideoRecording();
+                              await _cameraController.pauseVideoRecording();
 
                               setState(() {
                                 isRecordingPause = true;
                               });
                             } else {
-                              await _cameraController!.resumeVideoRecording();
+                              await _cameraController.resumeVideoRecording();
 
                               setState(() {
                                 isRecordingPause = false;
@@ -389,24 +255,55 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
                             ),
                           ),
                         ),
-                  left: MediaQuery.of(context).size.width - 350,
+                  left: MediaQuery.of(context).size.width -
+                      MediaQuery.of(context).size.width / 1.2,
                   top: MediaQuery.of(context).size.height - 100,
                 ),
                 Positioned(
                     child: Stack(
+                      overflow: Overflow.visible,
+                      fit: StackFit.loose,
                       children: [
                         GestureDetector(
                           onTap: () async {
-                            await _cameraController!.startVideoRecording();
+                            await _cameraController.startVideoRecording();
                             setState(() {
                               isRecoring = true;
+                            });
+                            Timer(Duration(seconds: widget.duration), () async {
+                              print(
+                                  "Yeah, this line is printed after ${widget.duration} seconds");
+
+                              XFile videoFilePath =
+                                  await _cameraController.stopVideoRecording();
+
+                              File filePath = File(videoFilePath.path);
+                              setState(() {
+                                isRecoring = false;
+                              });
+                              _showOverlayProgress(context);
+                              FutureProgressDialog(
+
+                                Future.delayed(Duration(seconds: 2),(){
+                                  Navigator.push(
+                                      context,
+                                      CupertinoPageRoute(
+                                          builder: (context) =>
+                                              VideoViewPage(
+                                                path: videoFilePath.path,
+                                                fileView: filePath,
+                                              )));
+                              }
+                              )
+
+                              );
                             });
                           },
                           child: isRecoring == true
                               ? GestureDetector(
                                   onTap: () async {
                                     XFile videoFilePath =
-                                        await _cameraController!
+                                        await _cameraController
                                             .stopVideoRecording();
 
                                     File filePath = File(videoFilePath.path);
@@ -414,17 +311,18 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
                                       isRecoring = false;
                                     });
                                     _showOverlayProgress(context);
-                                    Future.delayed(Duration(seconds: 5), () {
-                                      // Do something
-                                      Navigator.push(
-                                          context,
-                                          CupertinoPageRoute(
-                                              builder: (context) =>
-                                                  VideoViewPage(
-                                                    path: videoFilePath.path,
-                                                    fileView: filePath,
-                                                  )));
-                                    });
+                                    FutureProgressDialog(
+                                        Future.delayed(Duration(seconds: 2),(){
+                                          Navigator.push(
+                                              context,
+                                              CupertinoPageRoute(
+                                                  builder: (context) =>
+                                                      VideoViewPage(
+                                                        path: videoFilePath.path,
+                                                        fileView: filePath,
+                                                      )));
+                                        }
+                                        ));
                                   },
                                   child: Icon(
                                     Icons.radio_button_on,
@@ -440,19 +338,35 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
                         ),
                       ],
                     ),
-                    left: MediaQuery.of(context).size.width - 245,
+                    left: MediaQuery.of(context).size.width -
+                        MediaQuery.of(context).size.width / 1.7,
                     top: MediaQuery.of(context).size.height - 110),
                 Positioned(
-                  child: InkWell(
-                    onTap: () =>
-                        Navigator.pushNamed(context, PageRoutes.choose_music),
-                    child: Container(
-                      height: 40,
-                      width: 40,
-                      child: Image.asset('assets/icons/music_icon.png'),
-                    ),
-                  ),
-                  right: MediaQuery.of(context).size.width - 350,
+                  child: isRecoring == true
+                      ? isRecordingPause
+                          ? BlinkText(
+                              'Paused',
+                              style: TextStyle(
+                                  fontSize: 24.0, color: Colors.redAccent),
+                              endColor: Colors.orange,
+                            )
+                          : BlinkText(
+                              'REC',
+                              style: TextStyle(
+                                  fontSize: 24.0, color: Colors.redAccent),
+                              endColor: Colors.orange,
+                            )
+                      : InkWell(
+                          onTap: () => Navigator.pushNamed(
+                              context, PageRoutes.choose_music),
+                          child: Container(
+                            height: 40,
+                            width: 40,
+                            child: Image.asset('assets/icons/music_icon.png'),
+                          ),
+                        ),
+                  right: MediaQuery.of(context).size.width -
+                      MediaQuery.of(context).size.width / 1.15,
                   top: MediaQuery.of(context).size.height - 100,
                 ),
               ],
@@ -491,9 +405,14 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
 // DUET _ PAGE
 
 class DuetPage extends StatefulWidget {
+  final int durationofVideo;
   final VideoPlayerController? duetPlayer;
   final String? videoName;
-  DuetPage({Key? key, @required this.duetPlayer, @required this.videoName})
+  DuetPage(
+      {Key? key,
+      @required this.duetPlayer,
+      @required this.videoName,
+      required this.durationofVideo})
       : super(key: key);
 
   @override
@@ -519,7 +438,7 @@ class _DuetPageState extends State<DuetPage> with WidgetsBindingObserver {
   Directory? videoRecordingPath;
   bool isVideoPaused = false;
   String? duetVideoFileName;
-
+  double transform = 0;
   void openCamera() async {
     cameras = await availableCameras();
   }
@@ -608,7 +527,7 @@ class _DuetPageState extends State<DuetPage> with WidgetsBindingObserver {
 
     openCamera();
 
-    _cameraController = CameraController(cameras![0], ResolutionPreset.high);
+    _cameraController = CameraController(cameras[0], ResolutionPreset.high);
     cameraValue = _cameraController!.initialize();
     downloadDuetVideo();
     super.initState();
@@ -708,6 +627,80 @@ class _DuetPageState extends State<DuetPage> with WidgetsBindingObserver {
                         setState(() {
                           isRecoring = true;
                         });
+                        Timer(Duration(seconds: widget.durationofVideo),
+                            () async {
+                          XFile videoFilePath =
+                              await _cameraController!.stopVideoRecording();
+
+                          File filePath = File(videoFilePath.path);
+
+                          print(filePath);
+                          print('Recorded Path');
+                          setState(() {
+                            isRecoring = false;
+                          });
+                          _showOverlayProgress(context);
+                          Directory? newDirectory =
+                              await getApplicationDocumentsDirectory();
+                          String video1name =
+                              '${newDirectory.path}/${widget.videoName}';
+                          String video2name =
+                              '${newDirectory.path}/${DateTime.now().microsecond}.mp4';
+                          String outputVidep =
+                              '${newDirectory.path}/${DateTime.now().millisecond}.mp4';
+                          String scalevideo1 =
+                              "-i $duetfilePath -vf scale=320:240  $video1name";
+                          String scalevideo2 =
+                              "-i ${videoFilePath.path} -vf scale=320:240  $video2name";
+
+                          String a =
+                              '-i $video1name -i $video2name -filter_complex "[0:v][1:v]hstack=inputs=2[v]; [0:a][1:a]amerge[a]" -map "[v]" -vsync 2 -map "[a]" -ac 2 $outputVidep';
+
+                          File file1 = File(outputVidep);
+                          FlutterFFmpeg().execute(scalevideo1).then((value) {
+                            if (value == 0) {
+                              print("Success at stage 1");
+                              FlutterFFmpeg()
+                                  .execute(scalevideo2)
+                                  .then((value) => {
+                                        if (value == 0)
+                                          {
+                                            print('Success at stage 2'),
+                                            FlutterFFmpeg()
+                                                .execute(a)
+                                                .then((value) => {
+                                                      if (value == 0)
+                                                        {
+                                                          print("Successfull"),
+                                                          Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) =>
+                                                                          VideoViewPage(
+                                                                            path:
+                                                                                outputVidep,
+                                                                            fileView:
+                                                                                file1,
+                                                                          )))
+                                                        }
+                                                      else
+                                                        {
+                                                          CircularProgressIndicator(),
+                                                          print(
+                                                              "Not Successfull")
+                                                        }
+                                                    })
+                                          }
+                                        else
+                                          {CircularProgressIndicator()}
+                                      });
+                              print("I m here !! Success");
+                            } else {
+                              return CircularProgressIndicator();
+                            }
+                          });
+                        });
                       },
                       child: isRecoring == true
                           ? GestureDetector(
@@ -725,31 +718,63 @@ class _DuetPageState extends State<DuetPage> with WidgetsBindingObserver {
                                 _showOverlayProgress(context);
                                 Directory? newDirectory =
                                     await getApplicationDocumentsDirectory();
+                                String video1name =
+                                    '${newDirectory.path}/${widget.videoName}';
+                                String video2name =
+                                    '${newDirectory.path}/${DateTime.now().microsecond}.mp4';
+                                String outputVidep =
+                                    '${newDirectory.path}/${DateTime.now().millisecond}.mp4';
+                                String scalevideo1 =
+                                    "-i $duetfilePath -vf scale=320:240  $video1name";
+                                String scalevideo2 =
+                                    "-i ${videoFilePath.path} -vf scale=320:240  $video2name";
 
-                                File fileupdated = File(newDirectory.path);
+                                String a =
+                                    '-i $video1name -i $video2name -filter_complex "[0:v][1:v]hstack=inputs=2[v]; [0:a][1:a]amerge[a]" -map "[v]" -vsync 2 -map "[a]" -ac 2 $outputVidep';
 
-                                // Do something
-                                // String b =
-                                //     '-i new1.mp4 -i new2.mp4 -i new3.mp4 -i new4.mp4 -filter_complex \ "[0]setdar=16/9[a];[1]setdar=16/9[b];[2]setdar=16/9[c];[3]setdar=16/9[d]; \ [a][b][c][d]concat=n=4:v=1:a=1" output.mp4';
-
-                                // String a =
-                                //     '-i ${dir!.path}/videos.mp4 -i ${videoFilePath.path} -filter_complex "[0:v]scale=1024:576:force_original_aspect_ratio=1[v0]; [1:v]scale=1024:576:force_original_aspect_ratio=1[v1]; [v0][0:a][v1][1:a]concat=n=2:v=1:a=1[v][a]" -map [v] -map [a] ${newDirectory.path}/${DateTime.now().millisecond.toString()}.mp4';
-                                // // String commandToExecute =
-                                // // '-i ${dir!.path}/${widget.videoName} -i ${videoFilePath.path} -filter_complex \'[0:0][1:0]concat=n=2:v=1:a=0[out]\' -map \'[out]\' ${newDirectory.path}/output.mp4';
-
-                                // FlutterFFmpeg().execute(a).then((value) {
-                                //   print(value);
-                                //   print("Value of the command");
-                                //   value == 0
-                                Future.delayed(Duration(seconds: 2), () {
-                                  Navigator.push(
-                                      context,
-                                      CupertinoPageRoute(
-                                          builder: (context) => VideoDuetView(
-                                                pathDownloaded: duetfilePath,
-                                                pathRecorded:
-                                                    videoFilePath.path,
-                                              )));
+                                File file1 = File(outputVidep);
+                                FlutterFFmpeg()
+                                    .execute(scalevideo1)
+                                    .then((value) {
+                                  if (value == 0) {
+                                    print("Success at stage 1");
+                                    FlutterFFmpeg()
+                                        .execute(scalevideo2)
+                                        .then((value) => {
+                                              if (value == 0)
+                                                {
+                                                  print('Success at stage 2'),
+                                                  FlutterFFmpeg()
+                                                      .execute(a)
+                                                      .then((value) => {
+                                                            if (value == 0)
+                                                              {
+                                                                print(
+                                                                    "Successfull"),
+                                                                Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                        builder: (context) =>
+                                                                            VideoViewPage(
+                                                                              path: outputVidep,
+                                                                              fileView: file1,
+                                                                            )))
+                                                              }
+                                                            else
+                                                              {
+                                                                CircularProgressIndicator(),
+                                                                print(
+                                                                    "Not Successfull")
+                                                              }
+                                                          })
+                                                }
+                                              else
+                                                {CircularProgressIndicator()}
+                                            });
+                                    print("I m here !! Success");
+                                  } else {
+                                    return CircularProgressIndicator();
+                                  }
                                 });
                               },
                               child: Icon(
@@ -769,15 +794,55 @@ class _DuetPageState extends State<DuetPage> with WidgetsBindingObserver {
                 left: MediaQuery.of(context).size.width - 245,
                 top: MediaQuery.of(context).size.height - 110),
             Positioned(
-              child: InkWell(
-                onTap: () {},
-                child: Icon(
-                  Icons.cameraswitch,
-                  color: Colors.white,
-                  size: 31,
+              child: isRecoring == true
+                  ? isRecordingPause
+                      ? BlinkText(
+                          'Paused',
+                          style: TextStyle(
+                              fontSize: 24.0, color: Colors.redAccent),
+                          endColor: Colors.orange,
+                        )
+                      : BlinkText(
+                          'REC',
+                          style: TextStyle(
+                              fontSize: 24.0, color: Colors.redAccent),
+                          endColor: Colors.orange,
+                        )
+                  : InkWell(
+                      onTap: () =>
+                          Navigator.pushNamed(context, PageRoutes.choose_music),
+                      child: Container(
+                        height: 40,
+                        width: 40,
+                        child: Image.asset('assets/icons/music_icon.png'),
+                      ),
+                    ),
+              right: MediaQuery.of(context).size.width -
+                  MediaQuery.of(context).size.width / 1.15,
+              top: MediaQuery.of(context).size.height - 100,
+            ),
+            Positioned(
+              child: IconButton(
+                icon: Transform.rotate(
+                  angle: transform,
+                  child: Icon(
+                    Icons.flip_camera_ios,
+                    color: Colors.white,
+                    size: 24,
+                  ),
                 ),
+                onPressed: () async {
+                  setState(() {
+                    iscamerafront = !iscamerafront;
+                    transform = transform + pi;
+                  });
+                  int cameraPos = iscamerafront ? 0 : 1;
+                  _cameraController = CameraController(
+                      cameras[cameraPos], ResolutionPreset.high);
+                  cameraValue = _cameraController!.initialize();
+                },
               ),
-              right: 25,
+              right: 18,
               top: 40,
             ),
             Positioned(

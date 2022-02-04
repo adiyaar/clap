@@ -127,8 +127,8 @@ class _VideoPageState extends State<SingleVideoPlayer> with RouteAware {
                     child: FittedBox(
                         fit: BoxFit.cover,
                         child: SizedBox(
-                            height: _controller.value.size.height ?? 0,
-                            width: _controller.value.size.width ?? 0,
+                            height: _controller.value.size.height,
+                            width: _controller.value.size.width,
                             child: VideoPlayer(_controller))),
                   )
                 : SizedBox.shrink(),

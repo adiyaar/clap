@@ -104,7 +104,7 @@ class PageRoutes {
       bottomNavigation: (context) => BottomNavigation(),
       //followersPage: (context) => FollowersPage(),
 
-      addVideoPage: (context) => AddVideo(),
+      // addVideoPage: (context) => AddVideo(),
       //addVideoFilterPage: (context) => AddVideoFilter(),
       //postInfoPage: (context) => PostInfo(),
 

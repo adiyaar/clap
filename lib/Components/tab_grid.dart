@@ -27,7 +27,11 @@ class Grid {
     this.views,
   );
 }
-
+List<String> imagesInDisc1 = [
+  'assets/user/user1.png',
+  'assets/user/user2.png',
+  'assets/user/user3.png',
+];
 class TabGrid extends StatelessWidget {
   final IconData? icon;
   final List<UserVideos>? list;

@@ -5,14 +5,16 @@ import 'package:future_progress_dialog/future_progress_dialog.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:qvid/Components/post_thumb_list.dart';
-import 'package:qvid/Components/post_thumb_tile.dart';
 import 'package:qvid/Routes/routes.dart';
 import 'package:qvid/Theme/colors.dart';
 import 'package:qvid/apis/api.dart';
+import 'package:http/http.dart' as http;
 import 'package:qvid/helper/my_preference.dart';
 import 'package:qvid/model/user.dart';
+import 'package:qvid/utils/constaints.dart';
 import 'package:qvid/widget/toast.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
+import 'package:flutter_parsed_text_field/flutter_parsed_text_field.dart';
 
 class PostInfo extends StatefulWidget {
   String filePath = "";
@@ -25,6 +27,8 @@ class PostInfo extends StatefulWidget {
 
 class _PostInfoState extends State<PostInfo> {
   final TextEditingController _description = TextEditingController();
+  final hashtagsController = FlutterParsedTextFieldController();
+
   var icon = Icons.check_box_outline_blank;
   bool isSwitched1 = true;
   bool isSwitched2 = false;
@@ -36,11 +40,33 @@ class _PostInfoState extends State<PostInfo> {
   ];
 
   static List<String> dance = [];
+  List hashtags = [];
+
+  Future getHashtags() async {
+    var url = Uri.parse(Constraints.MANAGE_URL);
+    Response res = await http.post(url, body: {"flag": "hashtag"});
+
+    var statusCode = res.statusCode;
+    if (statusCode == 200) {
+      var response = jsonDecode(res.body);
+      print(response);
+      String re = response["res"];
+      String msg = response["msg"];
+      if (re == "success") {
+        hashtags.addAll(response["data"]);
+        print("I m the list of hashtags");
+        print(hashtags);
+      } else {
+        MyToast(message: msg).toast;
+      }
+    }
+  }
 
   @override
   void initState() {
     findUser();
     dance.clear();
+    getHashtags();
     Future.delayed(Duration(seconds: 1), () {
       thumbnilList();
     });
@@ -131,9 +157,23 @@ class _PostInfoState extends State<PostInfo> {
                     padding: const EdgeInsets.only(left: 5.0, right: 5),
                     child: Container(
                         height: 150,
-                        child: TextField(
+                        child: FlutterParsedTextField(
                           style: TextStyle(color: Colors.white),
-                          controller: _description,
+                          disableSuggestionOverlay: true,
+                          matchers: [
+                            Matcher(
+                              trigger: "#",
+                              suggestions: hashtags,
+                              idProp: (hashtags) => hashtags,
+                              displayProp: (hashtags) => hashtags,
+                              style: const TextStyle(color: Colors.blue),
+                              stringify: (trigger, hashtags) => hashtags,
+                              alwaysHighlight: true,
+                              parseRegExp: RegExp(r'(#([\w]+))'),
+                              parse: (regex, hashtagString) => hashtagString,
+                            ),
+                          ],
+                          controller: hashtagsController,
                           maxLines: 100,
                           decoration: InputDecoration(
                             hintText: "Enter Video Description",
@@ -142,7 +182,7 @@ class _PostInfoState extends State<PostInfo> {
                                 BoxConstraints.tight(Size(23, 23)),
                             alignLabelWithHint: true,
                             labelText: "Add Video Description",
-                            labelStyle: TextStyle(color: disabledTextColor),
+                            labelStyle: TextStyle(color: Colors.white),
                             enabledBorder: const OutlineInputBorder(
                               borderSide: const BorderSide(
                                   color: Colors.grey, width: 0.0),
@@ -158,6 +198,25 @@ class _PostInfoState extends State<PostInfo> {
                 ),
               ],
             ),
+            // FlutterParsedTextField(
+            //   controller: hashtagsController,
+            //   disableSuggestionOverlay: false,
+            //   decoration: InputDecoration(
+            //     hintText: "Enter Video Description",
+            //     hintStyle: TextStyle(color: Colors.white),
+            //     prefixIconConstraints: BoxConstraints.tight(Size(23, 23)),
+            //     alignLabelWithHint: true,
+            //     labelStyle: TextStyle(color: Colors.white),
+            //     enabledBorder: const OutlineInputBorder(
+            //       borderSide: const BorderSide(color: Colors.grey, width: 0.0),
+            //     ),
+            //     focusedBorder: const OutlineInputBorder(
+            //       borderSide: const BorderSide(color: Colors.grey, width: 0.0),
+            //     ),
+            //   ),
+            //   suggestionLimit: 5,
+
+            // ),
             SizedBox(
               height: 30,
             ),
@@ -288,11 +347,46 @@ class _PostInfoState extends State<PostInfo> {
             ),
             InkWell(
               onTap: () {
+                // File file = File(widget.filePath);
+                // showDialog(
+                //     context: context,
+                //     builder: (context1) => FutureProgressDialog(uploadPost(
+                //         userId, "Post", file, _description.text, coverFile!)));
+                //thumbnilList();
+                MyToast(message: 'Drafted Successfully').toast;
+                // Future.delayed(Duration(seconds: 1), () {
+                //   Navigator.of(context).pop();
+                //   Navigator.pushNamedAndRemoveUntil(
+                //       context, PageRoutes.bottomNavigation, (route) => false);
+                // });
+              },
+              child: Container(
+                margin: EdgeInsets.all(10),
+                padding: EdgeInsets.all(15),
+                alignment: Alignment.center,
+                width: MediaQuery.of(context).size.width,
+                child: Text(
+                  "DRAFT VIDEO",
+                  style: TextStyle(fontSize: 16, color: Colors.white),
+                ),
+                decoration: BoxDecoration(
+                    color: buttonColor,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(15),
+                        bottomRight: Radius.circular(15))),
+              ),
+            ),
+            InkWell(
+              onTap: () {
                 File file = File(widget.filePath);
                 showDialog(
                     context: context,
                     builder: (context1) => FutureProgressDialog(uploadPost(
-                        userId, "Post", file, _description.text, coverFile!)));
+                        userId,
+                        "Post",
+                        file,
+                        hashtagsController.text,
+                        coverFile!)));
                 //thumbnilList();
                 /* Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => HomePage())); */
@@ -322,9 +416,35 @@ class _PostInfoState extends State<PostInfo> {
 
   Future uploadPost(String userId, String title, File file1, String descri,
       File coverImage) async {
-    print("sdsd");
     //print(file1 != null ? "file h" : "file nhi");
     print(file1.readAsBytesSync().length);
+    Response res = await Apis().uploadPost(
+        userId, file1, title, descri, coverImage, _userUploadOption);
+    var statusCode = res.statusCode;
+
+    if (statusCode == 200) {
+      var response = jsonDecode(res.body);
+      print(response);
+      String re = response["res"];
+      String msg = response["msg"];
+      if (re == "success") {
+        MyToast(message: msg).toast;
+        Future.delayed(Duration(seconds: 1), () {
+          Navigator.of(context).pop();
+          Navigator.pushNamedAndRemoveUntil(
+              context, PageRoutes.bottomNavigation, (route) => false);
+        });
+      } else {
+        MyToast(message: msg).toast;
+      }
+    }
+  }
+
+  // draft video
+  Future draftVideo(String userId, String title, File file1, String descri,
+      File coverImage) async {
+    //print(file1 != null ? "file h" : "file nhi");
+
     Response res = await Apis().uploadPost(
         userId, file1, title, descri, coverImage, _userUploadOption);
     var statusCode = res.statusCode;

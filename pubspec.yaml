@@ -51,6 +51,7 @@ dependencies:
   comment_tree: any
 
   dio:
+  flutter_parsed_text_field: any
   blinking_text: ^1.0.1+2
   image_cropper: ^1.4.1
   flutter_image_compress: ^1.1.0
@@ -64,6 +65,7 @@ dependencies:
   google_sign_in: ^5.2.1
   firebase_auth: ^3.3.4
   chewie: ^1.2.2
+  provider: ^6.0.1
 
 dev_dependencies:
   flutter_test:
@@ -73,6 +75,9 @@ dev_dependencies:
   flutter_app_name: ^0.1.1
   build_runner:
 
+dependency_overrides:
+  provider: ^6.0.1
+  
 flutter_icons:
   android: true
   ios: true

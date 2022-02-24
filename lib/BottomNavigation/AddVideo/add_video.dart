@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'dart:math';
-import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
@@ -10,14 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:future_progress_dialog/future_progress_dialog.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:qvid/BottomNavigation/AddVideo/VideoView.dart';
-//import 'package:progress_dialog/progress_dialog.dart';
-import 'package:qvid/BottomNavigation/AddVideo/add_video_filter.dart';
 import 'package:qvid/BottomNavigation/AddVideo/my_trimmer.dart';
 import 'package:qvid/BottomNavigation/Home/home_page.dart';
 
 import 'package:qvid/Routes/routes.dart';
-import 'package:qvid/widget/toast.dart';
-import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:async';
 import 'package:blinking_text/blinking_text.dart';
@@ -51,10 +46,7 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
   void _showOverlayProgress(BuildContext context) async {
     OverlayState? overlayState = Overlay.of(context);
     OverlayEntry overlayEntry;
-    overlayEntry = OverlayEntry(
-
-        builder: (context) {
-
+    overlayEntry = OverlayEntry(builder: (context) {
       return Center(child: CircularProgressIndicator());
     });
 
@@ -84,7 +76,6 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
     } else if (state == AppLifecycleState.resumed) {
       _cameraController.initialize();
     }
-
   }
 
   @override
@@ -118,7 +109,9 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
                           return Container(
                               width: MediaQuery.of(context).size.width,
                               height: MediaQuery.of(context).size.height,
-                              child: _cameraController.value.isInitialized ?   CameraPreview(_cameraController) : CircularProgressIndicator());
+                              child: _cameraController.value.isInitialized
+                                  ? CameraPreview(_cameraController)
+                                  : CircularProgressIndicator());
                         } else {
                           return Center(
                             child: CircularProgressIndicator(),
@@ -126,6 +119,8 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
                         }
                       }),
                 ),
+                
+              
                 Positioned(
                   child: IconButton(
                       onPressed: () => Navigator.pop(context),
@@ -283,20 +278,15 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
                               });
                               _showOverlayProgress(context);
                               FutureProgressDialog(
-
-                                Future.delayed(Duration(seconds: 2),(){
-                                  Navigator.push(
-                                      context,
-                                      CupertinoPageRoute(
-                                          builder: (context) =>
-                                              VideoViewPage(
-                                                path: videoFilePath.path,
-                                                fileView: filePath,
-                                              )));
-                              }
-                              )
-
-                              );
+                                  Future.delayed(Duration(seconds: 2), () {
+                                Navigator.push(
+                                    context,
+                                    CupertinoPageRoute(
+                                        builder: (context) => VideoViewPage(
+                                              path: videoFilePath.path,
+                                              fileView: filePath,
+                                            )));
+                              }));
                             });
                           },
                           child: isRecoring == true
@@ -311,18 +301,17 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
                                       isRecoring = false;
                                     });
                                     _showOverlayProgress(context);
-                                    FutureProgressDialog(
-                                        Future.delayed(Duration(seconds: 2),(){
-                                          Navigator.push(
-                                              context,
-                                              CupertinoPageRoute(
-                                                  builder: (context) =>
-                                                      VideoViewPage(
-                                                        path: videoFilePath.path,
-                                                        fileView: filePath,
-                                                      )));
-                                        }
-                                        ));
+                                    FutureProgressDialog(Future.delayed(
+                                        Duration(seconds: 2), () {
+                                      Navigator.push(
+                                          context,
+                                          CupertinoPageRoute(
+                                              builder: (context) =>
+                                                  VideoViewPage(
+                                                    path: videoFilePath.path,
+                                                    fileView: filePath,
+                                                  )));
+                                    }));
                                   },
                                   child: Icon(
                                     Icons.radio_button_on,

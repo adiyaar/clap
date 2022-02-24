@@ -13,9 +13,7 @@ class Apis {
   Future<http.Response> userLogin(String mobile) async {
     var url = Uri.parse(Constraints.BASE_URL);
 
-    
     return await http.post(url, body: {"mobile": "$mobile", "flag": "Login"});
-
   }
 
   //otp verification
@@ -209,6 +207,17 @@ class Apis {
     return await http.post(url, body: {"flag": "Slider"});
   }
 
+  // get hashtags
+  Future getHashtags() async {
+    var url = Uri.parse(Constraints.MANAGE_URL);
+    var response = await http.post(url, body: {"flag": "hashtag"});
+    var jsonResponse = json.decode(response.body);
+    print(jsonResponse);
+    print('Hashtags');
+
+    return jsonResponse;
+  }
+
   //upload video
 
   Future<http.Response> uploadPost(String userId, File file, String title,
@@ -226,6 +235,33 @@ class Apis {
           filename: coverImage.path.split("/").last))
       ..files.add(http.MultipartFile.fromBytes(
           'video_name', file.readAsBytesSync(),
+          contentType: MediaType('application', 'video/mp4'),
+          filename: file.path.split("/").last));
+    var streamedResponse = await request.send();
+    return await http.Response.fromStream(streamedResponse);
+  }
+
+  Future<http.Response> uploadDraft(String userId, File file, String title,
+      String description, File coverImage, String option) async {
+    var url = Uri.parse(Constraints.BASE_URL);
+    var request = http.MultipartRequest('POST', url)
+      ..fields['user_id'] = userId
+      ..fields['flag'] = 'draft_video'
+      ..fields['title'] = title
+      // ..fields['video_name'] = DateTime.now().millisecond.toString()
+      ..fields['tmp_filename'] = DateTime.now().millisecond.toString()
+      ..fields['reels_view_option'] = option
+      ..fields['description'] = description
+      ..files.add(http.MultipartFile.fromBytes(
+          'cover_image', coverImage.readAsBytesSync(),
+          contentType: MediaType('application', 'image/*'),
+          filename: coverImage.path.split("/").last))
+      ..files.add(http.MultipartFile.fromBytes(
+          'video_name', file.readAsBytesSync(),
+          contentType: MediaType('application', 'video/mp4'),
+          filename: file.path.split("/").last))
+      ..files.add(http.MultipartFile.fromBytes(
+          'tmp_filename', file.readAsBytesSync(),
           contentType: MediaType('application', 'video/mp4'),
           filename: file.path.split("/").last));
     var streamedResponse = await request.send();

@@ -18,6 +18,7 @@ import 'package:qvid/Routes/routes.dart';
 import 'package:qvid/Theme/colors.dart';
 import 'package:qvid/apis/api.dart';
 import 'package:qvid/helper/api_handle.dart';
+import 'package:qvid/helper/my_preference.dart';
 import 'package:qvid/model/user.dart';
 import 'package:qvid/model/user_video.dart';
 import 'package:qvid/model/video_comment.dart';
@@ -27,6 +28,11 @@ import 'package:share/share.dart';
 import 'package:video_player/video_player.dart';
 
 List<VideoComment> videoComments = [];
+List<String> imagesInDisc1 = [
+  'assets/user/user1.png',
+  'assets/user/user2.png',
+  'assets/user/user3.png',
+];
 
 class FollowingTabPage1 extends StatelessWidget {
   final List<UserVideos> videos;
@@ -134,7 +140,6 @@ class _FollowingTab1BodyState extends State<FollowingTab1Body> {
                 ? widget.videos[position]
                 : widget.videos[widget.videoIndex!]);
       },
-
       itemCount: widget.videos.length,
     );
   }
@@ -146,7 +151,7 @@ class VideoPage extends StatefulWidget {
   final int? currentPageIndex;
   final bool? isPaused;
   final bool? isFollowing;
-  final UserVideos? userVideo;
+  UserVideos? userVideo;
 
   VideoPage(this.video,
       {this.pageIndex,
@@ -210,7 +215,17 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
   TextEditingController _replyComment = TextEditingController();
 
   late VideoPlayerController _controller;
-
+  List<String> comments = [
+    'Bindaas',
+    'Jhakas',
+    'Awesome',
+    'Hot',
+    'Beautiful',
+    'Classy',
+    'Sexy',
+    'Maza aagya',
+    'Hahaha'
+  ];
   @override
   void initState() {
     super.initState();
@@ -225,7 +240,6 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
           _controller.setLooping(true);
 
           _controller.play();
-
 
           initialized = true;
           isLoading = false;
@@ -287,7 +301,6 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
     return Scaffold(
         resizeToAvoidBottomInset: true,
         body: GestureDetector(
-
           onTap: () {
             _showOverlayMuteButton(context);
             _controller.setVolume(0.0);
@@ -325,8 +338,7 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                 width: MediaQuery.of(context).size.width * .8,
                                 height: MediaQuery.of(context).size.height,
                                 child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Text(
@@ -335,7 +347,6 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                           color: Colors.white,
                                           fontWeight: FontWeight.w700),
                                     ),
-
                                     SizedBox(
                                       height: 10,
                                     ),
@@ -349,7 +360,6 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                     SizedBox(
                                       height: 10,
                                     ),
-
                                   ],
                                 ),
                               ),
@@ -372,10 +382,9 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                       ),
                                       Container(
                                         //color: Colors.red,
-                                        height: MediaQuery.of(context)
-                                                .size
-                                                .height *
-                                            .7,
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                .7,
                                         child: Column(
                                           mainAxisAlignment:
                                               MainAxisAlignment.start,
@@ -384,31 +393,76 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                               onTap: () {
                                                 _controller.pause();
 
-                                                showModalBottomSheet(context: context, builder: (_)=>Container(
-                                                  color: backgroundColor,
-                                                  height: MediaQuery.of(context).size.height/3,
-                                                  child: Padding(
-                                                    padding: const EdgeInsets.only(top: 30.0,left: 10),
-                                                    child: Column(
-                                                      mainAxisAlignment: MainAxisAlignment.start,
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                      Text('Choose Video Duration',style: TextStyle(color: Colors.white),),
-                                                      TextButton(onPressed: (){
-                                                        Navigator.pop(context);
-                                                        Navigator.push(context, CupertinoPageRoute(builder: (_)=>AddVideo(15)));
-                                                      }, child: Text('15 seconds')),
-                                                      TextButton(onPressed: (){
-                                                        Navigator.pop(context);
-                                                        Navigator.push(context, CupertinoPageRoute(builder: (_)=>AddVideo(30)));
-                                                      }, child: Text('30 seconds')),
-                                                      TextButton(onPressed: (){
-                                                        Navigator.pop(context);
-                                                        Navigator.push(context, CupertinoPageRoute(builder: (_)=>AddVideo(60)));
-                                                      }, child: Text('60 seconds')),
-                                                    ],),
-                                                  ),
-                                                ));
+                                                showModalBottomSheet(
+                                                    context: context,
+                                                    builder: (_) => Container(
+                                                          color:
+                                                              backgroundColor,
+                                                          height: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .height /
+                                                              3,
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .only(
+                                                                    top: 30.0,
+                                                                    left: 10),
+                                                            child: Column(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .start,
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: [
+                                                                Text(
+                                                                  'Choose Video Duration',
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .white),
+                                                                ),
+                                                                TextButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.pop(
+                                                                          context);
+                                                                      Navigator.push(
+                                                                          context,
+                                                                          CupertinoPageRoute(
+                                                                              builder: (_) => AddVideo(15)));
+                                                                    },
+                                                                    child: Text(
+                                                                        '15 seconds')),
+                                                                TextButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.pop(
+                                                                          context);
+                                                                      Navigator.push(
+                                                                          context,
+                                                                          CupertinoPageRoute(
+                                                                              builder: (_) => AddVideo(30)));
+                                                                    },
+                                                                    child: Text(
+                                                                        '30 seconds')),
+                                                                TextButton(
+                                                                    onPressed:
+                                                                        () {
+                                                                      Navigator.pop(
+                                                                          context);
+                                                                      Navigator.push(
+                                                                          context,
+                                                                          CupertinoPageRoute(
+                                                                              builder: (_) => AddVideo(60)));
+                                                                    },
+                                                                    child: Text(
+                                                                        '60 seconds')),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                        ));
                                               },
                                               child: Container(
                                                 alignment: Alignment.center,
@@ -436,14 +490,13 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                                         PageRoutes
                                                             .userProfilePage,
                                                         arguments: widget
-                                                            .userVideo!
-                                                            .userId)
+                                                            .userVideo!.userId)
                                                     .then((value) =>
                                                         _controller.pause());
                                               },
                                               child: CircleAvatar(
-                                                  backgroundImage:
-                                                      NetworkImage(Constraints
+                                                  backgroundImage: NetworkImage(
+                                                      Constraints
                                                               .IMAGE_BASE_URL +
                                                           widget.userVideo!
                                                               .image!)),
@@ -461,8 +514,8 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                                       : isLiked = true;
                                                 });
 
-                                                User user = await ApiHandle
-                                                    .fetchUser();
+                                                User user =
+                                                    await ApiHandle.fetchUser();
                                                 likeVideo(user.id,
                                                     widget.userVideo!.id!);
                                               },
@@ -478,8 +531,7 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                             ),
                                             isLiked == true
                                                 ? Text(
-                                                    (int.parse(widget
-                                                                .userVideo!
+                                                    (int.parse(widget.userVideo!
                                                                 .likes!) +
                                                             1)
                                                         .toString(),
@@ -499,477 +551,570 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                                 _controller.pause();
 
                                                 showModalBottomSheet(
-                                                    //enableDrag: true,
-                                                    isScrollControlled: true,
-                                                    backgroundColor:
-                                                        backgroundColor,
-                                                    shape: OutlineInputBorder(
-                                                        borderRadius:
-                                                            BorderRadius.vertical(
-                                                                top: Radius
-                                                                    .circular(
-                                                                        25.0)),
-                                                        borderSide:
-                                                            BorderSide.none),
-                                                    context: context,
-                                                    builder: (context) =>
-                                                        Container(
-                                                            height: MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .height /
-                                                                1.5,
-                                                            child: Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                          .only(
-                                                                      top:
-                                                                          10.0),
-                                                              child: Stack(
-                                                                children: <
-                                                                    Widget>[
-                                                                  FadedSlideAnimation(
-                                                                    Column(
-                                                                      crossAxisAlignment:
-                                                                          CrossAxisAlignment.stretch,
-                                                                      children: <
-                                                                          Widget>[
-                                                                        Padding(
-                                                                          padding:
-                                                                              EdgeInsets.all(20.0),
-                                                                          child:
-                                                                              Text(
-                                                                            "Comments",
-                                                                            style: Theme.of(context).textTheme.headline6!.copyWith(color: Colors.white),
-                                                                          ),
-                                                                        ),
-                                                                        Expanded(
-                                                                          child:
-                                                                              Padding(
-                                                                            padding: EdgeInsets.only(bottom: 100.0),
-                                                                            child: ListView.builder(
-                                                                                shrinkWrap: true,
-                                                                                physics: BouncingScrollPhysics(),
-                                                                                itemCount: widget.userVideo!.comments!.length,
-                                                                                // controller: _controller,
-                                                                                itemBuilder: (context, index) {
-                                                                                  return Column(
-                                                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                    children: <Widget>[
-                                                                                      Padding(
-                                                                                        padding: const EdgeInsets.all(8.0),
-                                                                                        child: Column(
-                                                                                          children: [
-                                                                                            Row(
-                                                                                              children: [
-                                                                                                SizedBox(
-                                                                                                  width: 25,
-                                                                                                ),
-                                                                                                CircleAvatar(
-                                                                                                  backgroundImage: NetworkImage(
-                                                                                                    Constraints.IMAGE_BASE_URL + widget.userVideo!.comments![index].image!,
-                                                                                                  ),
-                                                                                                ),
-                                                                                                SizedBox(
-                                                                                                  width: 15,
-                                                                                                ),
-                                                                                                Container(
-                                                                                                  height: 60.0,
-                                                                                                  width: MediaQuery.of(context).size.width / 1.8,
-                                                                                                  decoration: BoxDecoration(color: Colors.grey.shade900, borderRadius: BorderRadius.circular(5.0)),
-                                                                                                  child: Padding(
-                                                                                                    padding: const EdgeInsets.only(left: 8.0, top: 5.0),
-                                                                                                    child: Column(
-                                                                                                      children: [
-                                                                                                        Align(alignment: Alignment.centerLeft, child: Text("@${widget.userVideo!.comments![index].name!}", style: TextStyle(color: Colors.grey, fontSize: 13))),
-                                                                                                        SizedBox(
-                                                                                                          height: 5,
-                                                                                                        ),
-                                                                                                        Align(alignment: Alignment.centerLeft, child: Text(widget.userVideo!.comments![index].comment!.trim(), style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold))),
-                                                                                                      ],
-                                                                                                    ),
-                                                                                                  ),
-                                                                                                ),
-                                                                                                /*SizedBox(
-                                                                          width:MediaQuery.of(context).size.width/4 ,
-                                                                        ),*/
-                                                                                                SizedBox(
-                                                                                                  width: 40,
-                                                                                                ),
-                                                                                                Column(
-                                                                                                  children: [
-                                                                                                    GestureDetector(
-                                                                                                      onTap: () {
-                                                                                                        setState(() {
-                                                                                                          tappedLikeIcon = !tappedLikeIcon;
-                                                                                                        });
-                                                                                                        commentLike(widget.userVideo!.userId!, widget.userVideo!.id!, widget.userVideo!.comments![index].id!, widget.userVideo!);
-                                                                                                      },
-                                                                                                      child: Icon(
-                                                                                                        Icons.favorite_rounded,
-                                                                                                        color: tappedLikeIcon == true ? Colors.red : Colors.white,
-                                                                                                      ),
-                                                                                                    ),
-                                                                                                    Text(widget.userVideo!.comments![index].likes!,
-                                                                                                        style: TextStyle(
-                                                                                                          color: Colors.white,
-                                                                                                        ))
-                                                                                                  ],
-                                                                                                ),
-                                                                                              ],
-                                                                                            ),
-                                                                                            Column(
-                                                                                              children: [
-                                                                                                Padding(
-                                                                                                  padding: const EdgeInsets.only(left: 78.0),
-                                                                                                  child: Row(
-                                                                                                    children: [
-                                                                                                      Text(
-                                                                                                        '2 hrs',
-                                                                                                        style: TextStyle(color: Colors.grey),
-                                                                                                      ),
-                                                                                                      SizedBox(
-                                                                                                        width: 10,
-                                                                                                      ),
-                                                                                                      TextButton(
-                                                                                                          onPressed: () {
-                                                                                                            showModalBottomSheet(
-                                                                                                                context: context,
-                                                                                                                builder: (_) => Container(
-                                                                                                                      color: backgroundColor,
-                                                                                                                      width: MediaQuery.of(context).size.width,
-                                                                                                                      child: EntryField(
-                                                                                                                        controller: _replyComment,
-                                                                                                                        counter: null,
-                                                                                                                        padding: MediaQuery.of(context).viewInsets,
-                                                                                                                        hint: "Replying to ${widget.userVideo!.comments![index].name!}",
-                                                                                                                        fillColor: Colors.grey.shade100,
-                                                                                                                        prefix: Padding(
-                                                                                                                          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                                                                                                                          child: user!.image.isEmpty
-                                                                                                                              ? CircleAvatar(
-                                                                                                                                  backgroundImage: AssetImage('assets/images/user.webp'),
-                                                                                                                                )
-                                                                                                                              : CircleAvatar(
-                                                                                                                                  backgroundImage: NetworkImage(Constraints.IMAGE_BASE_URL + user!.image),
-                                                                                                                                ),
-                                                                                                                        ),
-                                                                                                                        suffixIcon: GestureDetector(
-                                                                                                                          onTap: () {
-                                                                                                                            if (_replyComment.text.isNotEmpty) {
-                                                                                                                              FocusScope.of(context).unfocus();
-                                                                                                                              recomment(widget.userVideo!.userId!, widget.userVideo!.comments![index].id!, widget.userVideo!, _replyComment.text);
-                                                                                                                              _replyComment.text = "";
-                                                                                                                              Navigator.pop(context);
-                                                                                                                            } else {
-                                                                                                                              MyToast(message: "Please Write a Comment");
-                                                                                                                            }
-                                                                                                                          },
-                                                                                                                          child: Icon(
-                                                                                                                            Icons.send,
-                                                                                                                            color: mainColor,
-                                                                                                                          ),
-                                                                                                                        ),
-                                                                                                                      ),
-                                                                                                                    ));
-                                                                                                          },
-                                                                                                          child: Text(
-                                                                                                            'Reply',
-                                                                                                            style: TextStyle(color: Colors.white),
-                                                                                                          )),
-                                                                                                      widget.userVideo!.comments![index].recomment!.length > 0
-                                                                                                          ? TextButton(
-                                                                                                              onPressed: () {
-                                                                                                                showModalBottomSheet(
-                                                                                                                    context: context,
-                                                                                                                    builder: (_) => Container(
-                                                                                                                          height: MediaQuery.of(context).size.height / 1.5,
-                                                                                                                          color: backgroundColor,
-                                                                                                                          child: Column(
-                                                                                                                            mainAxisAlignment: MainAxisAlignment.start,
-                                                                                                                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                                                                                                                            children: [
-                                                                                                                              Padding(
-                                                                                                                                padding: EdgeInsets.all(20.0),
-                                                                                                                                child: Text(
-                                                                                                                                  "Replied Comments",
-                                                                                                                                  style: Theme.of(context).textTheme.headline6!.copyWith(color: Colors.white),
-                                                                                                                                ),
-                                                                                                                              ),
-                                                                                                                              Expanded(
-                                                                                                                                child: Padding(
-                                                                                                                                  padding: EdgeInsets.only(bottom: 100.0),
-                                                                                                                                  child: ListView.builder(
-                                                                                                                                      shrinkWrap: true,
-                                                                                                                                      physics: BouncingScrollPhysics(),
-                                                                                                                                      itemCount: widget.userVideo!.comments![index].recomment!.length,
-                                                                                                                                      // controller: _controller,
-                                                                                                                                      itemBuilder: (context, index) {
-                                                                                                                                        return Column(
-                                                                                                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                                                                                                          children: <Widget>[
-                                                                                                                                            Padding(
-                                                                                                                                              padding: const EdgeInsets.all(8.0),
-                                                                                                                                              child: Column(
-                                                                                                                                                children: [
-                                                                                                                                                  Row(
-                                                                                                                                                    children: [
-                                                                                                                                                      SizedBox(
-                                                                                                                                                        width: 25,
-                                                                                                                                                      ),
-                                                                                                                                                      CircleAvatar(
-                                                                                                                                                        backgroundImage: NetworkImage(
-                                                                                                                                                          Constraints.IMAGE_BASE_URL + widget.userVideo!.comments![index].recomment![index].image!,
-                                                                                                                                                        ),
-                                                                                                                                                      ),
-                                                                                                                                                      SizedBox(
-                                                                                                                                                        width: 15,
-                                                                                                                                                      ),
-                                                                                                                                                      Container(
-                                                                                                                                                        height: 60.0,
-                                                                                                                                                        width: MediaQuery.of(context).size.width / 1.8,
-                                                                                                                                                        decoration: BoxDecoration(color: Colors.grey.shade900, borderRadius: BorderRadius.circular(5.0)),
-                                                                                                                                                        child: Padding(
-                                                                                                                                                          padding: const EdgeInsets.only(left: 8.0, top: 5.0),
-                                                                                                                                                          child: Column(
-                                                                                                                                                            children: [
-                                                                                                                                                              Align(alignment: Alignment.centerLeft, child: Text("@${widget.userVideo!.comments![index].recomment![index].name!}", style: TextStyle(color: Colors.grey, fontSize: 13))),
-                                                                                                                                                              SizedBox(
-                                                                                                                                                                height: 5,
-                                                                                                                                                              ),
-                                                                                                                                                              Align(alignment: Alignment.centerLeft, child: Text(widget.userVideo!.comments![index].recomment![index].text!.trim(), style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold))),
-                                                                                                                                                            ],
-                                                                                                                                                          ),
-                                                                                                                                                        ),
-                                                                                                                                                      ),
-                                                                                                                                                      SizedBox(
-                                                                                                                                                        width: 40,
-                                                                                                                                                      ),
-                                                                                                                                                      Column(
-                                                                                                                                                        children: [
-                                                                                                                                                          GestureDetector(
-                                                                                                                                                            onTap: () {
-                                                                                                                                                              // commentLike(widget.userVideo!.userId!, widget.userVideo!.id!, widget.userVideo!.comments![index].id!, widget.userVideo!);
-                                                                                                                                                            },
-                                                                                                                                                            child: Icon(
-                                                                                                                                                              Icons.favorite_rounded,
-                                                                                                                                                              color: tappedLikeIcon == true ? Colors.red : Colors.white,
-                                                                                                                                                            ),
-                                                                                                                                                          ),
-                                                                                                                                                          Text(widget.userVideo!.comments![index].recomment![index].likes!,
-                                                                                                                                                              style: TextStyle(
-                                                                                                                                                                color: Colors.white,
-                                                                                                                                                              ))
-                                                                                                                                                        ],
-                                                                                                                                                      ),
-                                                                                                                                                    ],
-                                                                                                                                                  ),
-                                                                                                                                                  Column(
-                                                                                                                                                    children: [
-                                                                                                                                                      Padding(
-                                                                                                                                                        padding: const EdgeInsets.only(left: 78.0),
-                                                                                                                                                        child: Row(
-                                                                                                                                                          children: [
-                                                                                                                                                            Text(
-                                                                                                                                                              '2 hrs',
-                                                                                                                                                              style: TextStyle(color: Colors.grey),
-                                                                                                                                                            ),
-                                                                                                                                                            SizedBox(
-                                                                                                                                                              width: 10,
-                                                                                                                                                            ),
-                                                                                                                                                            TextButton(
-                                                                                                                                                                onPressed: () {
-                                                                                                                                                                  showModalBottomSheet(
-                                                                                                                                                                      context: context,
-                                                                                                                                                                      builder: (_) => Container(
-                                                                                                                                                                            color: backgroundColor,
-                                                                                                                                                                            width: MediaQuery.of(context).size.width,
-                                                                                                                                                                            child: EntryField(
-                                                                                                                                                                              controller: _replyComment,
-                                                                                                                                                                              counter: null,
-                                                                                                                                                                              padding: MediaQuery.of(context).viewInsets,
-                                                                                                                                                                              hint: "Replying to ${widget.userVideo!.comments![index].recomment![index].name!}",
-                                                                                                                                                                              fillColor: Colors.grey.shade100,
-                                                                                                                                                                              prefix: Padding(
-                                                                                                                                                                                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                                                                                                                                                                                child: user!.image.isEmpty
-                                                                                                                                                                                    ? CircleAvatar(
-                                                                                                                                                                                        backgroundImage: AssetImage('assets/images/user.webp'),
-                                                                                                                                                                                      )
-                                                                                                                                                                                    : CircleAvatar(
-                                                                                                                                                                                        backgroundImage: NetworkImage(Constraints.IMAGE_BASE_URL + user!.image),
-                                                                                                                                                                                      ),
-                                                                                                                                                                              ),
-                                                                                                                                                                              suffixIcon: GestureDetector(
-                                                                                                                                                                                onTap: () {
-                                                                                                                                                                                  if (_replyComment.text.isNotEmpty) {
-                                                                                                                                                                                    FocusScope.of(context).unfocus();
-                                                                                                                                                                                    recomment(widget.userVideo!.userId!, widget.userVideo!.comments![index].recomment![index].id!, widget.userVideo!, _replyComment.text);
-                                                                                                                                                                                    _replyComment.text = "";
-                                                                                                                                                                                    Navigator.pop(context);
-                                                                                                                                                                                  } else {
-                                                                                                                                                                                    MyToast(message: "Please Write a Comment");
-                                                                                                                                                                                  }
-                                                                                                                                                                                },
-                                                                                                                                                                                child: Icon(
-                                                                                                                                                                                  Icons.send,
-                                                                                                                                                                                  color: mainColor,
-                                                                                                                                                                                ),
-                                                                                                                                                                              ),
-                                                                                                                                                                            ),
-                                                                                                                                                                          ));
-                                                                                                                                                                },
-                                                                                                                                                                child: Text(
-                                                                                                                                                                  'Reply',
-                                                                                                                                                                  style: TextStyle(color: Colors.white),
-                                                                                                                                                                )),
-                                                                                                                                                          ],
-                                                                                                                                                        ),
-                                                                                                                                                      ),
-                                                                                                                                                    ],
-                                                                                                                                                  ),
-                                                                                                                                                ],
-                                                                                                                                              ),
-                                                                                                                                            ),
-                                                                                                                                          ],
-                                                                                                                                        );
-                                                                                                                                      }),
-                                                                                                                                ),
-                                                                                                                              )
-                                                                                                                            ],
-                                                                                                                          ),
-                                                                                                                        ));
-                                                                                                              },
-                                                                                                              child: Text(
-                                                                                                                'View Replies',
-                                                                                                                style: TextStyle(color: Colors.white),
-                                                                                                              ))
-                                                                                                          : SizedBox()
-                                                                                                    ],
-                                                                                                  ),
-                                                                                                ),
-                                                                                              ],
-                                                                                            ),
-                                                                                            // videoComments[index].replyComment!.length >= 0
-                                                                                            //     ? Container(
-                                                                                            //         margin: EdgeInsets.only(left: 50),
-                                                                                            //         child: ListView.builder(
-                                                                                            //             shrinkWrap: true,
-                                                                                            //             itemCount: videoComments[index].replyComment!.length,
-                                                                                            //             itemBuilder: (context, i) {
-                                                                                            //               return ListTile(
-                                                                                            //                 leading: CircleAvatar(
-                                                                                            //                   radius: 12,
-                                                                                            //                   backgroundImage: NetworkImage(
-                                                                                            //                     Constraints.IMAGE_BASE_URL + videoComments[index].replyComment![i].image!,
-                                                                                            //                   ),
-                                                                                            //                 ),
-                                                                                            //                 title: Text(
-                                                                                            //                   videoComments[index].replyComment![i].name!,
-                                                                                            //                   style: TextStyle(color: Colors.white),
-                                                                                            //                 ),
-                                                                                            //                 subtitle: Text(
-                                                                                            //                   videoComments[index].replyComment![i].text!,
-                                                                                            //                   style: TextStyle(color: Colors.white),
-                                                                                            //                 ),
-                                                                                            //                 trailing: IconButton(
-                                                                                            //                   icon: Icon(
-                                                                                            //                     Icons.favorite,
-                                                                                            //                     color: tappedDislikeIcon == true ? Colors.red : Colors.white,
-                                                                                            //                     size: 20,
-                                                                                            //                   ),
-                                                                                            //                   onPressed: () {
-                                                                                            //                     setState(() {
-                                                                                            //                       tappedDislikeIcon = !tappedDislikeIcon;
-                                                                                            //                     });
-                                                                                            //                     MyToast(message: "Liked Successfully");
-                                                                                            //                   },
-                                                                                            //                 ),
-                                                                                            //               );
-                                                                                            //             }),
-                                                                                            //       )
-                                                                                            //     : SizedBox()
-                                                                                          ],
-                                                                                        ),
-                                                                                      ),
-                                                                                    ],
-                                                                                  );
-                                                                                }),
-                                                                          ),
-                                                                        )
-                                                                      ],
-                                                                    ),
-                                                                    beginOffset:
-                                                                        Offset(
-                                                                            0,
-                                                                            0.3),
-                                                                    endOffset:
-                                                                        Offset(
-                                                                            0,
-                                                                            0),
-                                                                    slideCurve:
-                                                                        Curves
-                                                                            .linearToEaseOut,
-                                                                  ),
-                                                                  Align(
-                                                                    alignment:
-                                                                        Alignment
-                                                                            .bottomCenter,
-                                                                    child:
-                                                                        GestureDetector(
-                                                                      onTap:
-                                                                          () {},
-                                                                      child:
-                                                                          EntryField(
-                                                                        controller:
-                                                                            _comment,
-                                                                        counter:
-                                                                            null,
-                                                                        padding:
-                                                                            MediaQuery.of(context).viewInsets,
-                                                                        hint:
-                                                                            "Write Your comment",
-                                                                        fillColor: Colors
-                                                                            .grey
-                                                                            .shade100,
-                                                                        prefix:
-                                                                            Padding(
-                                                                          padding:
-                                                                              EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                                                                          child: user!.image.isEmpty
-                                                                              ? CircleAvatar(
-                                                                                  backgroundImage: AssetImage('assets/images/user.webp'),
-                                                                                )
-                                                                              : CircleAvatar(
-                                                                                  backgroundImage: NetworkImage(Constraints.IMAGE_BASE_URL + user!.image),
-                                                                                ),
-                                                                        ),
-                                                                        suffixIcon:
-                                                                            GestureDetector(
-                                                                          onTap:
-                                                                              () {
-                                                                            if (_comment.text.isNotEmpty) {
-                                                                              //isComment = true;
+                                                  context: context,
+                                                  isScrollControlled: true,
+                                                  builder: (_) => Container(
+                                                    color: Colors.black,
+                                                    // height:
+                                                    //     MediaQuery.of(context)
+                                                    //             .size
+                                                    //             .height /
+                                                    //         1.5,
+                                                    child: Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        SizedBox(
+                                                          height: 20,
+                                                        ),
+                                                        Text('Comment',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontSize: 20,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold)),
+                                                        SizedBox(height: 10),
+                                                        ListView.builder(
+                                                            itemCount:
+                                                                comments.length,
+                                                            shrinkWrap: true,
+                                                            itemBuilder:
+                                                                (context,
+                                                                    index) {
+                                                              return ListTile(
+                                                                title: Text(
+                                                                    comments[
+                                                                        index]),
+                                                                onTap: () {
+                                                                  commentVideo(
+                                                                      widget
+                                                                          .userVideo!
+                                                                          .userId!,
+                                                                      widget
+                                                                          .userVideo!
+                                                                          .id!,
+                                                                      comments[
+                                                                          index],
+                                                                      widget
+                                                                          .userVideo!);
+                                                                  Navigator.pop(
+                                                                      context);
+                                                                },
+                                                              );
+                                                            })
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
 
-                                                                              FocusScope.of(context).unfocus();
-                                                                              commentVideo(widget.userVideo!.userId!, widget.userVideo!.id!, _comment.text, widget.userVideo!);
-                                                                              _comment.text = "";
-                                                                            } else {
-                                                                              MyToast(message: "Write Your Comment");
-                                                                            }
-                                                                          },
-                                                                          child:
-                                                                              Icon(
-                                                                            Icons.send,
-                                                                            color: mainColor,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                            )));
+                                                //                                             showModalBottomSheet(
+                                                //                                                 //enableDrag: true,
+                                                //                                                 isScrollControlled: true,
+                                                //                                                 backgroundColor:
+                                                //                                                     backgroundColor,
+                                                //                                                 shape: OutlineInputBorder(
+                                                //                                                     borderRadius:
+                                                //                                                         BorderRadius.vertical(
+                                                //                                                             top: Radius
+                                                //                                                                 .circular(
+                                                //                                                                     25.0)),
+                                                //                                                     borderSide:
+                                                //                                                         BorderSide.none),
+                                                //                                                 context: context,
+                                                //                                                 builder: (context) =>
+                                                //                                                     Container(
+                                                //                                                         height: MediaQuery.of(
+                                                //                                                                     context)
+                                                //                                                                 .size
+                                                //                                                                 .height /
+                                                //                                                             1.5,
+                                                //                                                         child: Padding(
+                                                //                                                           padding:
+                                                //                                                               const EdgeInsets
+                                                //                                                                       .only(
+                                                //                                                                   top:
+                                                //                                                                       10.0),
+                                                //                                                           child: Stack(
+                                                //                                                             children: <
+                                                //                                                                 Widget>[
+                                                //                                                               FadedSlideAnimation(
+                                                //                                                                 Column(
+                                                //                                                                   crossAxisAlignment:
+                                                //                                                                       CrossAxisAlignment.stretch,
+                                                //                                                                   children: <
+                                                //                                                                       Widget>[
+                                                //                                                                     Padding(
+                                                //                                                                       padding:
+                                                //                                                                           EdgeInsets.all(20.0),
+                                                //                                                                       child:
+                                                //                                                                           Text(
+                                                //                                                                         "Comments",
+                                                //                                                                         style: Theme.of(context).textTheme.headline6!.copyWith(color: Colors.white),
+                                                //                                                                       ),
+                                                //                                                                     ),
+                                                //                                                                     Expanded(
+                                                //                                                                       child:
+                                                //                                                                           Padding(
+                                                //                                                                         padding: EdgeInsets.only(bottom: 100.0),
+                                                //                                                                         child: ListView.builder(
+                                                //                                                                             shrinkWrap: true,
+                                                //                                                                             physics: BouncingScrollPhysics(),
+                                                //                                                                             itemCount: widget.userVideo!.comments!.length,
+                                                //                                                                             // controller: _controller,
+                                                //                                                                             itemBuilder: (context, index) {
+                                                //                                                                               return Column(
+                                                //                                                                                 crossAxisAlignment: CrossAxisAlignment.start,
+                                                //                                                                                 children: <Widget>[
+                                                //                                                                                   Padding(
+                                                //                                                                                     padding: const EdgeInsets.all(8.0),
+                                                //                                                                                     child: Column(
+                                                //                                                                                       children: [
+                                                //                                                                                         Row(
+                                                //                                                                                           children: [
+                                                //                                                                                             SizedBox(
+                                                //                                                                                               width: 25,
+                                                //                                                                                             ),
+                                                //                                                                                             CircleAvatar(
+                                                //                                                                                               backgroundImage: NetworkImage(
+                                                //                                                                                                 Constraints.IMAGE_BASE_URL + widget.userVideo!.comments![index].image!,
+                                                //                                                                                               ),
+                                                //                                                                                             ),
+                                                //                                                                                             SizedBox(
+                                                //                                                                                               width: 15,
+                                                //                                                                                             ),
+                                                //                                                                                             Container(
+                                                //                                                                                               height: 60.0,
+                                                //                                                                                               width: MediaQuery.of(context).size.width / 1.8,
+                                                //                                                                                               decoration: BoxDecoration(color: Colors.grey.shade900, borderRadius: BorderRadius.circular(5.0)),
+                                                //                                                                                               child: Padding(
+                                                //                                                                                                 padding: const EdgeInsets.only(left: 8.0, top: 5.0),
+                                                //                                                                                                 child: Column(
+                                                //                                                                                                   children: [
+                                                //                                                                                                     Align(alignment: Alignment.centerLeft, child: Text("@${widget.userVideo!.comments![index].name!}", style: TextStyle(color: Colors.grey, fontSize: 13))),
+                                                //                                                                                                     SizedBox(
+                                                //                                                                                                       height: 5,
+                                                //                                                                                                     ),
+                                                //                                                                                                     Align(alignment: Alignment.centerLeft, child: Text(widget.userVideo!.comments![index].comment!.trim(), style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold))),
+                                                //                                                                                                   ],
+                                                //                                                                                                 ),
+                                                //                                                                                               ),
+                                                //                                                                                             ),
+                                                //                                                                                             /*SizedBox(
+                                                //                                                                       width:MediaQuery.of(context).size.width/4 ,
+                                                //                                                                     ),*/
+                                                //                                                                                             SizedBox(
+                                                //                                                                                               width: 40,
+                                                //                                                                                             ),
+                                                //                                                                                             Column(
+                                                //                                                                                               children: [
+                                                //                                                                                                 GestureDetector(
+                                                //                                                                                                   onTap: () {
+                                                //                                                                                                     setState(() {
+                                                //                                                                                                       tappedLikeIcon = !tappedLikeIcon;
+                                                //                                                                                                     });
+                                                //                                                                                                     commentLike(widget.userVideo!.userId!, widget.userVideo!.id!, widget.userVideo!.comments![index].id!, widget.userVideo!);
+                                                //                                                                                                   },
+                                                //                                                                                                   child: Icon(
+                                                //                                                                                                     Icons.favorite_rounded,
+                                                //                                                                                                     color: tappedLikeIcon == true ? Colors.red : Colors.white,
+                                                //                                                                                                   ),
+                                                //                                                                                                 ),
+                                                //                                                                                                 Text(widget.userVideo!.comments![index].likes!,
+                                                //                                                                                                     style: TextStyle(
+                                                //                                                                                                       color: Colors.white,
+                                                //                                                                                                     ))
+                                                //                                                                                               ],
+                                                //                                                                                             ),
+                                                //                                                                                           ],
+                                                //                                                                                         ),
+                                                //                                                                                         Column(
+                                                //                                                                                           children: [
+                                                //                                                                                             Padding(
+                                                //                                                                                               padding: const EdgeInsets.only(left: 78.0),
+                                                //                                                                                               child: Row(
+                                                //                                                                                                 children: [
+                                                //                                                                                                   Text(
+                                                //                                                                                                     '2 hrs',
+                                                //                                                                                                     style: TextStyle(color: Colors.grey),
+                                                //                                                                                                   ),
+                                                //                                                                                                   SizedBox(
+                                                //                                                                                                     width: 10,
+                                                //                                                                                                   ),
+                                                //                                                                                                   TextButton(
+                                                //                                                                                                       onPressed: () {
+                                                //                                                                                                         showModalBottomSheet(
+                                                //                                                                                                             context: context,
+                                                //                                                                                                             builder: (_) => Container(
+                                                //                                                                                                                   color: backgroundColor,
+                                                //                                                                                                                   width: MediaQuery.of(context).size.width,
+                                                //                                                                                                                   child: EntryField(
+                                                //                                                                                                                     controller: _replyComment,
+                                                //                                                                                                                     counter: null,
+                                                //                                                                                                                     padding: MediaQuery.of(context).viewInsets,
+                                                //                                                                                                                     hint: "Replying to ${widget.userVideo!.comments![index].name!}",
+                                                //                                                                                                                     fillColor: Colors.grey.shade100,
+                                                //                                                                                                                     prefix: Padding(
+                                                //                                                                                                                       padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                                //                                                                                                                       child: user!.image.isEmpty
+                                                //                                                                                                                           ? CircleAvatar(
+                                                //                                                                                                                               backgroundImage: AssetImage('assets/images/user.webp'),
+                                                //                                                                                                                             )
+                                                //                                                                                                                           : CircleAvatar(
+                                                //                                                                                                                               backgroundImage: NetworkImage(Constraints.IMAGE_BASE_URL + user!.image),
+                                                //                                                                                                                             ),
+                                                //                                                                                                                     ),
+                                                //                                                                                                                     suffixIcon: GestureDetector(
+                                                //                                                                                                                       onTap: () async {
+                                                //                                                                                                                         if (_replyComment.text.isNotEmpty) {
+                                                //                                                                                                                           FocusScope.of(context).unfocus();
+                                                //                                                                                                                           recomment(widget.userVideo!.userId!, widget.userVideo!.comments![index].id!, widget.userVideo!, _replyComment.text);
+                                                //                                                                                                                           _replyComment.text = "";
+                                                //                                                                                                                           Navigator.pop(context);
+                                                //                                                                                                                           var result = await MyPrefManager.prefInstance().getData("user");
+                                                //                                                                                                                           User user = User.fromMap(jsonDecode(result) as Map<String, dynamic>);
+                                                //                                                                                                                           List<UserVideos> userVideoList = await ApiHandle.getFollowersVideo(user.id);
+
+                                                //                                                                                                                           Navigator.push(context, MaterialPageRoute(builder: (context)=>FollowingTabPage1(
+                                                //                                                                                                                             userVideoList,
+                                                //                                                                                                                             imagesInDisc1,
+                                                //                                                                                                                             true,
+                                                //                                                                                                                             widget.currentPageIndex!,
+                                                //                                                                                                                             variable: 1,
+                                                //                                                                                                                           ),));
+                                                //                                                                                                                         } else {
+                                                //                                                                                                                           MyToast(message: "Please Write a Comment");
+                                                //                                                                                                                         }
+                                                //                                                                                                                       },
+                                                //                                                                                                                       child: Icon(
+                                                //                                                                                                                         Icons.send,
+                                                //                                                                                                                         color: mainColor,
+                                                //                                                                                                                       ),
+                                                //                                                                                                                     ),
+                                                //                                                                                                                   ),
+                                                //                                                                                                                 ));
+                                                //                                                                                                       },
+                                                //                                                                                                       child: Text(
+                                                //                                                                                                         'Reply',
+                                                //                                                                                                         style: TextStyle(color: Colors.white),
+                                                //                                                                                                       )),
+                                                //                                                                                                   widget.userVideo!.comments![index].recomment!.length > 0
+                                                //                                                                                                       ? TextButton(
+                                                //                                                                                                           onPressed: () {
+                                                //                                                                                                             showModalBottomSheet(
+                                                //                                                                                                                 context: context,
+                                                //                                                                                                                 builder: (_) => Container(
+                                                //                                                                                                                       height: MediaQuery.of(context).size.height / 1.5,
+                                                //                                                                                                                       color: backgroundColor,
+                                                //                                                                                                                       child: Column(
+                                                //                                                                                                                         mainAxisAlignment: MainAxisAlignment.start,
+                                                //                                                                                                                         crossAxisAlignment: CrossAxisAlignment.stretch,
+                                                //                                                                                                                         children: [
+                                                //                                                                                                                           Padding(
+                                                //                                                                                                                             padding: EdgeInsets.all(20.0),
+                                                //                                                                                                                             child: Text(
+                                                //                                                                                                                               "Replied Comments",
+                                                //                                                                                                                               style: Theme.of(context).textTheme.headline6!.copyWith(color: Colors.white),
+                                                //                                                                                                                             ),
+                                                //                                                                                                                           ),
+                                                //                                                                                                                           Expanded(
+                                                //                                                                                                                             child: Padding(
+                                                //                                                                                                                               padding: EdgeInsets.only(bottom: 100.0),
+                                                //                                                                                                                               child: ListView.builder(
+                                                //                                                                                                                                   shrinkWrap: true,
+                                                //                                                                                                                                   physics: BouncingScrollPhysics(),
+                                                //                                                                                                                                   itemCount: widget.userVideo!.comments![index].recomment!.length,
+                                                //                                                                                                                                   // controller: _controller,
+                                                //                                                                                                                                   itemBuilder: (context, index) {
+                                                //                                                                                                                                     return Column(
+                                                //                                                                                                                                       crossAxisAlignment: CrossAxisAlignment.start,
+                                                //                                                                                                                                       children: <Widget>[
+                                                //                                                                                                                                         Padding(
+                                                //                                                                                                                                           padding: const EdgeInsets.all(8.0),
+                                                //                                                                                                                                           child: Column(
+                                                //                                                                                                                                             children: [
+                                                //                                                                                                                                               Row(
+                                                //                                                                                                                                                 children: [
+                                                //                                                                                                                                                   SizedBox(
+                                                //                                                                                                                                                     width: 25,
+                                                //                                                                                                                                                   ),
+                                                //                                                                                                                                                   CircleAvatar(
+                                                //                                                                                                                                                     backgroundImage: NetworkImage(
+                                                //                                                                                                                                                       Constraints.IMAGE_BASE_URL + widget.userVideo!.comments![index].recomment![index].image!,
+                                                //                                                                                                                                                     ),
+                                                //                                                                                                                                                   ),
+                                                //                                                                                                                                                   SizedBox(
+                                                //                                                                                                                                                     width: 15,
+                                                //                                                                                                                                                   ),
+                                                //                                                                                                                                                   Container(
+                                                //                                                                                                                                                     height: 60.0,
+                                                //                                                                                                                                                     width: MediaQuery.of(context).size.width / 1.8,
+                                                //                                                                                                                                                     decoration: BoxDecoration(color: Colors.grey.shade900, borderRadius: BorderRadius.circular(5.0)),
+                                                //                                                                                                                                                     child: Padding(
+                                                //                                                                                                                                                       padding: const EdgeInsets.only(left: 8.0, top: 5.0),
+                                                //                                                                                                                                                       child: Column(
+                                                //                                                                                                                                                         children: [
+                                                //                                                                                                                                                           Align(alignment: Alignment.centerLeft, child: Text("@${widget.userVideo!.comments![index].recomment![index].name!}", style: TextStyle(color: Colors.grey, fontSize: 13))),
+                                                //                                                                                                                                                           SizedBox(
+                                                //                                                                                                                                                             height: 5,
+                                                //                                                                                                                                                           ),
+                                                //                                                                                                                                                           Align(alignment: Alignment.centerLeft, child: Text(widget.userVideo!.comments![index].recomment![index].text!.trim(), style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold))),
+                                                //                                                                                                                                                         ],
+                                                //                                                                                                                                                       ),
+                                                //                                                                                                                                                     ),
+                                                //                                                                                                                                                   ),
+                                                //                                                                                                                                                   SizedBox(
+                                                //                                                                                                                                                     width: 40,
+                                                //                                                                                                                                                   ),
+                                                //                                                                                                                                                   Column(
+                                                //                                                                                                                                                     children: [
+                                                //                                                                                                                                                       GestureDetector(
+                                                //                                                                                                                                                         onTap: () {
+                                                //                                                                                                                                                           // commentLike(widget.userVideo!.userId!, widget.userVideo!.id!, widget.userVideo!.comments![index].id!, widget.userVideo!);
+                                                //                                                                                                                                                         },
+                                                //                                                                                                                                                         child: Icon(
+                                                //                                                                                                                                                           Icons.favorite_rounded,
+                                                //                                                                                                                                                           color: tappedLikeIcon == true ? Colors.red : Colors.white,
+                                                //                                                                                                                                                         ),
+                                                //                                                                                                                                                       ),
+                                                //                                                                                                                                                       Text(widget.userVideo!.comments![index].recomment![index].likes!,
+                                                //                                                                                                                                                           style: TextStyle(
+                                                //                                                                                                                                                             color: Colors.white,
+                                                //                                                                                                                                                           ))
+                                                //                                                                                                                                                     ],
+                                                //                                                                                                                                                   ),
+                                                //                                                                                                                                                 ],
+                                                //                                                                                                                                               ),
+                                                //                                                                                                                                               Column(
+                                                //                                                                                                                                                 children: [
+                                                //                                                                                                                                                   Padding(
+                                                //                                                                                                                                                     padding: const EdgeInsets.only(left: 78.0),
+                                                //                                                                                                                                                     child: Row(
+                                                //                                                                                                                                                       children: [
+                                                //                                                                                                                                                         Text(
+                                                //                                                                                                                                                           '2 hrs',
+                                                //                                                                                                                                                           style: TextStyle(color: Colors.grey),
+                                                //                                                                                                                                                         ),
+                                                //                                                                                                                                                         SizedBox(
+                                                //                                                                                                                                                           width: 10,
+                                                //                                                                                                                                                         ),
+                                                //                                                                                                                                                         TextButton(
+                                                //                                                                                                                                                             onPressed: () {
+                                                //                                                                                                                                                               showModalBottomSheet(
+                                                //                                                                                                                                                                   context: context,
+                                                //                                                                                                                                                                   builder: (_) => Container(
+                                                //                                                                                                                                                                         color: backgroundColor,
+                                                //                                                                                                                                                                         width: MediaQuery.of(context).size.width,
+                                                //                                                                                                                                                                         child: EntryField(
+                                                //                                                                                                                                                                           controller: _replyComment,
+                                                //                                                                                                                                                                           counter: null,
+                                                //                                                                                                                                                                           padding: MediaQuery.of(context).viewInsets,
+                                                //                                                                                                                                                                           hint: "Replying to ${widget.userVideo!.comments![index].recomment![index].name!}",
+                                                //                                                                                                                                                                           fillColor: Colors.grey.shade100,
+                                                //                                                                                                                                                                           prefix: Padding(
+                                                //                                                                                                                                                                             padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                                //                                                                                                                                                                             child: user!.image.isEmpty
+                                                //                                                                                                                                                                                 ? CircleAvatar(
+                                                //                                                                                                                                                                                     backgroundImage: AssetImage('assets/images/user.webp'),
+                                                //                                                                                                                                                                                   )
+                                                //                                                                                                                                                                                 : CircleAvatar(
+                                                //                                                                                                                                                                                     backgroundImage: NetworkImage(Constraints.IMAGE_BASE_URL + user!.image),
+                                                //                                                                                                                                                                                   ),
+                                                //                                                                                                                                                                           ),
+                                                //                                                                                                                                                                           suffixIcon: GestureDetector(
+                                                //                                                                                                                                                                             onTap: () {
+                                                //                                                                                                                                                                               if (_replyComment.text.isNotEmpty) {
+                                                //                                                                                                                                                                                 FocusScope.of(context).unfocus();
+                                                //                                                                                                                                                                                 recomment(widget.userVideo!.userId!, widget.userVideo!.comments![index].recomment![index].id!, widget.userVideo!, _replyComment.text);
+                                                //                                                                                                                                                                                 _replyComment.text = "";
+                                                //                                                                                                                                                                                 Navigator.pop(context);
+                                                //                                                                                                                                                                               } else {
+                                                //                                                                                                                                                                                 MyToast(message: "Please Write a Comment");
+                                                //                                                                                                                                                                               }
+                                                //                                                                                                                                                                             },
+                                                //                                                                                                                                                                             child: Icon(
+                                                //                                                                                                                                                                               Icons.send,
+                                                //                                                                                                                                                                               color: mainColor,
+                                                //                                                                                                                                                                             ),
+                                                //                                                                                                                                                                           ),
+                                                //                                                                                                                                                                         ),
+                                                //                                                                                                                                                                       ));
+                                                //                                                                                                                                                             },
+                                                //                                                                                                                                                             child: Text(
+                                                //                                                                                                                                                               'Reply',
+                                                //                                                                                                                                                               style: TextStyle(color: Colors.white),
+                                                //                                                                                                                                                             )),
+                                                //                                                                                                                                                       ],
+                                                //                                                                                                                                                     ),
+                                                //                                                                                                                                                   ),
+                                                //                                                                                                                                                 ],
+                                                //                                                                                                                                               ),
+                                                //                                                                                                                                             ],
+                                                //                                                                                                                                           ),
+                                                //                                                                                                                                         ),
+                                                //                                                                                                                                       ],
+                                                //                                                                                                                                     );
+                                                //                                                                                                                                   }),
+                                                //                                                                                                                             ),
+                                                //                                                                                                                           )
+                                                //                                                                                                                         ],
+                                                //                                                                                                                       ),
+                                                //                                                                                                                     ));
+                                                //                                                                                                           },
+                                                //                                                                                                           child: Text(
+                                                //                                                                                                             'View Replies',
+                                                //                                                                                                             style: TextStyle(color: Colors.white),
+                                                //                                                                                                           ))
+                                                //                                                                                                       : SizedBox()
+                                                //                                                                                                 ],
+                                                //                                                                                               ),
+                                                //                                                                                             ),
+                                                //                                                                                           ],
+                                                //                                                                                         ),
+                                                //                                                                                         // videoComments[index].replyComment!.length >= 0
+                                                //                                                                                         //     ? Container(
+                                                //                                                                                         //         margin: EdgeInsets.only(left: 50),
+                                                //                                                                                         //         child: ListView.builder(
+                                                //                                                                                         //             shrinkWrap: true,
+                                                //                                                                                         //             itemCount: videoComments[index].replyComment!.length,
+                                                //                                                                                         //             itemBuilder: (context, i) {
+                                                //                                                                                         //               return ListTile(
+                                                //                                                                                         //                 leading: CircleAvatar(
+                                                //                                                                                         //                   radius: 12,
+                                                //                                                                                         //                   backgroundImage: NetworkImage(
+                                                //                                                                                         //                     Constraints.IMAGE_BASE_URL + videoComments[index].replyComment![i].image!,
+                                                //                                                                                         //                   ),
+                                                //                                                                                         //                 ),
+                                                //                                                                                         //                 title: Text(
+                                                //                                                                                         //                   videoComments[index].replyComment![i].name!,
+                                                //                                                                                         //                   style: TextStyle(color: Colors.white),
+                                                //                                                                                         //                 ),
+                                                //                                                                                         //                 subtitle: Text(
+                                                //                                                                                         //                   videoComments[index].replyComment![i].text!,
+                                                //                                                                                         //                   style: TextStyle(color: Colors.white),
+                                                //                                                                                         //                 ),
+                                                //                                                                                         //                 trailing: IconButton(
+                                                //                                                                                         //                   icon: Icon(
+                                                //                                                                                         //                     Icons.favorite,
+                                                //                                                                                         //                     color: tappedDislikeIcon == true ? Colors.red : Colors.white,
+                                                //                                                                                         //                     size: 20,
+                                                //                                                                                         //                   ),
+                                                //                                                                                         //                   onPressed: () {
+                                                //                                                                                         //                     setState(() {
+                                                //                                                                                         //                       tappedDislikeIcon = !tappedDislikeIcon;
+                                                //                                                                                         //                     });
+                                                //                                                                                         //                     MyToast(message: "Liked Successfully");
+                                                //                                                                                         //                   },
+                                                //                                                                                         //                 ),
+                                                //                                                                                         //               );
+                                                //                                                                                         //             }),
+                                                //                                                                                         //       )
+                                                //                                                                                         //     : SizedBox()
+                                                //                                                                                       ],
+                                                //                                                                                     ),
+                                                //                                                                                   ),
+                                                //                                                                                 ],
+                                                //                                                                               );
+                                                //                                                                             }),
+                                                //                                                                       ),
+                                                //                                                                     )
+                                                //                                                                   ],
+                                                //                                                                 ),
+                                                //                                                                 beginOffset:
+                                                //                                                                     Offset(
+                                                //                                                                         0,
+                                                //                                                                         0.3),
+                                                //                                                                 endOffset:
+                                                //                                                                     Offset(
+                                                //                                                                         0,
+                                                //                                                                         0),
+                                                //                                                                 slideCurve:
+                                                //                                                                     Curves
+                                                //                                                                         .linearToEaseOut,
+                                                //                                                               ),
+                                                //                                                               Align(
+                                                //                                                                 alignment:
+                                                //                                                                     Alignment
+                                                //                                                                         .bottomCenter,
+                                                //                                                                 child:
+                                                //                                                                     EntryField(
+                                                //                                                                     controller:
+                                                //                                                                       _comment,
+                                                //                                                                     counter:
+                                                //                                                                       null,
+                                                //                                                                     padding:
+                                                //                                                                       MediaQuery.of(context).viewInsets,
+                                                //                                                                     hint:
+                                                //                                                                       "Write Your comment",
+                                                //                                                                     fillColor: Colors
+                                                //                                                                       .grey
+                                                //                                                                       .shade100,
+                                                //                                                                     prefix:
+                                                //                                                                       Padding(
+                                                //                                                                     padding:
+                                                //                                                                         EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                                //                                                                     child: user!.image.isEmpty
+                                                //                                                                         ? CircleAvatar(
+                                                //                                                                             backgroundImage: AssetImage('assets/images/user.webp'),
+                                                //                                                                           )
+                                                //                                                                         : CircleAvatar(
+                                                //                                                                             backgroundImage: NetworkImage(Constraints.IMAGE_BASE_URL + user!.image),
+                                                //                                                                           ),
+                                                //                                                                     ),
+                                                //                                                                     suffixIcon:
+                                                //                                                                       GestureDetector(
+                                                //                                                                     onTap:
+                                                //                                                                         ()  async {
+                                                //                                                                       if (_comment.text.isNotEmpty) {
+                                                //                                                                         //isComment = true;
+
+                                                //                                                                         FocusScope.of(context).unfocus();
+                                                //                                                                         commentVideo(widget.userVideo!.userId!, widget.userVideo!.id!, _comment.text, widget.userVideo!);
+                                                //                                                                         _comment.text = "";
+
+                                                //                                                                           var result = await MyPrefManager.prefInstance().getData("user");
+                                                //                                                                           User user = User.fromMap(jsonDecode(result) as Map<String, dynamic>);
+                                                //                                                                           List<UserVideos> userVideoList = await ApiHandle.getFollowersVideo(user.id);
+
+                                                //                                                                             Navigator.push(context, MaterialPageRoute(builder: (context)=>FollowingTabPage1(
+                                                //                                                                               userVideoList,
+                                                //                                                                               imagesInDisc1,
+                                                //                                                                               true,
+                                                //                                                                               widget.currentPageIndex!,
+                                                //                                                                               variable: 1,
+                                                //                                                                             ),));
+
+                                                // // dynamic response = await Apis().getVideoComment(widget.userVideo!.id!);
+                                                // //
+                                                // // if (response.statusCode == 200) {
+                                                // //   var data = jsonDecode(response.body);
+                                                // //   String res = data['res'];
+                                                // //   String msg = data['msg'];
+                                                // //   if (res == "success") {
+                                                // //     var re = data['data'] as List;
+                                                // //
+                                                // //     widget.userVideo!.comments!.clear();
+                                                // //     widget.userVideo!.comments!.length = re.length;
+                                                // //
+                                                // //     re.map((e) => UserVideos.fromJson(e)).toList();
+                                                // //   }
+                                                // // }
+                                                //                                                                       } else {
+                                                //                                                                         MyToast(message: "Write Your Comment");
+                                                //                                                                       }
+                                                //                                                                     },
+                                                //                                                                     child:
+                                                //                                                                         Icon(
+                                                //                                                                       Icons.send,
+                                                //                                                                       color: mainColor,
+                                                //                                                                     ),
+                                                //                                                                     ),
+                                                //                                                                   ),
+                                                //                                                               ),
+                                                //                                                             ],
+                                                //                                                           ),
+                                                //                                                         )));
                                               },
                                               child: ImageIcon(
                                                 AssetImage(
@@ -1004,16 +1149,16 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                                     context: context,
                                                     builder: (_) => ClipRRect(
                                                           borderRadius:
-                                                              BorderRadius
-                                                                  .only(
-                                                            topRight: Radius
-                                                                .circular(20),
-                                                            topLeft: Radius
-                                                                .circular(20),
+                                                              BorderRadius.only(
+                                                            topRight:
+                                                                Radius.circular(
+                                                                    20),
+                                                            topLeft:
+                                                                Radius.circular(
+                                                                    20),
                                                           ),
                                                           child: Container(
-                                                            color:
-                                                                Colors.black,
+                                                            color: Colors.black,
                                                             height: MediaQuery.of(
                                                                         context)
                                                                     .size
@@ -1080,15 +1225,15 @@ class _VideoPageState extends State<VideoPage> with RouteAware {
                                                                             _controller,
                                                                         videoName: widget
                                                                             .userVideo!
-                                                                            .videoName!, durationofVideo: 30,
+                                                                            .videoName!,
+                                                                        durationofVideo:
+                                                                            30,
                                                                       );
-
                                                                     }));
                                                                   },
                                                                 ),
                                                                 ListTile(
-                                                                  leading:
-                                                                      Icon(
+                                                                  leading: Icon(
                                                                     Icons
                                                                         .report_problem,
                                                                     color: Colors

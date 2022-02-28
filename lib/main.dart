@@ -13,11 +13,7 @@ import 'package:http/http.dart';
 import 'package:qvid/Routes/routes.dart';
 import 'package:qvid/Screens/custom_splash_fle.dart';
 import 'package:qvid/Theme/colors.dart';
-import 'package:qvid/Theme/style.dart';
-import 'package:qvid/apis/api.dart';
-import 'package:qvid/helper/my_preference.dart';
 
-import 'model/user.dart';
 late List<CameraDescription> cameras;
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
   'high_importance_channel', // id
@@ -33,7 +29,7 @@ Future<void> main() async {
       overlays: [SystemUiOverlay.bottom]); */
 
   WidgetsFlutterBinding.ensureInitialized();
-  cameras = await availableCameras();
+  await availableCameras();
 
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);

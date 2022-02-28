@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qvid/BottomNavigation/AddVideo/my_trimmer.dart';
+import 'package:video_editor_sdk/video_editor_sdk.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoViewPage extends StatefulWidget {
@@ -16,6 +17,13 @@ class VideoViewPage extends StatefulWidget {
 
 class _VideoViewPageState extends State<VideoViewPage> {
   late VideoPlayerController _controller;
+
+  void presentEditor() async {
+    final result = await VESDK.openEditor(
+      Video(widget.path!),
+    );
+    print(result?.toJson());
+  }
 
   @override
   void initState() {
@@ -109,11 +117,12 @@ class _VideoViewPageState extends State<VideoViewPage> {
                         fontSize: 17,
                       ),
                       suffixIcon: InkWell(
-                        onTap: () => Navigator.push(
-                            context,
-                            CupertinoPageRoute(
-                                builder: (context) =>
-                                    TrimmerView(widget.fileView!, 1))),
+                        onTap: () => presentEditor(),
+                        // onTap: () => Navigator.push(
+                        //     context,
+                        //     CupertinoPageRoute(
+                        //         builder: (context) =>
+                        //             TrimmerView(widget.fileView!, 1))),
                         child: CircleAvatar(
                           radius: 27,
                           backgroundColor: Colors.tealAccent[700],
@@ -298,10 +307,10 @@ class _VideoDuetViewPageState extends State<VideoDuetView> {
                           File filedownload = File(widget.pathDownloaded!);
                           File filerecorded = File(widget.pathRecorded!);
                           Navigator.push(
-                            context,
-                            CupertinoPageRoute(
-                                builder: (context) =>
-                                    TrimmerDuetVideo(filerecorded, 1,filedownload)));
+                              context,
+                              CupertinoPageRoute(
+                                  builder: (context) => TrimmerDuetVideo(
+                                      filerecorded, 1, filedownload)));
                         },
                         child: CircleAvatar(
                           radius: 27,

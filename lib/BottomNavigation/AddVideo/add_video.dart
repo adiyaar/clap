@@ -119,8 +119,6 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
                         }
                       }),
                 ),
-                
-              
                 Positioned(
                   child: IconButton(
                       onPressed: () => Navigator.pop(context),
@@ -265,7 +263,7 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
                             setState(() {
                               isRecoring = true;
                             });
-                            Timer(Duration(seconds: widget.duration), () async {
+                            Timer(Duration(seconds: 3), () async {
                               print(
                                   "Yeah, this line is printed after ${widget.duration} seconds");
 
@@ -279,6 +277,10 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
                               _showOverlayProgress(context);
                               FutureProgressDialog(
                                   Future.delayed(Duration(seconds: 2), () {
+                                print('Important');
+                                print(videoFilePath.path);
+                                print(filePath);
+                                print('Important');
                                 Navigator.push(
                                     context,
                                     CupertinoPageRoute(

@@ -30,7 +30,7 @@ class _MySplashFileState extends State<MySplashFile> {
   ChatController chatController = Get.put(ChatController());
   @override
   void initState() {
-    print("hi");
+    
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print(message.notification);

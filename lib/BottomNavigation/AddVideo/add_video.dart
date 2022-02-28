@@ -263,7 +263,7 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
                             setState(() {
                               isRecoring = true;
                             });
-                            Timer(Duration(seconds: 3), () async {
+                            Timer(Duration(seconds: widget.duration), () async {
                               print(
                                   "Yeah, this line is printed after ${widget.duration} seconds");
 

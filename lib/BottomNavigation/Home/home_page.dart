@@ -140,6 +140,7 @@ class _HomeBodyState extends State<HomeBody> {
   //getVideo
   Future getVideoList() async {
     var result = await MyPrefManager.prefInstance().getData("user");
+    
     User user = User.fromMap(jsonDecode(result) as Map<String, dynamic>);
     List<UserVideos> userVideoList = await ApiHandle.getFollowersVideo(user.id);
     setState(() {

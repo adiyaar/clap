@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:future_progress_dialog/future_progress_dialog.dart';
 import 'package:gallery_saver/gallery_saver.dart';
+import 'package:get/get_connect/http/src/response/response.dart';
 
 import 'package:lottie/lottie.dart';
 import 'package:qvid/BottomNavigation/AddVideo/add_video.dart';
@@ -320,6 +321,31 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
     });
   }
 
+  bool isFollowed = false;
+
+  Future followUser(userId, fId) async {
+    // Response<dynamic> resp = await Apis().followUser(userId, fId);
+    Response resp = await Apis().followUser(userId, fId) as Response;
+    if (resp.statusCode == 200) {
+      var response = jsonDecode(resp.body);
+      String res = response['res'];
+      String msg = response['msg'];
+      if (res == "success") {
+        setState(() {
+          isFollowed == true ? isFollowed = false : isFollowed = true;
+          Future.delayed(Duration(seconds: 1), () {
+            fetchCurrentUser();
+          });
+        });
+        MyToast(message: msg).toast;
+      } else {
+        MyToast(message: msg).toast;
+      }
+    } else {
+      MyToast(message: "Retry").toast;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -374,11 +400,60 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    Text(
-                                      widget.userVideo!.userName!,
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w700),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          widget.userVideo!.userName!,
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w700),
+                                        ),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              isFollowed = !isFollowed;
+                                            });
+                                            // isFollowed
+                                            //     ? MyToast(
+                                            //             message:
+                                            //                 "Already Following")
+                                            //         .toast
+                                            //     : showDialog(
+                                            //         context: context,
+                                            //         builder: (context) =>
+                                            //             FutureProgressDialog(
+                                            //                 followUser(
+                                            //                     user!.id,
+                                            //                     widget
+                                            //                         .userVideo!
+                                            //                         .userId)));
+                                          },
+                                          child: Container(
+                                              decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      color: Colors.white)),
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 12.0,
+                                                  vertical: 2.0),
+                                              child: isFollowed
+                                                  ? Text(
+                                                      'Following',
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                      ),
+                                                    )
+                                                  : Text(
+                                                      'Follow',
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                      ),
+                                                    )),
+                                        )
+                                      ],
                                     ),
                                     SizedBox(
                                       height: 10,
@@ -388,11 +463,25 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 17,
-                                          fontWeight: FontWeight.w700),
+                                          fontWeight: FontWeight.w400),
                                     ),
                                     SizedBox(
                                       height: 10,
                                     ),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.play_arrow,
+                                          color: Colors.white,
+                                        ),
+                                        Text(
+                                          ' 25 plays',
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w400),
+                                        ),
+                                      ],
+                                    )
                                   ],
                                 ),
                               ),
@@ -420,7 +509,7 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
                                                 .7,
                                         child: Column(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.start,
+                                              MainAxisAlignment.end,
                                           children: [
                                             GestureDetector(
                                               onTap: () {
@@ -513,27 +602,27 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
                                                 ),
                                               ),
                                             ),
-                                            SizedBox(height: 30),
-                                            InkWell(
-                                              onTap: () async {
-                                                _controller.pause();
+                                            // SizedBox(height: 30),
+                                            // InkWell(
+                                            //   onTap: () async {
+                                            //     _controller.pause();
 
-                                                await Navigator.pushNamed(
-                                                        context,
-                                                        PageRoutes
-                                                            .userProfilePage,
-                                                        arguments: widget
-                                                            .userVideo!.userId)
-                                                    .then((value) =>
-                                                        _controller.pause());
-                                              },
-                                              child: CircleAvatar(
-                                                  backgroundImage: NetworkImage(
-                                                      Constraints
-                                                              .IMAGE_BASE_URL +
-                                                          widget.userVideo!
-                                                              .image!)),
-                                            ),
+                                            //     await Navigator.pushNamed(
+                                            //             context,
+                                            //             PageRoutes
+                                            //                 .userProfilePage,
+                                            //             arguments: widget
+                                            //                 .userVideo!.userId)
+                                            //         .then((value) =>
+                                            //             _controller.pause());
+                                            //   },
+                                            //   child: CircleAvatar(
+                                            //       backgroundImage: NetworkImage(
+                                            //           Constraints
+                                            //                   .IMAGE_BASE_URL +
+                                            //               widget.userVideo!
+                                            //                   .image!)),
+                                            // ),
                                             SizedBox(
                                               height: 30,
                                             ),
@@ -724,6 +813,13 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
                                                                         .play();
                                                                     shareApp();
                                                                   },
+                                                                  trailing:
+                                                                      Text(
+                                                                    '30 Shares',
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .white),
+                                                                  ),
                                                                 ),
                                                                 ListTile(
                                                                   leading: Icon(
@@ -733,6 +829,13 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
                                                                           .white),
                                                                   title: Text(
                                                                       'Download Video'),
+                                                                  trailing:
+                                                                      Text(
+                                                                    '10 Downloads',
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .white),
+                                                                  ),
                                                                   onTap: () {
                                                                     Navigator.pop(
                                                                         context);
@@ -756,6 +859,13 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
                                                                           .white),
                                                                   title: Text(
                                                                       'Make Duet'),
+                                                                  trailing:
+                                                                      Text(
+                                                                    '5 Duets',
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .white),
+                                                                  ),
                                                                   onTap: () {
                                                                     _controller
                                                                         .pause();
@@ -784,6 +894,13 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
                                                                         .report_problem,
                                                                     color: Colors
                                                                         .red,
+                                                                  ),
+                                                                  trailing:
+                                                                      Text(
+                                                                    '0 Reports',
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .white),
                                                                   ),
                                                                   title: Text(
                                                                       'Report Video'),

@@ -21,7 +21,8 @@ late List<CameraDescription> cameras;
 
 class AddVideo extends StatefulWidget {
   final int duration;
-  AddVideo(this.duration);
+  List<CameraDescription> cameras;
+  AddVideo(this.duration, this.cameras);
   @override
   _AddVideoState createState() => _AddVideoState();
 }
@@ -38,10 +39,6 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
   Directory? videoRecordingPath;
 
   double transform = 0;
-
-  void openCamera() async {
-    cameras = await availableCameras();
-  }
 
   void _showOverlayProgress(BuildContext context) async {
     OverlayState? overlayState = Overlay.of(context);
@@ -60,8 +57,8 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
   void initState() {
     WidgetsBinding.instance!.addObserver(this);
 
-    openCamera();
-    _cameraController = CameraController(cameras[0], ResolutionPreset.high);
+    _cameraController =
+        CameraController(widget.cameras[0], ResolutionPreset.high);
     cameraValue = _cameraController.initialize();
     super.initState();
   }
@@ -396,6 +393,7 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
 // DUET _ PAGE
 
 class DuetPage extends StatefulWidget {
+  List<CameraDescription> cameras;
   final int durationofVideo;
   final VideoPlayerController? duetPlayer;
   final String? videoName;
@@ -403,7 +401,10 @@ class DuetPage extends StatefulWidget {
       {Key? key,
       @required this.duetPlayer,
       @required this.videoName,
-      required this.durationofVideo})
+      required this.durationofVideo,
+      required this.cameras,
+      
+      })
       : super(key: key);
 
   @override
@@ -430,9 +431,7 @@ class _DuetPageState extends State<DuetPage> with WidgetsBindingObserver {
   bool isVideoPaused = false;
   String? duetVideoFileName;
   double transform = 0;
-  void openCamera() async {
-    cameras = await availableCameras();
-  }
+  
 
   void _showOverlayProgress(BuildContext context) async {
     OverlayState? overlayState = Overlay.of(context);
@@ -516,9 +515,9 @@ class _DuetPageState extends State<DuetPage> with WidgetsBindingObserver {
   void initState() {
     WidgetsBinding.instance!.addObserver(this);
 
-    openCamera();
+    
 
-    _cameraController = CameraController(cameras[0], ResolutionPreset.high);
+    _cameraController = CameraController(widget.cameras[0], ResolutionPreset.high);
     cameraValue = _cameraController!.initialize();
     downloadDuetVideo();
     super.initState();

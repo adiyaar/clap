@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:animation_wrappers/Animations/faded_slide_animation.dart';
+import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -547,37 +548,38 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
                                                                 ),
                                                                 TextButton(
                                                                     onPressed:
-                                                                        () {
+                                                                        () async {
                                                                       Navigator.pop(
                                                                           context);
-                                                                      Navigator.push(
+                                                                      await availableCameras().then((value) => Navigator.push(
                                                                           context,
                                                                           CupertinoPageRoute(
-                                                                              builder: (_) => AddVideo(15)));
+                                                                              builder: (_) => AddVideo(15, value))));
                                                                     },
                                                                     child: Text(
                                                                         '15 seconds')),
                                                                 TextButton(
                                                                     onPressed:
-                                                                        () {
+                                                                        () async {
                                                                       Navigator.pop(
                                                                           context);
-                                                                      Navigator.push(
+
+                                                                      await availableCameras().then((value) => Navigator.push(
                                                                           context,
                                                                           CupertinoPageRoute(
-                                                                              builder: (_) => AddVideo(30)));
+                                                                              builder: (_) => AddVideo(30, value))));
                                                                     },
                                                                     child: Text(
                                                                         '30 seconds')),
                                                                 TextButton(
                                                                     onPressed:
-                                                                        () {
+                                                                        () async {
                                                                       Navigator.pop(
                                                                           context);
-                                                                      Navigator.push(
+                                                                      await availableCameras().then((value) => Navigator.push(
                                                                           context,
                                                                           CupertinoPageRoute(
-                                                                              builder: (_) => AddVideo(60)));
+                                                                              builder: (_) => AddVideo(60, value))));
                                                                     },
                                                                     child: Text(
                                                                         '60 seconds')),
@@ -866,26 +868,30 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
                                                                         color: Colors
                                                                             .white),
                                                                   ),
-                                                                  onTap: () {
+                                                                  onTap:
+                                                                      () async {
                                                                     _controller
                                                                         .pause();
                                                                     Navigator.of(
                                                                             context)
                                                                         .pop();
-                                                                    Navigator.push(
+
+                                                                    await availableCameras().then((value) => Navigator.push(
                                                                         context,
-                                                                        MaterialPageRoute(builder:
-                                                                            (context) {
-                                                                      return DuetPage(
-                                                                        duetPlayer:
-                                                                            _controller,
-                                                                        videoName: widget
-                                                                            .userVideo!
-                                                                            .videoName!,
-                                                                        durationofVideo:
-                                                                            30,
-                                                                      );
-                                                                    }));
+                                                                        CupertinoPageRoute(
+                                                                            builder: (_) => DuetPage(
+                                                                                duetPlayer: _controller,
+                                                                                videoName: widget.userVideo!.videoName!,
+                                                                                durationofVideo: 30,
+                                                                                cameras: value))));
+                                                                    // Navigator.push(
+                                                                    //     context,
+                                                                    //     MaterialPageRoute(builder:
+                                                                    //         (context) {
+                                                                    //   return DuetPage(
+
+                                                                    //   );
+                                                                    // }));
                                                                   },
                                                                 ),
                                                                 ListTile(

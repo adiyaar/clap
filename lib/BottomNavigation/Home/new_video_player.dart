@@ -347,18 +347,26 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
     }
   }
 
+  muteUnMute({bool mute = true}) async {
+    mute == true ? _controller.setVolume(0.0) : _controller.setVolume(1.0);
+    mute == true
+        ? _showOverlayMuteButton(context)
+        : _showOverlayUnmuteButton(context);
+  }
+
+  bool isTappedtoMute = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         resizeToAvoidBottomInset: true,
         body: GestureDetector(
           onTap: () {
-            _showOverlayUnmuteButton(context);
-            _controller.setVolume(1.0);
-          },
-          onDoubleTap: () {
-            _showOverlayMuteButton(context);
-            _controller.setVolume(0.0);
+            setState(() {
+              isTappedtoMute = !isTappedtoMute;
+            });
+
+            muteUnMute(mute: isTappedtoMute);
           },
           onLongPress: () {
             _controller.pause();
@@ -373,15 +381,15 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
                 height: MediaQuery.of(context).size.height,
                 child: Opacity(opacity: 0.8, child: VideoPlayer(_controller)),
               ),
-              Positioned(
-                top: 40,
-                left: 10,
-                child: Container(
-                  height: 50,
-                  width: 80,
-                  child: VideoPlayer(logoController),
-                ),
-              ),
+              // Positioned(
+              //   top: 40,
+              //   left: 10,
+              //   child: Container(
+              //     height: 50,
+              //     width: 80,
+              //     child: VideoPlayer(logoController),
+              //   ),
+              // ),
               Container(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height,
@@ -475,12 +483,22 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
                                           Icons.play_arrow,
                                           color: Colors.white,
                                         ),
-                                        Text(
-                                          ' 25 plays',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w400),
-                                        ),
+                                        widget.userVideo!.reelsView == ""
+                                            ? Text(
+                                                '0 Plays',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.w400),
+                                              )
+                                            : Text(
+                                                widget.userVideo!.reelsView! +
+                                                    'Plays',
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.w400),
+                                              ),
                                       ],
                                     )
                                   ],

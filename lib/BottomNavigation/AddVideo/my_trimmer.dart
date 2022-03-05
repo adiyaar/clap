@@ -201,18 +201,18 @@ class _TrimmerViewState extends State<TrimmerView> {
                                     });
                                     print('OUTPUT PATH: $outputPath');
                                     _trimmer.dispose();
-                                    Navigator.of(context).push(
+                                    Navigator.push(
+                                        context,
                                         MaterialPageRoute(
-                                            builder: (context) =>
-                                                AddVideoFilter(
-                                                  videoPath: outputPath!,
-                                                  file: widget.file,
-                                                )));
-                                    /*   final snackBar = SnackBar(
-                                    content: Text('Video Saved successfully'));
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  snackBar,
-                                ); */
+                                            builder: (context) => PostInfo(
+                                                filePath: outputPath!)));
+                                    // Navigator.of(context).push(
+                                    //     MaterialPageRoute(
+                                    //         builder: (context) =>
+                                    //             AddVideoFilter(
+                                    //               videoPath: outputPath!,
+                                    //               file: widget.file,
+                                    //             )));
                                   });
                                 },
                           child: Text("SAVE"),

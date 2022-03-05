@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:helpers/helpers.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:qvid/BottomNavigation/AddVideo/post_info.dart';
+import 'package:qvid/widget/toast.dart';
 import 'package:video_editor/video_editor.dart';
 import 'package:video_player/video_player.dart';
 
@@ -19,10 +21,14 @@ class VideoEditor extends StatefulWidget {
   _VideoEditorState createState() => _VideoEditorState();
 }
 
-class _VideoEditorState extends State<VideoEditor> {
+class _VideoEditorState extends State<VideoEditor>
+    with SingleTickerProviderStateMixin {
   final _exportingProgress = ValueNotifier<double>(0.0);
   final _isExporting = ValueNotifier<bool>(false);
   final double height = 60;
+  TabController? _tabController;
+  File? coverImage;
+  File? exportedVideo;
 
   bool _exported = false;
   String _exportText = "";
@@ -33,6 +39,8 @@ class _VideoEditorState extends State<VideoEditor> {
     _controller = VideoEditorController.file(widget.file,
         maxDuration: Duration(seconds: 30))
       ..initialize().then((_) => setState(() {}));
+    _tabController = new TabController(vsync: this, length: 2);
+
     super.initState();
   }
 
@@ -41,6 +49,7 @@ class _VideoEditorState extends State<VideoEditor> {
     _exportingProgress.dispose();
     _isExporting.dispose();
     _controller.dispose();
+    _tabController!.dispose();
     super.dispose();
   }
 
@@ -52,7 +61,7 @@ class _VideoEditorState extends State<VideoEditor> {
   void _exportVideo() async {
     _isExporting.value = true;
     bool _firstStat = true;
-    
+
     await _controller.exportVideo(
       // preset: VideoExportPreset.medium,
       // customInstruction: "-crf 17",
@@ -69,24 +78,34 @@ class _VideoEditorState extends State<VideoEditor> {
         _isExporting.value = false;
         if (!mounted) return;
         if (file != null) {
-          final VideoPlayerController _videoController =
-              VideoPlayerController.file(file);
-          _videoController.initialize().then((value) async {
-            setState(() {});
-            _videoController.play();
-            _videoController.setLooping(true);
-            await showModalBottomSheet(
-              context: context,
-              backgroundColor: Colors.black54,
-              builder: (_) => AspectRatio(
-                aspectRatio: _videoController.value.aspectRatio,
-                child: VideoPlayer(_videoController),
-              ),
-            );
-            await _videoController.pause();
-            _videoController.dispose();
+          // _tabController!.animateTo(1);
+
+          MyToast(message: "Please Select Your Cover to move Ahead").toast;
+
+          print(file);
+          setState(() {
+            exportedVideo = file;
           });
-          _exportText = "Video success export!";
+          print(exportedVideo);
+
+          // final VideoPlayerController _videoController =
+          //     VideoPlayerController.file(exportedVideo);
+          // _videoController.initialize().then((value) async {
+          //   setState(() {});
+          //   _videoController.play();
+          //   _videoController.setLooping(true);
+          //   await showModalBottomSheet(
+          //     context: context,
+          //     backgroundColor: Colors.black54,
+          //     builder: (_) => AspectRatio(
+          //       aspectRatio: _videoController.value.aspectRatio,
+          //       child: VideoPlayer(_videoController),
+          //     ),
+          //   );
+          //   await _videoController.pause();
+          //   _videoController.dispose();
+          // });
+          // _exportText = "Video success export!";
         } else {
           _exportText = "Error on export video :(";
         }
@@ -100,17 +119,30 @@ class _VideoEditorState extends State<VideoEditor> {
   void _exportCover() async {
     setState(() => _exported = false);
     await _controller.extractCover(
-      onCompleted: (cover) {
+      onCompleted: (coverImage) {
         if (!mounted) return;
 
-        if (cover != null) {
-          _exportText = "Cover exported! ${cover.path}";
-          showModalBottomSheet(
-            context: context,
-            backgroundColor: Colors.black54,
-            builder: (BuildContext context) =>
-                Image.memory(cover.readAsBytesSync()),
-          );
+        if (coverImage != null) {
+          _exportText = "Cover exported! ${coverImage.path}";
+
+          print(_exportText);
+          print(exportedVideo);
+          // showModalBottomSheet(
+          //   context: context,
+          //   backgroundColor: Colors.black54,
+          //   builder: (BuildContext context) =>
+          //       Image.memory(coverImage.readAsBytesSync()),
+          // );
+
+          if (exportedVideo != null) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PostInfo(
+                          videoFilePath: exportedVideo!.path,
+                          coverFilePath: coverImage,
+                        )));
+          }
         } else
           _exportText = "Error on cover exportation :(";
 
@@ -135,6 +167,7 @@ class _VideoEditorState extends State<VideoEditor> {
                         child: Column(children: [
                           Expanded(
                               child: TabBarView(
+                            controller: _tabController,
                             physics: NeverScrollableScrollPhysics(),
                             children: [
                               Stack(alignment: Alignment.center, children: [
@@ -204,7 +237,22 @@ class _VideoEditorState extends State<VideoEditor> {
                                         child: Column(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
-                                            children: [_coverSelection()]),
+                                            children: [
+                                              _coverSelection(),
+                                              SizedBox(height: 20),
+                                              Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 12.0),
+                                                color: Colors.blue,
+                                                child: TextButton(
+                                                  onPressed: _exportCover,
+                                                  child: Text(
+                                                      'Save Your Cover Image',
+                                                      style: TextStyle(
+                                                          color: Colors.white)),
+                                                ),
+                                              )
+                                            ]),
                                       ),
                                     ],
                                   ),
@@ -244,34 +292,40 @@ class _VideoEditorState extends State<VideoEditor> {
           children: [
             Expanded(
               child: GestureDetector(
+                onTap: () => context.goBack(),
+                child: Icon(Icons.arrow_back_ios, color: Colors.white),
+              ),
+            ),
+            Expanded(
+              child: GestureDetector(
                 onTap: () => _controller.rotate90Degrees(RotateDirection.left),
-                child: Icon(Icons.rotate_left),
+                child: Icon(Icons.rotate_left, color: Colors.white),
               ),
             ),
             Expanded(
               child: GestureDetector(
                 onTap: () => _controller.rotate90Degrees(RotateDirection.right),
-                child: Icon(Icons.rotate_right),
+                child: Icon(Icons.rotate_right, color: Colors.white),
               ),
             ),
             Expanded(
               child: GestureDetector(
                 onTap: _openCropScreen,
-                child: Icon(Icons.crop),
+                child: Icon(Icons.crop, color: Colors.white),
               ),
             ),
-            Expanded(
-              child: GestureDetector(
-                onTap: _exportCover,
-                child: Icon(Icons.save_alt, color: Colors.white),
-              ),
-            ),
-            Expanded(
-              child: GestureDetector(
-                onTap: _exportVideo,
-                child: Icon(Icons.save),
-              ),
-            ),
+            // Expanded(
+            //   child: GestureDetector(
+            //     onTap: _exportCover,
+            //     child: Icon(Icons.save_alt, color: Colors.white),
+            //   ),
+            // ),
+            // Expanded(
+            //   child: GestureDetector(
+            //     onTap: _exportVideo,
+            //     child: Icon(Icons.save, color: Colors.white),
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -312,13 +366,22 @@ class _VideoEditorState extends State<VideoEditor> {
       ),
       Container(
         width: MediaQuery.of(context).size.width,
-        margin: Margin.vertical(height / 4),
+        margin: Margin.vertical(height / 15),
         child: TrimSlider(
             child: TrimTimeline(
                 controller: _controller, margin: EdgeInsets.only(top: 10)),
             controller: _controller,
             height: height,
             horizontalMargin: height / 4),
+      ),
+      Container(
+        padding: EdgeInsets.symmetric(horizontal: 12.0),
+        color: Colors.blue,
+        child: TextButton(
+          onPressed: _exportVideo,
+          child: Text('Save Your Trimmed Video',
+              style: TextStyle(color: Colors.white)),
+        ),
       )
     ];
   }
@@ -375,14 +438,14 @@ class CropScreen extends StatelessWidget {
               Expanded(
                 child: GestureDetector(
                   onTap: () => controller.rotate90Degrees(RotateDirection.left),
-                  child: Icon(Icons.rotate_left),
+                  child: Icon(Icons.rotate_left, color: Colors.white),
                 ),
               ),
               Expanded(
                 child: GestureDetector(
                   onTap: () =>
                       controller.rotate90Degrees(RotateDirection.right),
-                  child: Icon(Icons.rotate_right),
+                  child: Icon(Icons.rotate_right, color: Colors.white),
                 ),
               )
             ]),
@@ -403,6 +466,7 @@ class CropScreen extends StatelessWidget {
                     child: TextDesigned(
                       "CANCEL",
                       bold: true,
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -424,7 +488,11 @@ class CropScreen extends StatelessWidget {
                     context.goBack();
                   },
                   child: Center(
-                    child: TextDesigned("OK", bold: true),
+                    child: TextDesigned(
+                      "DONE",
+                      bold: true,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -448,7 +516,11 @@ class CropScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.aspect_ratio, color: Colors.white),
-            TextDesigned(title, bold: true),
+            TextDesigned(
+              title,
+              bold: true,
+              color: Colors.white,
+            ),
           ],
         ),
       ),

@@ -343,11 +343,11 @@ class _AddVideoFilterState extends State<AddVideoFilter> {
                             /* Navigator.pushNamed(
                                 context, PageRoutes.postInfoPage,
                                 arguments: filePath); */
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        PostInfo(filePath: filePath)));
+                            // Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //         builder: (context) =>
+                            //             PostInfo(filePath: filePath)));
                           });
                           print("file path $filePath");
                         },

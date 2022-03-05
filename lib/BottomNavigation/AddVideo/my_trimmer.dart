@@ -201,11 +201,11 @@ class _TrimmerViewState extends State<TrimmerView> {
                                     });
                                     print('OUTPUT PATH: $outputPath');
                                     _trimmer.dispose();
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => PostInfo(
-                                                filePath: outputPath!)));
+                                    // Navigator.push(
+                                    //     context,
+                                    //     MaterialPageRoute(
+                                    //         builder: (context) => PostInfo(
+                                    //             filePath: outputPath!)));
                                     // Navigator.of(context).push(
                                     //     MaterialPageRoute(
                                     //         builder: (context) =>
@@ -571,11 +571,11 @@ class _TrimmerDuetVideoState extends State<TrimmerDuetVideo> {
                                     print('OUTPUT PATH: $outputPath');
                                     _trimmer.dispose();
                                     _trimmer2.dispose();
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => PostInfo(
-                                                filePath: widget.file1.path)));
+                                    // Navigator.push(
+                                    //     context,
+                                    //     MaterialPageRoute(
+                                    //         builder: (context) => PostInfo(
+                                    //             filePath: widget.file1.path)));
                                     /*   final snackBar = SnackBar(
                                     content: Text('Video Saved successfully'));
                                 ScaffoldMessenger.of(context).showSnackBar(

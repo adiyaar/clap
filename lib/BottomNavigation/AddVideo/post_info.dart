@@ -17,9 +17,10 @@ import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:flutter_parsed_text_field/flutter_parsed_text_field.dart';
 
 class PostInfo extends StatefulWidget {
-  String filePath = "";
+  String videoFilePath = "";
+  File coverFilePath;
 
-  PostInfo({required this.filePath});
+  PostInfo({required this.videoFilePath, required this.coverFilePath});
 
   @override
   _PostInfoState createState() => _PostInfoState();
@@ -41,6 +42,7 @@ class _PostInfoState extends State<PostInfo> {
 
   static List<String> dance = [];
   List hashtags = [];
+  List usersList = [];
 
   Future getHashtags() async {
     var url = Uri.parse(Constraints.MANAGE_URL);
@@ -67,9 +69,9 @@ class _PostInfoState extends State<PostInfo> {
     findUser();
     dance.clear();
     getHashtags();
-    Future.delayed(Duration(seconds: 1), () {
-      thumbnilList();
-    });
+    // Future.delayed(Duration(seconds: 1), () {
+    //   thumbnilList();
+    // });
     super.initState();
   }
 
@@ -96,58 +98,54 @@ class _PostInfoState extends State<PostInfo> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      dance.isNotEmpty
-                          ? Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 10.0, top: 15),
-                              child: Container(
-                                height: 170,
-                                alignment: Alignment.center,
-                                child: Stack(
-                                  children: [
-                                    coverFile == null
-                                        ? Image.asset(
-                                            "assets/images/banner 1.png",
-                                            fit: BoxFit.fill,
-                                            height: 170,
-                                            width: 110,
-                                          )
-                                        : ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(5),
-                                            child: Image.file(
-                                              coverFile!,
-                                              fit: BoxFit.fill,
-                                              height: 170,
-                                              width: 110,
-                                            ),
-                                          ),
-                                    Align(
-                                      alignment: Alignment.bottomCenter,
-                                      child: Container(
-                                        width: double.infinity,
-                                        height: 20,
-                                        alignment: Alignment.center,
-                                        color: Colors.black54,
-                                        child: Text(
-                                          "Select Cover" + '\n',
-                                          style: TextStyle(
-                                              color: Colors.blue, fontSize: 14),
-                                        ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10.0, top: 15),
+                        child: Container(
+                          height: 170,
+                          alignment: Alignment.center,
+                          child: Stack(
+                            children: [
+                              widget.coverFilePath == null
+                                  ? Image.asset(
+                                      "assets/images/banner 1.png",
+                                      fit: BoxFit.fill,
+                                      height: 170,
+                                      width: 110,
+                                    )
+                                  : ClipRRect(
+                                      borderRadius: BorderRadius.circular(5),
+                                      child: Image.memory(
+                                        widget.coverFilePath.readAsBytesSync(),
+                                        fit: BoxFit.fill,
+                                        height: 170,
+                                        width: 110,
                                       ),
                                     ),
-                                  ],
-                                ),
+                              // Align(
+                              //   alignment: Alignment.bottomCenter,
+                              //   child: Container(
+                              //     width: double.infinity,
+                              //     height: 20,
+                              //     alignment: Alignment.center,
+                              //     color: Colors.black54,
+                              //     child: Text(
+                              //       "Select Cover" + '\n',
+                              //       style: TextStyle(
+                              //           color: Colors.blue, fontSize: 14),
+                              //     ),
+                              //   ),
+                              // ),
+                            ],
+                          ),
 
-                                /*  ListView.builder(
+                          /*  ListView.builder(
                                     scrollDirection: Axis.horizontal,
                                     itemCount: thumbLists.length,
                                     itemBuilder: (context, index) {
                                       return PostThumbTile(dance[index]);
                                     }) */
-                              ),
-                            )
-                          : Container(),
+                        ),
+                      )
                     ],
                   ),
                 ),
@@ -171,6 +169,17 @@ class _PostInfoState extends State<PostInfo> {
                               alwaysHighlight: true,
                               parseRegExp: RegExp(r'(#([\w]+))'),
                               parse: (regex, hashtagString) => hashtagString,
+                            ),
+                            Matcher(
+                              trigger: "@",
+                              suggestions: usersList,
+                              idProp: (usersList) => usersList,
+                              displayProp: (usersList) => usersList,
+                              style: const TextStyle(color: Colors.blue),
+                              stringify: (trigger, usersList) => usersList,
+                              alwaysHighlight: true,
+                              parseRegExp: RegExp(r'(@([\w]+))'),
+                              parse: (regex, usersList) => usersList,
                             ),
                           ],
                           controller: hashtagsController,
@@ -378,7 +387,7 @@ class _PostInfoState extends State<PostInfo> {
             ),
             InkWell(
               onTap: () {
-                File file = File(widget.filePath);
+                File file = File(widget.videoFilePath);
                 showDialog(
                     context: context,
                     builder: (context1) => FutureProgressDialog(uploadPost(
@@ -386,7 +395,7 @@ class _PostInfoState extends State<PostInfo> {
                         "Post",
                         file,
                         hashtagsController.text,
-                        coverFile!)));
+                        widget.coverFilePath)));
                 //thumbnilList();
                 /* Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => HomePage())); */
@@ -473,9 +482,9 @@ class _PostInfoState extends State<PostInfo> {
     User user = User.fromMap(jsonDecode(result) as Map<String, dynamic>);
     //print(user.id + user.name);
     userId = user.id;
-    Future.delayed(Duration(seconds: 1), () {
-      thumbnilList();
-    });
+    // Future.delayed(Duration(seconds: 1), () {
+    //   thumbnilList();
+    // });
 
     MyToast(message: user.id).toast;
   }
@@ -485,23 +494,4 @@ class _PostInfoState extends State<PostInfo> {
     //return await File(filePath!);
   } */
 
-  Future<void> thumbnilList() async {
-    print("file name ${widget.filePath}");
-    final fileName = await VideoThumbnail.thumbnailFile(
-      video: widget.filePath,
-      thumbnailPath: (await getTemporaryDirectory()).path,
-      imageFormat: ImageFormat.PNG,
-      maxHeight:
-          100, // specify the height of the thumbnail, let the width auto-scaled to keep the source aspect ratio
-      quality: 100,
-    );
-    setState(() {
-      dance.add(fileName!);
-      print("lenght ${dance.length}");
-      coverFile = File(fileName);
-      print(dance);
-    });
-    print(dance.length);
-    print("File Name $fileName");
-  }
 }

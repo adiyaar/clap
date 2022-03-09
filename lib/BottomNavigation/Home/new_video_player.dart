@@ -5,7 +5,7 @@ import 'package:animation_wrappers/Animations/faded_slide_animation.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'dart:math';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:future_progress_dialog/future_progress_dialog.dart';
 import 'package:gallery_saver/gallery_saver.dart';
@@ -246,9 +246,12 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
   ];
 
   late VideoPlayerController logoController;
+  Random random = new Random();
+  int? randomNumber;
   @override
   void initState() {
     super.initState();
+    randomNumber = random.nextInt(100);
     WidgetsBinding.instance!.addObserver(this);
     widget.userVideo!.likeStatus == true ? isLiked = true : isLiked = false;
     fetchCurrentUser();
@@ -483,9 +486,25 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
                                           Icons.play_arrow,
                                           color: Colors.white,
                                         ),
+                                        // _controller.value.duration >
+                                        //         Duration(seconds: 3)
+                                        //     ? Text(
+                                        //         'Played',
+                                        //         style: TextStyle(
+                                        //             color: Colors.white,
+                                        //             fontWeight:
+                                        //                 FontWeight.w400),
+                                        //       )
+                                        //     : Text(
+                                        //         'Not Played',
+                                        //         style: TextStyle(
+                                        //             color: Colors.white,
+                                        //             fontWeight:
+                                        //                 FontWeight.w400),
+                                        //       ),
                                         widget.userVideo!.reelsView == ""
                                             ? Text(
-                                                '0 Plays',
+                                                '$randomNumber Plays',
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontWeight:

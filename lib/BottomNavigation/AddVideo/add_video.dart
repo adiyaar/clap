@@ -17,8 +17,6 @@ import 'package:video_player/video_player.dart';
 import 'dart:async';
 import 'package:blinking_text/blinking_text.dart';
 
-late List<CameraDescription> cameras;
-
 class AddVideo extends StatefulWidget {
   final int duration;
   List<CameraDescription> cameras;
@@ -144,20 +142,20 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
                       });
                       int cameraPos = iscamerafront ? 0 : 1;
                       _cameraController = CameraController(
-                          cameras[cameraPos], ResolutionPreset.high);
+                          widget.cameras[cameraPos], ResolutionPreset.high);
                       cameraValue = _cameraController.initialize();
                     },
                   ),
                   right: 16,
                   top: 140,
                 ),
-                Positioned(
-                    child: Text(
-                      "Flip",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    right: 23,
-                    top: 183),
+                // Positioned(
+                //     child: Text(
+                //       "Flip",
+                //       style: TextStyle(color: Colors.white),
+                //     ),
+                //     right: 23,
+                //     top: 183),
                 Positioned(
                   child: InkWell(
                     onTap: () {},
@@ -170,13 +168,13 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
                   right: 25,
                   top: 203,
                 ),
-                Positioned(
-                    child: Text(
-                      "Beautify",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    right: 17,
-                    top: 233),
+                // Positioned(
+                //     child: Text(
+                //       "Beautify",
+                //       style: TextStyle(color: Colors.white),
+                //     ),
+                //     right: 17,
+                //     top: 233),
                 Positioned(
                   child: IconButton(
                       icon: Icon(
@@ -195,13 +193,13 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
                   right: 19,
                   top: 253,
                 ),
-                Positioned(
-                    child: Text(
-                      "Flash",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    right: 23,
-                    top: 287),
+                // Positioned(
+                //     child: Text(
+                //       "Flash",
+                //       style: TextStyle(color: Colors.white),
+                //     ),
+                //     right: 23,
+                //     top: 287),
                 Positioned(
                   child: isRecoring == true
                       ? InkWell(
@@ -377,8 +375,11 @@ class _AddVideoState extends State<AddVideo> with WidgetsBindingObserver {
     //trim video by video trimmer
 
     if (file != null) {
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (context) => TrimmerView(file!, 1)));
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => VideoViewPage(
+                path: file!.path,
+                fileView: file,
+              )));
     }
   }
 
@@ -397,15 +398,13 @@ class DuetPage extends StatefulWidget {
   final int durationofVideo;
   final VideoPlayerController? duetPlayer;
   final String? videoName;
-  DuetPage(
-      {Key? key,
-      @required this.duetPlayer,
-      @required this.videoName,
-      required this.durationofVideo,
-      required this.cameras,
-      
-      })
-      : super(key: key);
+  DuetPage({
+    Key? key,
+    @required this.duetPlayer,
+    @required this.videoName,
+    required this.durationofVideo,
+    required this.cameras,
+  }) : super(key: key);
 
   @override
   State<DuetPage> createState() => _DuetPageState();
@@ -431,7 +430,6 @@ class _DuetPageState extends State<DuetPage> with WidgetsBindingObserver {
   bool isVideoPaused = false;
   String? duetVideoFileName;
   double transform = 0;
-  
 
   void _showOverlayProgress(BuildContext context) async {
     OverlayState? overlayState = Overlay.of(context);
@@ -515,9 +513,8 @@ class _DuetPageState extends State<DuetPage> with WidgetsBindingObserver {
   void initState() {
     WidgetsBinding.instance!.addObserver(this);
 
-    
-
-    _cameraController = CameraController(widget.cameras[0], ResolutionPreset.high);
+    _cameraController =
+        CameraController(widget.cameras[0], ResolutionPreset.high);
     cameraValue = _cameraController!.initialize();
     downloadDuetVideo();
     super.initState();
@@ -828,7 +825,7 @@ class _DuetPageState extends State<DuetPage> with WidgetsBindingObserver {
                   });
                   int cameraPos = iscamerafront ? 0 : 1;
                   _cameraController = CameraController(
-                      cameras[cameraPos], ResolutionPreset.high);
+                      widget.cameras[cameraPos], ResolutionPreset.high);
                   cameraValue = _cameraController!.initialize();
                 },
               ),

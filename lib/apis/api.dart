@@ -404,6 +404,14 @@ class Apis {
     return await http.post(url, body: {"user_id": userId, "flag": "get_video"});
   }
 
+
+  Future<http.Response> updateCount(String videoId) async {
+    var url = Uri.parse(Constraints.BASE_URL);
+    return await http.post(url, body: {"video_id": videoId, "flag": "UpdateVideoCount", "type": "view"});
+  }
+
+
+
   Future<http.Response> getLikedVideo(String userId) async {
     var url = Uri.parse(Constraints.MANAGE_URL);
     return await http

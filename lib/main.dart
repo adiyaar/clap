@@ -14,6 +14,8 @@ import 'package:qvid/Routes/routes.dart';
 import 'package:qvid/Screens/custom_splash_fle.dart';
 import 'package:qvid/Theme/colors.dart';
 
+import 'Screens/IntroScreens/IntroScreen.dart';
+
 late List<CameraDescription> cameras;
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
   'high_importance_channel', // id
@@ -89,7 +91,7 @@ class MyApp extends StatelessWidget {
                 SystemUiOverlayStyle(statusBarColor: Colors.transparent)),
       ),
       routes: PageRoutes().routes(),
-      home: MySplashFile(),
+      home: WelcomeScreen(),
     );
   }
 }

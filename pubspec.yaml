@@ -26,6 +26,7 @@ dependencies:
   animation_wrappers: ^0.0.4
   pin_code_fields: ^7.3.0
   http: ^0.13.3
+
   fluttertoast: ^8.0.8
   future_progress_dialog: ^0.2.0
   convert: ^3.0.1

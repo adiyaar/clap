@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart';
 import 'package:lottie/lottie.dart';
+import 'package:qvid/BottomNavigation/Home/new_video_player.dart';
 import 'package:qvid/Screens/custom_appbar.dart';
 import 'package:qvid/Theme/colors.dart';
 import 'package:qvid/apis/api.dart';
@@ -12,6 +13,7 @@ import 'package:qvid/helper/api_handle.dart';
 import 'package:qvid/helper/my_preference.dart';
 import 'package:qvid/model/notification.dart';
 import 'package:qvid/model/user.dart';
+import 'package:qvid/model/user_video.dart';
 import 'package:qvid/utils/constaints.dart';
 import 'package:qvid/widget/toast.dart';
 
@@ -36,10 +38,26 @@ class _NotificationPageState extends State<NotificationPage> {
   User? userDetails;
   bool isLoading = true;
   List<Notifications> notificationList = [];
+  List<UserVideos> userVideos = [];
+
+  Future getVideoList() async {
+    var result = await MyPrefManager.prefInstance().getData("user");
+
+    User user = User.fromMap(jsonDecode(result) as Map<String, dynamic>);
+    List<UserVideos> userVideoList = await ApiHandle.getVideo(user.id);
+    setState(() {
+      userVideos = userVideoList;
+    });
+    print('Done');
+  }
+
+
+
   @override
   void initState() {
     super.initState();
     fetchUser();
+    getVideoList();
     Future.delayed(Duration(seconds: 1), () {
       fetchNotification();
     });
@@ -83,39 +101,54 @@ class _NotificationPageState extends State<NotificationPage> {
                                     SizedBox(
                                       width: 10,
                                     ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "${notificationList[index].userName!}" +
-                                                "${notificationList[index].message!}",
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontFamily: 'Times',
-                                                fontSize: 16),
-                                          ),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
-                                          Text(
-                                            notificationList[index]
-                                                .description!,
-                                            style: TextStyle(
-                                                color: Colors.white38,
-                                                fontSize: 14),
-                                          ),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
-                                          Text(notificationList[index].time!,
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            CupertinoPageRoute(
+                                              builder: (_) => FollowingTabPage1(
+                                                userVideos,
+                                                imagesInDisc1,
+                                                true,
+                                                0,
+                                                variable: 1,
+                                              ),
+                                            ));
+                                      },
+                                      child: Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "${notificationList[index].userName!}" +
+                                                  "${notificationList[index].message!}",
                                               style: TextStyle(
-                                                  color: buttonColor,
-                                                  fontSize: 14,
-                                                  fontWeight:
-                                                      FontWeight.normal))
-                                        ],
+                                                  color: Colors.white,
+                                                  fontFamily: 'Times',
+                                                  fontSize: 16),
+                                            ),
+                                            SizedBox(
+                                              height: 5,
+                                            ),
+                                            Text(
+                                              notificationList[index]
+                                                  .description!,
+                                              style: TextStyle(
+                                                  color: Colors.white38,
+                                                  fontSize: 14),
+                                            ),
+                                            SizedBox(
+                                              height: 5,
+                                            ),
+                                            Text(notificationList[index].time!,
+                                                style: TextStyle(
+                                                    color: buttonColor,
+                                                    fontSize: 14,
+                                                    fontWeight:
+                                                        FontWeight.normal))
+                                          ],
+                                        ),
                                       ),
                                     )
                                   ],
@@ -164,8 +197,6 @@ class _NotificationPageState extends State<NotificationPage> {
       String msg = data['msg'];
       if (res == "success") {
         var re = data['data'] as List;
-        print("sdsd");
-        print(re.length);
 
         if (mounted)
           setState(() {

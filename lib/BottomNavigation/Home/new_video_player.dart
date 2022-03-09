@@ -273,15 +273,15 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
         });
       });
 
-    logoController =
-        VideoPlayerController.asset("assets/audio/splash_video.mp4")
-          ..initialize().then((value) {
-            setState(() {
-              logoController.setLooping(true);
-              logoController.play();
-              logoController.setVolume(0.0);
-            });
-          });
+    // logoController =
+    //     VideoPlayerController.asset("assets/audio/splash_video.mp4")
+    //       ..initialize().then((value) {
+    //         setState(() {
+    //           logoController.setLooping(true);
+    //           logoController.play();
+    //           logoController.setVolume(0.0);
+    //         });
+    //       });
   }
 
   // @override

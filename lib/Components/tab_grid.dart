@@ -65,7 +65,7 @@ class TabGrid extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
-                      print("select index ${index}");
+                      
                       Navigator.push(
                           context,
                           MaterialPageRoute(

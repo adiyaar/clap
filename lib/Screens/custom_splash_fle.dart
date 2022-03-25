@@ -6,6 +6,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:qvid/Routes/routes.dart';
+import 'package:qvid/Screens/IntroScreens/IntroScreen.dart';
 import 'package:qvid/Screens/chat/chat_controller.dart';
 import 'package:qvid/Theme/colors.dart';
 import 'package:qvid/apis/api.dart';
@@ -15,10 +16,6 @@ import 'package:qvid/model/user.dart';
 import 'package:intl/intl.dart';
 import 'package:video_player/video_player.dart';
 
-/* void main() {
-  runApp(MySplashFile());
-} */
-
 class MySplashFile extends StatefulWidget {
   const MySplashFile({Key? key}) : super(key: key);
   @override
@@ -26,73 +23,28 @@ class MySplashFile extends StatefulWidget {
 }
 
 class _MySplashFileState extends State<MySplashFile> {
-  late VideoPlayerController _controller;
   ChatController chatController = Get.put(ChatController());
   @override
   void initState() {
-    
-
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print(message.notification);
       DateTime now = DateTime.now();
       var currentTime = now.hour.toString() + ":" + now.minute.toString();
-      print(message.data['body']);
+
       chatController.receiveMessage(
           message.notification!.body, "1", currentTime);
-      // showNotification();
-      //RemoteNotification notification = message.notification!;
-      //AndroidNotification? android = message.notification?.android;
-
-      //if (android != null) {
-      //showNotification();
-      /*      flutterLocalNotificationsPlugin.show(
-            notification.hashCode,
-            notification.title,
-            notification.body,
-            NotificationDetails(
-              android: AndroidNotificationDetails(
-                channel.id,
-                channel.name,
-                channelDescription: channel.description,
-                icon: android.smallIcon,
-                // other properties...
-              ),
-            )); */
-      //}
     });
-    Future.delayed(Duration(seconds: 8), () {
+    Future.delayed(Duration(seconds: 2), () {
       hanldleNavigation(context);
     });
     super.initState();
-    _controller = VideoPlayerController.asset("assets/audio/splash_video.mp4")
-      ..initialize().then((value) {
-        setState(() {
-          print("is Intilized");
-          //_controller.setLooping(true);
-          _controller.play();
-        });
-      });
   }
-
-  /* showNotification() async {
-    print("hiello");
-    var android = new AndroidNotificationDetails('channel id', 'channel NAME',
-        channelDescription: 'CHANNEL DESCRIPTION',
-        priority: Priority.high,
-        importance: Importance.max);
-    var iOS = new IOSNotificationDetails();
-    var platform = new NotificationDetails(android: android, iOS: iOS);
-    await flutterLocalNotificationsPlugin.show(
-        0, 'New Tutorial', 'Local Notification', platform,
-        payload: 'AndroidCoding.in');
-  } */
 
   @override
   void dispose() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
         overlays: [SystemUiOverlay.bottom, SystemUiOverlay.top]);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarColor: buttonColor,
+        statusBarColor: Colors.black,
         statusBarBrightness:
             Brightness.light //or set color with: Color(0xFF0000FF)
         ));
@@ -102,27 +54,31 @@ class _MySplashFileState extends State<MySplashFile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: videoColor,
+        backgroundColor: Colors.black,
         body: Align(
           alignment: Alignment.center,
           child: FittedBox(
-              fit: BoxFit.cover,
-              child: SizedBox(
-                  height: _controller.value.size.height,
-                  width: _controller.value.size.width,
-                  child: VideoPlayer(_controller))),
+            fit: BoxFit.contain,
+            child: Image.asset(
+              "assets/images/splash_logo.png",
+              height: 150,
+              width: 150,
+            ),
+          ),
         ));
   }
 
   hanldleNavigation(BuildContext context) async {
     var result = await MyPrefManager.prefInstance().getData("user");
+    var introScreenSaw = await MyPrefManager.prefInstance().getData("intro");
     print(result);
-    if (result == null) {
-      print("user not found");
+    if (result == null && introScreenSaw == null) {
+      Navigator.pushAndRemoveUntil(context,
+          MaterialPageRoute(builder: (_) => WelcomeScreen()), (route) => false);
+    } else if (result == null && introScreenSaw == "true") {
       Navigator.pushNamedAndRemoveUntil(
           context, PageRoutes.login_screen, (route) => false);
     } else {
-      print("user  found");
       User user = User.fromMap(jsonDecode(result) as Map<String, dynamic>);
       if (user.otpStatus == "true") {
         http.Response response = await Apis().getUser(user.id);
@@ -153,7 +109,7 @@ class _MySplashFileState extends State<MySplashFile> {
                   PageRoutes.basic_profile_info, (route) => false);
             } else {
               Navigator.of(context).pushNamedAndRemoveUntil(
-                  PageRoutes.bottomNavigation, (route) => false);
+                  PageRoutes.mycontainer, (route) => false);
             }
           } else {}
         } else {}

@@ -608,174 +608,101 @@ class _DuetPageState extends State<DuetPage> with WidgetsBindingObserver {
             Positioned(
                 child: Stack(
                   children: [
-                    GestureDetector(
-                      onTap: () async {
-                        await _cameraController!.startVideoRecording();
-                        setState(() {
-                          isRecoring = true;
-                        });
-                        Timer(Duration(seconds: widget.durationofVideo),
-                            () async {
-                          XFile videoFilePath =
-                              await _cameraController!.stopVideoRecording();
+                    isRecoring == true
+                        ? GestureDetector(
+                            onTap: () async {
+                              XFile videoFilePath =
+                                  await _cameraController!.stopVideoRecording();
 
-                          File filePath = File(videoFilePath.path);
+                              File filePath = File(videoFilePath.path);
 
-                          print(filePath);
-                          print('Recorded Path');
-                          setState(() {
-                            isRecoring = false;
-                          });
-                          _showOverlayProgress(context);
-                          Directory? newDirectory =
-                              await getApplicationDocumentsDirectory();
-                          String video1name =
-                              '${newDirectory.path}/${widget.videoName}';
-                          String video2name =
-                              '${newDirectory.path}/${DateTime.now().microsecond}.mp4';
-                          String outputVidep =
-                              '${newDirectory.path}/${DateTime.now().millisecond}.mp4';
-                          String scalevideo1 =
-                              "-i $duetfilePath -vf scale=320:240  $video1name";
-                          String scalevideo2 =
-                              "-i ${videoFilePath.path} -vf scale=320:240  $video2name";
+                              print(filePath);
+                              print('Recorded Path');
+                              setState(() {
+                                isRecoring = false;
+                              });
+                              _showOverlayProgress(context);
+                              Directory? newDirectory =
+                                  await getApplicationDocumentsDirectory();
+                              String video1name =
+                                  '${newDirectory.absolute.path}/${widget.videoName}';
+                              String video2name =
+                                  '${newDirectory.path}/${DateTime.now().microsecond}.mp4';
+                              String outputVidep =
+                                  '${newDirectory.path}/${DateTime.now().millisecond}.mp4';
+                              String scalevideo1 =
+                                  "-i $duetfilePath -vf scale=320:240  $video1name";
+                              String scalevideo2 =
+                                  "-i ${videoFilePath.path} -vf scale=320:240  $video2name";
 
-                          String a =
-                              '-i $video1name -i $video2name -filter_complex "[0:v][1:v]hstack=inputs=2[v]; [0:a][1:a]amerge[a]" -map "[v]" -vsync 2 -map "[a]" -ac 2 $outputVidep';
+                              String a =
+                                  '-i $video1name -i $video2name -filter_complex "[0:v][1:v]hstack=inputs=2[v]; [0:a][1:a]amerge[a]" -map "[v]" -vsync 2 -map "[a]" -ac 2 $outputVidep';
 
-                          File file1 = File(outputVidep);
-                          FlutterFFmpeg().execute(scalevideo1).then((value) {
-                            if (value == 0) {
-                              print("Success at stage 1");
+                              File file1 = File(outputVidep);
                               FlutterFFmpeg()
-                                  .execute(scalevideo2)
-                                  .then((value) => {
-                                        if (value == 0)
-                                          {
-                                            print('Success at stage 2'),
-                                            FlutterFFmpeg()
-                                                .execute(a)
-                                                .then((value) => {
-                                                      if (value == 0)
-                                                        {
-                                                          print("Successfull"),
-                                                          Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                  builder:
-                                                                      (context) =>
-                                                                          VideoViewPage(
-                                                                            path:
-                                                                                outputVidep,
-                                                                            fileView:
-                                                                                file1,
-                                                                          )))
-                                                        }
-                                                      else
-                                                        {
-                                                          CircularProgressIndicator(),
-                                                          print(
-                                                              "Not Successfull")
-                                                        }
-                                                    })
-                                          }
-                                        else
-                                          {CircularProgressIndicator()}
-                                      });
-                              print("I m here !! Success");
-                            } else {
-                              return CircularProgressIndicator();
-                            }
-                          });
-                        });
-                      },
-                      child: isRecoring == true
-                          ? GestureDetector(
-                              onTap: () async {
-                                XFile videoFilePath = await _cameraController!
-                                    .stopVideoRecording();
-
-                                File filePath = File(videoFilePath.path);
-
-                                print(filePath);
-                                print('Recorded Path');
-                                setState(() {
-                                  isRecoring = false;
-                                });
-                                _showOverlayProgress(context);
-                                Directory? newDirectory =
-                                    await getApplicationDocumentsDirectory();
-                                String video1name =
-                                    '${newDirectory.path}/${widget.videoName}';
-                                String video2name =
-                                    '${newDirectory.path}/${DateTime.now().microsecond}.mp4';
-                                String outputVidep =
-                                    '${newDirectory.path}/${DateTime.now().millisecond}.mp4';
-                                String scalevideo1 =
-                                    "-i $duetfilePath -vf scale=320:240  $video1name";
-                                String scalevideo2 =
-                                    "-i ${videoFilePath.path} -vf scale=320:240  $video2name";
-
-                                String a =
-                                    '-i $video1name -i $video2name -filter_complex "[0:v][1:v]hstack=inputs=2[v]; [0:a][1:a]amerge[a]" -map "[v]" -vsync 2 -map "[a]" -ac 2 $outputVidep';
-
-                                File file1 = File(outputVidep);
-                                FlutterFFmpeg()
-                                    .execute(scalevideo1)
-                                    .then((value) {
-                                  if (value == 0) {
-                                    print("Success at stage 1");
-                                    FlutterFFmpeg()
-                                        .execute(scalevideo2)
-                                        .then((value) => {
-                                              if (value == 0)
-                                                {
-                                                  print('Success at stage 2'),
-                                                  FlutterFFmpeg()
-                                                      .execute(a)
-                                                      .then((value) => {
-                                                            if (value == 0)
-                                                              {
-                                                                print(
-                                                                    "Successfull"),
-                                                                Navigator.push(
-                                                                    context,
-                                                                    MaterialPageRoute(
-                                                                        builder: (context) =>
-                                                                            VideoViewPage(
-                                                                              path: outputVidep,
-                                                                              fileView: file1,
-                                                                            )))
-                                                              }
-                                                            else
-                                                              {
-                                                                CircularProgressIndicator(),
-                                                                print(
-                                                                    "Not Successfull")
-                                                              }
-                                                          })
-                                                }
-                                              else
-                                                {CircularProgressIndicator()}
-                                            });
-                                    print("I m here !! Success");
-                                  } else {
-                                    return CircularProgressIndicator();
-                                  }
-                                });
-                              },
-                              child: Icon(
-                                Icons.radio_button_on,
-                                color: Colors.red,
-                                size: 80,
-                              ),
-                            )
-                          : Icon(
+                                  .execute(scalevideo1)
+                                  .then((value) {
+                                if (value == 0) {
+                                  print("Success at stage 1");
+                                  FlutterFFmpeg()
+                                      .execute(scalevideo2)
+                                      .then((value) => {
+                                            if (value == 0)
+                                              {
+                                                print('Success at stage 2'),
+                                                FlutterFFmpeg()
+                                                    .execute(a)
+                                                    .then((value) => {
+                                                          if (value == 0)
+                                                            {
+                                                              print(
+                                                                  "Successfull"),
+                                                              Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                      builder:
+                                                                          (context) =>
+                                                                              VideoViewPage(
+                                                                                path: outputVidep,
+                                                                                fileView: file1,
+                                                                              )))
+                                                            }
+                                                          else
+                                                            {
+                                                              CircularProgressIndicator(),
+                                                              print(
+                                                                  "Not Successfull")
+                                                            }
+                                                        })
+                                              }
+                                            else
+                                              {  CircularProgressIndicator()}
+                                          });
+                                  print("I m here !! Success");
+                                } else {
+                                  return CircularProgressIndicator();
+                                }
+                              });
+                            },
+                            child: Icon(
+                              Icons.radio_button_on,
+                              color: Colors.red,
+                              size: 80,
+                            ),
+                          )
+                        : GestureDetector(
+                            onTap: () async {
+                              await _cameraController!.startVideoRecording();
+                              setState(() {
+                                isRecoring = true;
+                              });
+                            },
+                            child: Icon(
                               Icons.fiber_manual_record_rounded,
                               color: Colors.yellow,
                               size: 80,
                             ),
-                    ),
+                          ),
                   ],
                 ),
                 left: MediaQuery.of(context).size.width - 245,

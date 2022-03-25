@@ -1,8 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'IntroPages.dart';
-
-
+import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
+import 'package:qvid/Routes/routes.dart';
+import 'package:qvid/Screens/auth/login.dart';
+import 'package:qvid/helper/my_preference.dart';
 
 class WelcomeScreen extends StatefulWidget {
   @override
@@ -10,106 +12,289 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  List<Widget> slides = item
-      .map((item) => Container(
-      padding: EdgeInsets.symmetric(horizontal: 18.0),
-      child: Column(
-        children: <Widget>[
-         /* Flexible(
-            flex: 1,
-            fit: FlexFit.tight,
-            *//*child: Image.asset(
-              item['image'],
-              fit: BoxFit.fitWidth,
-              width: 220.0,
-              alignment: Alignment.bottomCenter,
-            ),*//*
-          ),*/
-          Flexible(
-            flex: 1,
-            fit: FlexFit.tight,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 30.0),
-              child: Column(
-                children: <Widget>[
-                  Text(item['header'],
-                      style: TextStyle(
-                          fontSize: 50.0,
-                          fontWeight: FontWeight.w300,
-                          color: Color(0XFF3F3D56),
-                          height: 2.0)),
-                  Text(
-                    item['description'],
-                    style: TextStyle(
-                        color: Colors.grey,
-                        letterSpacing: 1.2,
-                        fontSize: 16.0,
-                        height: 1.3),
-                    textAlign: TextAlign.center,
-                  )
-                ],
-              ),
-            ),
-          )
-        ],
-      )))
-      .toList();
-
-  List<Widget> indicator() => List<Widget>.generate(
-      slides.length,
-          (index) => Container(
-        margin: EdgeInsets.symmetric(horizontal: 3.0),
-        height: 10.0,
-        width: 10.0,
-        decoration: BoxDecoration(
-            color: currentPage.round() == index
-                ? Color(0XFF256075)
-                : Color(0XFF256075).withOpacity(0.2),
-            borderRadius: BorderRadius.circular(10.0)),
-      ));
-
-  double currentPage = 0.0;
-  final _pageViewController = new PageController();
-
   @override
   void initState() {
     super.initState();
-    _pageViewController.addListener(() {
-      setState(() {
-        currentPage = _pageViewController.page!;
-      });
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: Stack(
-          children: <Widget>[
-            PageView.builder(
-              controller: _pageViewController,
-              itemCount: slides.length,
-              itemBuilder: (BuildContext context, int index) {
-                return slides[index];
-              },
-            ),
-            Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  margin: EdgeInsets.only(top: 70.0),
-                  padding: EdgeInsets.symmetric(vertical: 40.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: indicator(),
-                  ),
-                )
-              //  ),
-            )
-            // )
-          ],
-        ),
-      ),
-    );
+        backgroundColor: Colors.black,
+        body: SafeArea(
+          child: PageView(
+            children: [
+              Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                child: Column(
+                  children: [
+                    Lottie.asset('assets/images/intro1.json',
+                        height: MediaQuery.of(context).size.height / 2.5),
+                    Text('Celebrity Wishing\nPlatform',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.nunito(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 32)),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 20,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                          "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an Lorem Ipsum has been the industry's standard dummy text ever since",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.nunito(
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xff8B8B8B),
+                              fontSize: 12)),
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 5,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 3.0),
+                          height: 10.0,
+                          width: 10.0,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10.0)),
+                        ),
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 3.0),
+                          height: 10.0,
+                          width: 10.0,
+                          decoration: BoxDecoration(
+                              color: Color(0xff8B8B8B),
+                              borderRadius: BorderRadius.circular(10.0)),
+                        ),
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 3.0),
+                          height: 10.0,
+                          width: 10.0,
+                          decoration: BoxDecoration(
+                              color: Color(0xff8B8B8B),
+                              borderRadius: BorderRadius.circular(10.0)),
+                        ),
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 3.0),
+                          height: 10.0,
+                          width: 10.0,
+                          decoration: BoxDecoration(
+                              color: Color(0xff8B8B8B),
+                              borderRadius: BorderRadius.circular(10.0)),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+              Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                child: Column(
+                  children: [
+                    Lottie.network(
+                        'https://assets9.lottiefiles.com/packages/lf20_ezxj8avu.json',
+                        height: MediaQuery.of(context).size.height / 2.5),
+                    Text('Start Creating\nYour Content',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.nunito(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 32)),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 20,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                          "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an Lorem Ipsum has been the industry's standard dummy text ever since",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.nunito(
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xff8B8B8B),
+                              fontSize: 12)),
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 5,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 3.0),
+                          height: 10.0,
+                          width: 10.0,
+                          decoration: BoxDecoration(
+                              color: Color(0xff8B8B8B),
+                              borderRadius: BorderRadius.circular(10.0)),
+                        ),
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 3.0),
+                          height: 10.0,
+                          width: 10.0,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10.0)),
+                        ),
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 3.0),
+                          height: 10.0,
+                          width: 10.0,
+                          decoration: BoxDecoration(
+                              color: Color(0xff8B8B8B),
+                              borderRadius: BorderRadius.circular(10.0)),
+                        ),
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 3.0),
+                          height: 10.0,
+                          width: 10.0,
+                          decoration: BoxDecoration(
+                              color: Color(0xff8B8B8B),
+                              borderRadius: BorderRadius.circular(10.0)),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+              Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                child: Column(
+                  children: [
+                    Lottie.network(
+                        'https://assets3.lottiefiles.com/private_files/lf30_bxssE7.json',
+                        height: MediaQuery.of(context).size.height / 2.5),
+                    Text('Share Your\nShort Films',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.nunito(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 32)),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 20,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                          "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an Lorem Ipsum has been the industry's standard dummy text ever since",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.nunito(
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xff8B8B8B),
+                              fontSize: 12)),
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 5,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 3.0),
+                          height: 10.0,
+                          width: 10.0,
+                          decoration: BoxDecoration(
+                              color: Color(0xff8B8B8B),
+                              borderRadius: BorderRadius.circular(10.0)),
+                        ),
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 3.0),
+                          height: 10.0,
+                          width: 10.0,
+                          decoration: BoxDecoration(
+                              color: Color(0xff8B8B8B),
+                              borderRadius: BorderRadius.circular(10.0)),
+                        ),
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 3.0),
+                          height: 10.0,
+                          width: 10.0,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10.0)),
+                        ),
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 3.0),
+                          height: 10.0,
+                          width: 10.0,
+                          decoration: BoxDecoration(
+                              color: Color(0xff8B8B8B),
+                              borderRadius: BorderRadius.circular(10.0)),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+              Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                child: Column(
+                  children: [
+                    Lottie.network(
+                        'https://assets5.lottiefiles.com/private_files/lf30_uvrwjrrs.json',
+                        height: MediaQuery.of(context).size.height / 2.5),
+                    Text('Browse Creative\nBollywood Directory',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.nunito(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 32)),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 20,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                          "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an Lorem Ipsum has been the industry's standard dummy text ever since",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.nunito(
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xff8B8B8B),
+                              fontSize: 12)),
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 6,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            MyPrefManager.myPrefManager
+                                .addData("intro", "true");
+                            Navigator.pushNamedAndRemoveUntil(context,
+                                PageRoutes.login_screen, (route) => false);
+                          },
+                          child: Container(
+                            height: 50,
+                            width: MediaQuery.of(context).size.width / 1.5,
+                            alignment: Alignment.center,
+                            child: Text("Let’s Begin",
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.nunito(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                    fontSize: 20)),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12.0)),
+                          ),
+                        )
+                      ],
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
+        ));
   }
 }

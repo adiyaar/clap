@@ -29,10 +29,7 @@ class ApiHandle {
     }
   }
 
-          
-
   static Future<User?> getUserById(String userId) async {
-    print(userId);
     User? user;
     Response response = await Apis().getUser(userId);
     if (response.statusCode == 200) {
@@ -63,7 +60,7 @@ class ApiHandle {
       String msg = data['msg'];
       if (res == "success") {
         var re = data['data'] as List;
-        
+
         print(re.length);
 
         return re.map<UserVideos>((e) => UserVideos.fromJson(e)).toList();
@@ -82,8 +79,6 @@ class ApiHandle {
       throw Exception('Failed to load album');
     }
   }
-
-  
 
   static Future<List<UserVideos>> getLikedVideo(String userId) async {
     Response response = await Apis().getLikedVideo(userId);
@@ -127,8 +122,6 @@ class ApiHandle {
         print(re.length);
 
         return re.map<UserVideos>((e) => UserVideos.fromJson(e)).toList();
-
-
       } else {
         print("error");
         MyToast(message: msg).toast;
@@ -136,6 +129,29 @@ class ApiHandle {
       }
     } else {
       throw Exception('Failed to load album');
+    }
+  }
+
+  static Future getCount(String countOf, String videoId) async {
+    Response response = await Apis().getCount(countOf, videoId);
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      String res = data['res'];
+      String msg = data['msg'];
+      if (res == "success") {
+        print(data);
+
+        //return MySlider.fromJson(data['data'] as Map<String, dynamic>);
+        /* for (int i = 0; i < sliders.length; i++) {
+          MySlider slider = sliders[i];
+          sliderImage[i] = slider.image;
+        } */
+
+      } else {
+        MyToast(message: msg).toast;
+        return [];
+      }
     }
   }
 
@@ -149,8 +165,6 @@ class ApiHandle {
       String msg = data['msg'];
       if (res == "success") {
         var re = data['data'] as List;
-        print("sdsd");
-        print(re.length);
 
         return re.map<UserVideos>((e) => UserVideos.fromJson(e)).toList();
         //return MySlider.fromJson(data['data'] as Map<String, dynamic>);

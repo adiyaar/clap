@@ -15,6 +15,7 @@ dependencies:
   cupertino_icons: ^1.0.3
   video_player: ^2.1.1
   video_editor: ^1.2.3
+  flutter_slider_drawer: ^2.1.1
   helpers:
   carousel_slider: ^4.0.0-nullsafety.0
   google_fonts: ^2.1.0
@@ -26,7 +27,7 @@ dependencies:
   animation_wrappers: ^0.0.4
   pin_code_fields: ^7.3.0
   http: ^0.13.3
-
+  intl:
   fluttertoast: ^8.0.8
   future_progress_dialog: ^0.2.0
   convert: ^3.0.1

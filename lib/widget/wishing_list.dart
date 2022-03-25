@@ -22,28 +22,29 @@ class WisheshList {
   Padding get list => Padding(
       padding: EdgeInsets.only(top: 5, left: 5, right: 5),
       child: Container(
-        height: 200,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-
           //gradient: LinearGradient(colors: [buttonColor, Colors.black87])
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: user.image!.isNotEmpty
-                  ? CachedNetworkImage(
-                      height: 150,
-                      width: 120,
+            user.image!.isNotEmpty
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(90.0),
+                    child: CachedNetworkImage(
+                      height: 100,
+                      width: 100,
                       imageUrl: Constraints.IMAGE_BASE_URL + user.image!,
-                      errorWidget: (context, url, error) => Image.asset(
-                        "assets/images/banner 1.png",
-                        height: 150,
-                        width: 120,
+                      errorWidget: (context, url, error) => ClipRRect(
+                        borderRadius: BorderRadius.circular(90.0),
+                        child: Image.asset(
+                          "assets/images/banner 1.png",
+                          height: 100,
+                          width: 100,
+                        ),
                       ),
-                      fit: BoxFit.fill,
+                      fit: BoxFit.cover,
                       placeholder: (context, value) => Shimmer.fromColors(
                         child: Card(
                             shape: RoundedRectangleBorder(
@@ -58,14 +59,14 @@ class WisheshList {
                         direction: ShimmerDirection.rtl,
                         period: Duration(seconds: 2),
                       ),
-                    )
-                  : Image.asset(
-                      "assets/images/banner 1.png",
-                      height: 150,
-                      width: 120,
-                      fit: BoxFit.fill,
                     ),
-            ),
+                  )
+                : Image.asset(
+                    "assets/images/banner 1.png",
+                    height: 100,
+                    width: 100,
+                    fit: BoxFit.fill,
+                  ),
             /* user.image!.isNotEmpty
                 ? Image.asset(
                     "assets/images/banner 1.png",

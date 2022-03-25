@@ -1,10 +1,13 @@
 import 'dart:convert';
 
+import 'package:chewie/chewie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 import 'package:lottie/lottie.dart';
+import 'package:qvid/BottomNavigation/Home/new_video_player.dart';
 import 'package:qvid/Screens/custom_appbar.dart';
 import 'package:qvid/Theme/colors.dart';
 import 'package:qvid/apis/api.dart';
@@ -12,8 +15,10 @@ import 'package:qvid/helper/api_handle.dart';
 import 'package:qvid/helper/my_preference.dart';
 import 'package:qvid/model/notification.dart';
 import 'package:qvid/model/user.dart';
+import 'package:qvid/model/user_video.dart';
 import 'package:qvid/utils/constaints.dart';
 import 'package:qvid/widget/toast.dart';
+import 'package:video_player/video_player.dart';
 
 class NotificationMessages extends StatefulWidget {
   @override
@@ -36,6 +41,7 @@ class _NotificationPageState extends State<NotificationPage> {
   User? userDetails;
   bool isLoading = true;
   List<Notifications> notificationList = [];
+  List<UserVideos> list = [];
   @override
   void initState() {
     super.initState();
@@ -49,96 +55,82 @@ class _NotificationPageState extends State<NotificationPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-          appBar: PreferredSize(
-              child: Container(
-                  child: MyCustomAppBar(context: context, user: userDetails)
-                      .myCustomAppBar),
-              preferredSize: Size.fromHeight(100)),
+          appBar: AppBar(
+            centerTitle: true,
+            automaticallyImplyLeading: false,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back_ios_new),
+              onPressed: () => Navigator.pop(context),
+            ),
+            title: Text('Notifications',
+                style: GoogleFonts.nunito(
+                    fontWeight: FontWeight.bold, fontSize: 20)),
+          ),
           body: isLoading == false
               ? notificationList.isNotEmpty
-                  ? ListView.builder(
+                  ? ListView.separated(
+                      separatorBuilder: (context, index) => Divider(
+                            color: Colors.black,
+                          ),
                       itemCount: notificationList.length,
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
-                        return Stack(children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                top: 10, left: 5, right: 5),
-                            child: Column(
-                              children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    notificationList[index].userProfile!.isEmpty
-                                        ? CircleAvatar(
-                                            radius: 25,
-                                            backgroundImage: AssetImage(
-                                                "assets/images/user_icon.png"))
-                                        : CircleAvatar(
-                                            radius: 25,
-                                            backgroundImage: NetworkImage(
-                                                Constraints.IMAGE_BASE_URL +
-                                                    notificationList[index]
-                                                        .userProfile!)),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "${notificationList[index].userName!}" +
-                                                "${notificationList[index].message!}",
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontFamily: 'Times',
-                                                fontSize: 16),
-                                          ),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
-                                          Text(
-                                            notificationList[index]
-                                                .description!,
-                                            style: TextStyle(
-                                                color: Colors.white38,
-                                                fontSize: 14),
-                                          ),
-                                          SizedBox(
-                                            height: 5,
-                                          ),
-                                          Text(notificationList[index].time!,
-                                              style: TextStyle(
-                                                  color: buttonColor,
-                                                  fontSize: 14,
-                                                  fontWeight:
-                                                      FontWeight.normal))
-                                        ],
+                        return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => VideoViewFromNotification(
+                                            videoName: notificationList[index]
+                                                .videoName,
+                                          )));
+                            },
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        notificationList[index]
+                                            .description!
+                                            .replaceAll("#", ""),
+                                        style: GoogleFonts.nunito(
+                                            fontSize: 18, color: Colors.white),
                                       ),
-                                    )
-                                  ],
-
-                                  // onTap: () =>
-                                  //     Navigator.pushNamed(context, PageRoutes.userProfilePage),
-                                ),
-                                Divider(
-                                  color: Colors.white38,
-                                )
-                              ],
-                            ),
-                          ),
-                        ]);
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        '1d',
+                                        style: GoogleFonts.nunito(
+                                            fontSize: 16,
+                                            color: Color(0xffC7C7C7)),
+                                      ),
+                                    ],
+                                  ),
+                                  Container(
+                                    height: 50,
+                                    width: 50,
+                                    child: Image.network(
+                                        'https://media.istockphoto.com/photos/3d-render-clapperboard-or-film-slate-with-play-button-picture-id1303456217?b=1&k=20&m=1303456217&s=170667a&w=0&h=Vw-tl4MdOdqYtKYddOa-mlO_opEUWs4OR8nra2Vcjfw='),
+                                  )
+                                ],
+                              ),
+                            ));
                       })
                   : Center(
-                      child: Lottie.asset(
-                        "assets/animation/no-data.json",
-                        width: 250,
-                        height: 250,
+                      child: Lottie.network(
+                        "https://assets6.lottiefiles.com/packages/lf20_0xxka1td.json",
                       ),
                     )
-              : Center(child: SpinKitFadingCircle(color: Colors.red))),
+              : Center(
+                  child: CircularProgressIndicator.adaptive(
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(Colors.white)))),
     );
   }
 
@@ -149,6 +141,17 @@ class _NotificationPageState extends State<NotificationPage> {
     //print(user.id + user.name);
     setState(() {
       userDetails = userDet;
+    });
+  }
+
+  Future getVideoList() async {
+    var result = await MyPrefManager.prefInstance().getData("user");
+
+    User user = User.fromMap(jsonDecode(result) as Map<String, dynamic>);
+    List<UserVideos> userVideoList = await ApiHandle.getFollowersVideo(user.id);
+    setState(() {
+      isLoading = false;
+      list = userVideoList;
     });
   }
 
@@ -187,5 +190,52 @@ class _NotificationPageState extends State<NotificationPage> {
     } else {
       throw Exception('Failed to load album');
     }
+  }
+}
+
+class VideoViewFromNotification extends StatefulWidget {
+  String? videoName;
+  VideoViewFromNotification({Key? key, required this.videoName})
+      : super(key: key);
+
+  @override
+  State<VideoViewFromNotification> createState() =>
+      _VideoViewFromNotificationState();
+}
+
+class _VideoViewFromNotificationState extends State<VideoViewFromNotification> {
+  late VideoPlayerController videoPlayController;
+
+  @override
+  void initState() {
+    videoPlayController =
+        VideoPlayerController.network(Constraints.Video_URL + widget.videoName!)
+          ..initialize().then((value) {
+            setState(() {
+              videoPlayController.addListener(() {});
+            });
+            videoPlayController.play();
+            videoPlayController.setLooping(true);
+          });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    videoPlayController.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      child: Stack(children: [
+        Opacity(opacity: 0.8, child: VideoPlayer(videoPlayController)),
+      ]),
+    ));
   }
 }

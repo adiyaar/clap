@@ -10,10 +10,10 @@ final ThemeData appTheme = ThemeData.light().copyWith(
 
   primaryColor: mainColor,
 //  accentColor: mainColor,
-  bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      selectedLabelStyle: TextStyle(color: Colors.red),
-      unselectedLabelStyle: TextStyle(color: disabledTextColor)),
-    
+  // bottomNavigationBarTheme: BottomNavigationBarThemeData(
+  //     selectedLabelStyle: TextStyle(color: Colors.red),
+  //     unselectedLabelStyle: TextStyle(color: disabledTextColor)),
+
   ///appBar theme
   appBarTheme: AppBarTheme(
       color: transparentColor,
@@ -22,7 +22,7 @@ final ThemeData appTheme = ThemeData.light().copyWith(
           SystemUiOverlayStyle(statusBarColor: Colors.transparent)),
 
   ///text theme
- textTheme: GoogleFonts.openSansTextTheme().copyWith(
+  textTheme: GoogleFonts.openSansTextTheme().copyWith(
     subtitle1: TextStyle(color: disabledTextColor),
     caption: TextStyle(color: disabledTextColor),
     bodyText1: TextStyle(fontSize: 16.0, color: Colors.black),
@@ -30,7 +30,7 @@ final ThemeData appTheme = ThemeData.light().copyWith(
     button: TextStyle(fontSize: 16.0, letterSpacing: 1),
     subtitle2: TextStyle(),
     bodyText2: TextStyle(fontSize: 16.0, color: Colors.black),
-  ), 
+  ),
 );
 
 /// NAME         SIZE  WEIGHT  SPACING

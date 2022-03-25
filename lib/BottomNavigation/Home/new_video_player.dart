@@ -9,7 +9,7 @@ import 'dart:math';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:future_progress_dialog/future_progress_dialog.dart';
 import 'package:gallery_saver/gallery_saver.dart';
-import 'package:get/get_connect/http/src/response/response.dart';
+import 'package:http/http.dart';
 
 import 'package:lottie/lottie.dart';
 import 'package:qvid/BottomNavigation/AddVideo/add_video.dart';
@@ -29,6 +29,7 @@ import 'package:qvid/model/video_comment.dart';
 import 'package:qvid/utils/constaints.dart';
 import 'package:qvid/widget/toast.dart';
 import 'package:share/share.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
 
 List<VideoComment> videoComments = [];
@@ -227,9 +228,9 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
   }
 
   bool tappedLikeIcon = false;
-  bool tappedDislikeIcon = false;
+
   TextEditingController _comment = TextEditingController();
-  TextEditingController _replyComment = TextEditingController();
+  // TextEditingController _replyComment = TextEditingController();
   bool isCommented = false;
 
   late VideoPlayerController _controller;
@@ -248,6 +249,7 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
   late VideoPlayerController logoController;
   Random random = new Random();
   int? randomNumber;
+
   @override
   void initState() {
     super.initState();
@@ -282,31 +284,8 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
               logoController.setVolume(0.0);
             });
           });
+    fetchFromLocalStore();
   }
-
-  // @override
-  // void didPopNext() {
-  //   print("didPopNext");
-  //   _controller.pause();
-
-  //   super.didPopNext();
-  // }
-
-  // @override
-  // void didPushNext() {
-  //   print("didPushNext");
-  //   _controller.pause();
-
-  //   super.didPushNext();
-  // }
-
-  // @override
-  // void didChangeDependencies() {
-  //   _controller.pause();
-  //   routeObserver.subscribe(
-  //       this, ModalRoute.of(context) as PageRoute<dynamic>); //Subscribe it here
-  //   super.didChangeDependencies();
-  // }
 
   @override
   void dispose() {
@@ -329,9 +308,11 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
 
   Future followUser(userId, fId) async {
     // Response<dynamic> resp = await Apis().followUser(userId, fId);
-    Response resp = await Apis().followUser(userId, fId) as Response;
+    Response resp = await Apis().followUser(userId, fId);
+    print(resp.body);
     if (resp.statusCode == 200) {
       var response = jsonDecode(resp.body);
+      print(response);
       String res = response['res'];
       String msg = response['msg'];
       if (res == "success") {
@@ -342,11 +323,16 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
           });
         });
         MyToast(message: msg).toast;
+        print(msg);
+        print('Here 1');
       } else {
         MyToast(message: msg).toast;
+        print('Here 2');
+        print(msg);
       }
     } else {
       MyToast(message: "Retry").toast;
+      print('Here 3');
     }
   }
 
@@ -357,10 +343,26 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
         : _showOverlayUnmuteButton(context);
   }
 
+  addtoLocalStore() async {
+    SharedPreferences pf = await SharedPreferences.getInstance();
+    pf.setStringList('followList', userId);
+  }
+
+  fetchFromLocalStore() async {
+    SharedPreferences pf = await SharedPreferences.getInstance();
+    // ignore: deprecated_member_use
+    storedUserId = (pf.getStringList('followList') ?? <String>[]);
+  }
+
+  List<String> userId = [];
+  List<String> storedUserId = [];
+
   bool isTappedtoMute = false;
 
   @override
   Widget build(BuildContext context) {
+    fetchFromLocalStore();
+
     return Scaffold(
         resizeToAvoidBottomInset: true,
         body: GestureDetector(
@@ -384,15 +386,6 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
                 height: MediaQuery.of(context).size.height,
                 child: Opacity(opacity: 0.8, child: VideoPlayer(_controller)),
               ),
-              // Positioned(
-              //   top: 40,
-              //   left: 10,
-              //   child: Container(
-              //     height: 50,
-              //     width: 80,
-              //     child: VideoPlayer(logoController),
-              //   ),
-              // ),
               Container(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height,
@@ -426,23 +419,25 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
                                         ),
                                         GestureDetector(
                                           onTap: () {
-                                            setState(() {
-                                              isFollowed = !isFollowed;
-                                            });
-                                            // isFollowed
-                                            //     ? MyToast(
-                                            //             message:
-                                            //                 "Already Following")
-                                            //         .toast
-                                            //     : showDialog(
-                                            //         context: context,
-                                            //         builder: (context) =>
-                                            //             FutureProgressDialog(
-                                            //                 followUser(
-                                            //                     user!.id,
-                                            //                     widget
-                                            //                         .userVideo!
-                                            //                         .userId)));
+                                            if (storedUserId.contains(
+                                                widget.userVideo!.userId!)) {
+                                              userId.remove(
+                                                  widget.userVideo!.userId!);
+                                              addtoLocalStore();
+                                            } else {
+                                              userId.add(
+                                                  widget.userVideo!.userId!);
+                                              addtoLocalStore();
+
+                                              // showDialog(
+                                              //     context: context,
+                                              //     builder: (context) =>
+                                              //         FutureProgressDialog(
+                                              //             followUser(
+                                              //                 user!.id,
+                                              //                 widget.userVideo!
+                                              //                     .userId)));
+                                            }
                                           },
                                           child: Container(
                                               decoration: BoxDecoration(
@@ -451,7 +446,8 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
                                               padding: EdgeInsets.symmetric(
                                                   horizontal: 12.0,
                                                   vertical: 2.0),
-                                              child: isFollowed
+                                              child: storedUserId.contains(
+                                                      widget.userVideo!.userId!)
                                                   ? Text(
                                                       'Following',
                                                       style: TextStyle(
@@ -486,22 +482,6 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
                                           Icons.play_arrow,
                                           color: Colors.white,
                                         ),
-                                        // _controller.value.duration >
-                                        //         Duration(seconds: 3)
-                                        //     ? Text(
-                                        //         'Played',
-                                        //         style: TextStyle(
-                                        //             color: Colors.white,
-                                        //             fontWeight:
-                                        //                 FontWeight.w400),
-                                        //       )
-                                        //     : Text(
-                                        //         'Not Played',
-                                        //         style: TextStyle(
-                                        //             color: Colors.white,
-                                        //             fontWeight:
-                                        //                 FontWeight.w400),
-                                        //       ),
                                         widget.userVideo!.reelsView == ""
                                             ? Text(
                                                 '$randomNumber Plays',
@@ -796,6 +776,8 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
                                             ),
                                             InkWell(
                                               onTap: () {
+                                                ApiHandle.getCount("view",
+                                                    widget.userVideo!.id!);
                                                 _controller.pause();
                                                 showModalBottomSheet(
                                                     backgroundColor:
@@ -854,7 +836,7 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
                                                                   },
                                                                   trailing:
                                                                       Text(
-                                                                    '30 Shares',
+                                                                    '$randomNumber Shares',
                                                                     style: TextStyle(
                                                                         color: Colors
                                                                             .white),
@@ -870,7 +852,7 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
                                                                       'Download Video'),
                                                                   trailing:
                                                                       Text(
-                                                                    '10 Downloads',
+                                                                    '$randomNumber Downloads',
                                                                     style: TextStyle(
                                                                         color: Colors
                                                                             .white),
@@ -900,7 +882,7 @@ class _VideoPageState extends State<VideoPage> with WidgetsBindingObserver {
                                                                       'Make Duet'),
                                                                   trailing:
                                                                       Text(
-                                                                    '5 Duets',
+                                                                    '${randomNumber! + 10} Duets',
                                                                     style: TextStyle(
                                                                         color: Colors
                                                                             .white),

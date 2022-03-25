@@ -6,18 +6,12 @@ import 'package:qvid/BottomNavigation/Home/report_reel.dart';
 import 'package:qvid/BottomNavigation/MyProfile/my_profile_page.dart';
 import 'package:qvid/BottomNavigation/MyProfile/video_option.dart';
 import 'package:qvid/BottomNavigation/Notifications/notification_messages.dart';
-import 'package:qvid/BottomNavigation/bottom_navigation.dart';
-import 'package:qvid/BottomNavigation/AddVideo/add_video.dart';
-import 'package:qvid/BottomNavigation/MyProfile/followers.dart';
-import 'package:qvid/BottomNavigation/AddVideo/post_info.dart';
-
 import 'package:qvid/Screens/applied_details.dart';
 import 'package:qvid/Screens/auth/basic_profile_details.dart';
 import 'package:qvid/Screens/auth/choice_talent_interst.dart';
 import 'package:qvid/Screens/auth/login.dart';
 import 'package:qvid/Screens/auth/otp_screen.dart';
 import 'package:qvid/Screens/auth/detail.dart';
-import 'package:qvid/Screens/auth/persional_details.dart';
 import 'package:qvid/Screens/auth/report_profile.dart';
 import 'package:qvid/Screens/auth/setting_page.dart';
 import 'package:qvid/Screens/auth/show_periosnal_info.dart';
@@ -98,10 +92,11 @@ class PageRoutes {
   static const String newUserPage = "new_user_page";
   static const String bookingList = "booking_list";
   static const String reportReels = "report_reels";
+  static const String categorySelection = "category_selection";
 
   Map<String, WidgetBuilder> routes() {
     return {
-      bottomNavigation: (context) => BottomNavigation(),
+      // bottomNavigation: (context) => BottomNavigation(),
       //followersPage: (context) => FollowersPage(),
 
       // addVideoPage: (context) => AddVideo(),
@@ -109,6 +104,7 @@ class PageRoutes {
       //postInfoPage: (context) => PostInfo(),
 
       videoOptionPage: (context) => VideoOptionPage(),
+      
 
       mycontainer: (context) => MyContainer(),
       allPostList: (context) => AllPostList(),
@@ -135,7 +131,7 @@ class PageRoutes {
 
       show_persional_info: (context) => ShowPersonalInfo(data: {}),
       search_page: (context) => SearchPage(),
-      persional_details: (context) => UpdatePersionalDetails(),
+      
       broadcastPage: (context) => BroadcastPage(),
       allCelebrityList: (context) => AllCelebrityList(),
       wishlistUsers: (context) => WishlistUsers(),

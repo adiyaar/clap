@@ -298,9 +298,6 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
 
   //get Directory User
   Future<List<DirectoryUser>> getDirectoryUser() async {
-    /* setState(() {
-      isLoading = true;
-    }); */
     var result = await MyPrefManager.prefInstance().getData("user");
     User user = User.fromMap(jsonDecode(result) as Map<String, dynamic>);
     Response response = await Apis().getDirectory(user.id);
@@ -312,9 +309,6 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
       String msg = data['msg'];
       if (res == "success") {
         var re = data['data'] as List;
-        print("sdsd");
-        print(re);
-        print(re.length);
 
         if (mounted)
           setState(() {

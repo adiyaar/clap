@@ -10,6 +10,7 @@ class Notifications {
   String? time;
   String? userProfile;
   String? userName;
+  String? videoName;
 
   Notifications(
       {this.id,
@@ -19,6 +20,7 @@ class Notifications {
       this.message,
       this.description,
       this.status,
+      this.videoName,
       this.date,
       this.time,
       this.userProfile,
@@ -32,6 +34,7 @@ class Notifications {
     message = json['message'];
     description = json['description'];
     status = json['status'];
+    videoName = json['video_name'];
     date = json['date'];
     time = json['time'];
     userProfile = json['user_profile'];
@@ -44,6 +47,7 @@ class Notifications {
     data['user_id'] = this.userId;
     data['broadcast_user_id'] = this.broadcastUserId;
     data['notification_type'] = this.notificationType;
+    data['video_name'] = this.videoName;
     data['message'] = this.message;
     data['description'] = this.description;
     data['status'] = this.status;

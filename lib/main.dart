@@ -79,19 +79,19 @@ class MyApp extends StatelessWidget {
         ),
         primaryColor: mainColor,
 //  accentColor: mainColor,
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
-            selectedLabelStyle: TextStyle(color: Colors.red),
-            unselectedLabelStyle: TextStyle(color: disabledTextColor)),
+        // bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        //     selectedLabelStyle: TextStyle(color: Colors.red),
+        //     unselectedLabelStyle: TextStyle(color: disabledTextColor)),
 
         ///appBar theme
         appBarTheme: AppBarTheme(
             color: transparentColor,
             elevation: 0.0,
             systemOverlayStyle:
-                SystemUiOverlayStyle(statusBarColor: Colors.transparent)),
+                SystemUiOverlayStyle(statusBarColor: Colors.black)),
       ),
       routes: PageRoutes().routes(),
-      home: WelcomeScreen(),
+      home: MySplashFile(),
     );
   }
 }

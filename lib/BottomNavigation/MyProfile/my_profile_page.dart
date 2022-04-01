@@ -30,6 +30,8 @@ import 'package:qvid/BottomNavigation/MyProfile/following.dart';
 import 'package:qvid/apis/api.dart';
 import 'package:qvid/helper/api_handle.dart';
 import 'package:qvid/helper/my_preference.dart';
+import 'package:qvid/model/upload_audios.dart';
+import 'package:qvid/model/upload_photo.dart';
 import 'package:qvid/model/user.dart' as use;
 import 'package:qvid/model/user.dart';
 import 'package:qvid/model/user_video.dart';
@@ -572,139 +574,6 @@ class _MyProfileBodyState extends State<MyProfileBody>
   }
 }
 
-Widget profileHeaderWidget(BuildContext context) {
-  return Container(
-    width: double.infinity,
-    decoration: BoxDecoration(color: Colors.black),
-    child: Padding(
-      padding: const EdgeInsets.only(left: 18.0, right: 18.0, bottom: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 10,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                radius: 40,
-                backgroundColor: Color(0xff74EDED),
-                backgroundImage:
-                    NetworkImage("https://placeimg.com/640/480/people"),
-              ),
-              Row(
-                children: [
-                  Column(
-                    children: [
-                      Text(
-                        "23",
-                        style: GoogleFonts.nunito(
-                          fontSize: 15,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      Text(
-                        "Posts",
-                        style: GoogleFonts.nunito(
-                          fontSize: 15,
-                          color: Colors.white,
-                          letterSpacing: 0.4,
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    width: 30,
-                  ),
-                  Column(
-                    children: [
-                      Text(
-                        "1.5M",
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      Text(
-                        "Followers",
-                        style: TextStyle(
-                          letterSpacing: 0.4,
-                          color: Colors.white,
-                          fontSize: 15,
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    width: 30,
-                  ),
-                  Column(
-                    children: [
-                      Text(
-                        "234",
-                        style: TextStyle(
-                          letterSpacing: 0.4,
-                          fontSize: 15,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      Text(
-                        "Following",
-                        style: TextStyle(
-                          letterSpacing: 0.4,
-                          fontSize: 15,
-                          color: Colors.white,
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    width: 15,
-                  ),
-                ],
-              )
-            ],
-          ),
-          SizedBox(
-            height: 8,
-          ),
-          Text(
-            "John Doe",
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
-              letterSpacing: 0.4,
-            ),
-          ),
-          SizedBox(
-            height: 4,
-          ),
-          Text(
-            "Lorem Ipsum",
-            style: TextStyle(
-              letterSpacing: 0.4,
-              color: Colors.white,
-            ),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          actions(context),
-          SizedBox(
-            height: 20,
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
 Widget actions(BuildContext context) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -728,6 +597,30 @@ Widget actions(BuildContext context) {
   );
 }
 
+Widget services(BuildContext context) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Expanded(
+        child: OutlinedButton(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 50),
+            child:
+                Text("Add My Service", style: TextStyle(color: Colors.white)),
+          ),
+          style: OutlinedButton.styleFrom(
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              minimumSize: Size(0, 30),
+              side: BorderSide(
+                color: Colors.grey.shade400,
+              )),
+          onPressed: () {},
+        ),
+      ),
+    ],
+  );
+}
+
 class ProfileBaseScreen extends StatefulWidget {
   final User? userDetails;
   ProfileBaseScreen({Key? key, required this.userDetails}) : super(key: key);
@@ -737,9 +630,248 @@ class ProfileBaseScreen extends StatefulWidget {
 }
 
 class _ProfileBaseScreenState extends State<ProfileBaseScreen> {
+  TextEditingController titleController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+  TextEditingController priceController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
+      floatingActionButton: widget.userDetails!.celebrity == "true"
+          ? FloatingActionButton.extended(
+              backgroundColor: Colors.black,
+              onPressed: () async {
+                await showModalBottomSheet(
+                    isScrollControlled: true,
+                    backgroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(20),
+                      ),
+                    ),
+                    clipBehavior: Clip.antiAliasWithSaveLayer,
+                    context: context,
+                    builder: (_) => SingleChildScrollView(
+                          reverse: true,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Text(
+                                'Add Your Services',
+                                style: GoogleFonts.nunito(
+                                    color: Colors.white,
+                                    fontSize: 23,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: 30),
+                              Center(
+                                child: Container(
+                                  width:
+                                      MediaQuery.of(context).size.width / 1.1,
+                                  alignment: Alignment.center,
+                                  height: 60,
+                                  decoration: BoxDecoration(
+                                    color: Color(0xffFFbac373737),
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 20.0, top: 5),
+                                    child: TextField(
+                                      controller: titleController,
+                                      keyboardAppearance: Brightness.dark,
+                                      keyboardType: TextInputType.text,
+                                      cursorColor: Color(0xffC7C7C7),
+                                      toolbarOptions: ToolbarOptions(
+                                          paste: true, cut: true),
+                                      decoration: InputDecoration(
+                                          border: InputBorder.none,
+                                          hintText: 'Birthday Video Call',
+                                          hintStyle: GoogleFonts.nunito(
+                                              textStyle: TextStyle(
+                                                  fontSize: 18,
+                                                  color: Color(0xffFF929292),
+                                                  fontWeight:
+                                                      FontWeight.w700))),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 15,
+                              ),
+                              Center(
+                                child: Container(
+                                  width:
+                                      MediaQuery.of(context).size.width / 1.1,
+                                  alignment: Alignment.center,
+                                  height: 60,
+                                  decoration: BoxDecoration(
+                                    color: Color(0xffFFbac373737),
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 20.0, top: 5),
+                                    child: TextField(
+                                      controller: descriptionController,
+                                      keyboardAppearance: Brightness.dark,
+                                      keyboardType: TextInputType.text,
+                                      cursorColor: Color(0xffC7C7C7),
+                                      toolbarOptions: ToolbarOptions(
+                                          paste: true, cut: true),
+                                      decoration: InputDecoration(
+                                          border: InputBorder.none,
+                                          hintText: '5 mins Video Call',
+                                          hintStyle: GoogleFonts.nunito(
+                                              textStyle: TextStyle(
+                                                  fontSize: 18,
+                                                  color: Color(0xffFF929292),
+                                                  fontWeight:
+                                                      FontWeight.w700))),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 15,
+                              ),
+                              Center(
+                                child: Container(
+                                  width:
+                                      MediaQuery.of(context).size.width / 1.1,
+                                  alignment: Alignment.center,
+                                  height: 60,
+                                  decoration: BoxDecoration(
+                                    color: Color(0xffFFbac373737),
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 20.0, top: 5),
+                                    child: TextField(
+                                      controller: priceController,
+                                      keyboardAppearance: Brightness.dark,
+                                      keyboardType: TextInputType.number,
+                                      cursorColor: Color(0xffC7C7C7),
+                                      toolbarOptions: ToolbarOptions(
+                                          paste: true, cut: true),
+                                      decoration: InputDecoration(
+                                          border: InputBorder.none,
+                                          hintText: 'Rs 700',
+                                          hintStyle: GoogleFonts.nunito(
+                                              textStyle: TextStyle(
+                                                  fontSize: 18,
+                                                  color: Color(0xffFF929292),
+                                                  fontWeight:
+                                                      FontWeight.w700))),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 50,
+                              ),
+                              GestureDetector(
+                                onTap: () async {
+                                  if (titleController.text.trim().isNotEmpty &&
+                                      descriptionController.text
+                                          .trim()
+                                          .isNotEmpty &&
+                                      priceController.text.trim().isNotEmpty) {
+                                    Response response = await Apis()
+                                        .addCelbServices(
+                                            titleController.text.trim(),
+                                            descriptionController.text.trim(),
+                                            priceController.text.trim(),
+                                            widget.userDetails!.id);
+
+                                    if (response.statusCode == 200) {
+                                      var decodeResponse =
+                                          jsonDecode(response.body);
+                                      String result = decodeResponse['res'];
+                                      String msg = decodeResponse['msg'];
+
+                                      print(msg);
+
+                                      if (result == "success") {
+                                        Navigator.pop(context);
+                                        MyToast(
+                                                message:
+                                                    'Service Added Successfully')
+                                            .toast;
+                                      } else {
+                                        Navigator.pop(context);
+                                        MyToast(message: 'Something Went Wrong')
+                                            .toast;
+                                      }
+                                    } else {
+                                      Navigator.pop(context);
+                                      MyToast(message: 'Socket Exception')
+                                          .toast;
+                                    }
+                                  }
+                                  // if (_mobileNumber.text.trim().length < 10) {
+                                  //   MyToast(message: 'Please Enter A valid mobile number')
+                                  //       .toast;
+                                  // } else {
+                                  // Response response =
+                                  //     await Apis().userLogin(_mobileNumber.text.trim());
+
+                                  //   if (response.statusCode == 200) {
+                                  //     var decodedResponse = jsonDecode(response.body);
+                                  //     String res = decodedResponse['res'];
+                                  //     String msg = decodedResponse['msg'];
+
+                                  //     if (res == "success") {
+                                  //       String userType = decodedResponse['user_type'];
+                                  //       Future.delayed(Duration(microseconds: 1), () {
+                                  //         Navigator.pushNamed(context, PageRoutes.otp_screen,
+                                  //             arguments: {
+                                  //               "mobile": _mobileNumber.text.trim(),
+                                  //               "user_type": userType
+                                  //             });
+                                  //       });
+                                  //     } else {
+                                  //       MyToast(message: msg).toast;
+                                  //     }
+                                  //   } else {
+                                  //     MyToast(message: 'Server Error Occured').toast;
+                                  //   }
+                                  // }
+                                },
+                                child: Container(
+                                  width:
+                                      MediaQuery.of(context).size.width / 1.2,
+                                  height: 60.0,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      "Add Now",
+                                      style: GoogleFonts.nunito(
+                                          textStyle: TextStyle(
+                                              fontSize: 20,
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold)),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ));
+              },
+              icon: Icon(Icons.add),
+              label: Text('Add Service'),
+            )
+          : SizedBox(),
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(40),
         child: Container(
@@ -779,8 +911,6 @@ class _ProfileBaseScreenState extends State<ProfileBaseScreen> {
               SliverList(
                 delegate: SliverChildListDelegate(
                   [
-                    // profileHeaderWidget(context),
-
                     Container(
                       width: double.infinity,
                       decoration: BoxDecoration(color: Colors.black),
@@ -987,8 +1117,12 @@ class _ProfileBaseScreenState extends State<ProfileBaseScreen> {
                     Gallery(
                         userId: widget.userDetails!.id,
                         userDetails: widget.userDetails),
-                    Igtv(),
-                    Reels(),
+                    Igtv(
+                        userId: widget.userDetails!.id,
+                        userDetails: widget.userDetails),
+                    Reels(
+                        userId: widget.userDetails!.id,
+                        userDetails: widget.userDetails),
                   ],
                 ),
               ),
@@ -1047,7 +1181,11 @@ class _GalleryState extends State<Gallery> {
             )
           : userVideos.length == 0
               ? Center(
-                  child: Text('No Videos'),
+                  child: Text(
+                    'No Videos',
+                    style: GoogleFonts.nunito(
+                        fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
                 )
               : GridView.count(
                   shrinkWrap: true,
@@ -1190,20 +1328,187 @@ class AnimatedDialogState extends State<AnimatedDialog>
   }
 }
 
-class Reels extends StatelessWidget {
-  const Reels({Key? key}) : super(key: key);
+class Reels extends StatefulWidget {
+  final String? userId;
+  final User? userDetails;
+  Reels({Key? key, required this.userId, required this.userDetails})
+      : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold();
-  }
+  State<Reels> createState() => _ReelsState();
 }
 
-class Igtv extends StatelessWidget {
-  const Igtv({Key? key}) : super(key: key);
+class _ReelsState extends State<Reels> {
+  bool isPhotoLoading = true;
+
+  List<UploadesPhoto> userPhots = [];
+
+  getUsersPhotos(String userId) async {
+    Response response = await Apis().getPhotos(userId);
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+
+      String res = data['res'];
+
+      if (res == "success") {
+        var re = data['data'] as List;
+
+        setState(() {
+          userPhots =
+              re.map<UploadesPhoto>((e) => UploadesPhoto.fromJson(e)).toList();
+
+          isPhotoLoading = false;
+        });
+      } else {
+        setState(() {
+          userPhots = [];
+          isPhotoLoading = false;
+        });
+      }
+    } else {}
+  }
+
+  @override
+  void initState() {
+    getUsersPhotos(widget.userId!);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    return Scaffold(
+      body: isPhotoLoading
+          ? Center(
+              child: Text(
+                'Fetching Photos',
+                style: GoogleFonts.nunito(
+                    fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+            )
+          : userPhots.length == 0
+              ? Center(
+                  child: Text(
+                    'No Photos',
+                    style: GoogleFonts.nunito(
+                        fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                )
+              : GridView.count(
+                  shrinkWrap: true,
+                  crossAxisCount: 3,
+                  childAspectRatio: 1.0,
+                  children: userPhots
+                      .map((e) => _createGridTileWidget(e.imageName!))
+                      .toList(),
+                ),
+    );
   }
+
+  Widget _createGridTileWidget(String url) => Builder(
+        builder: (context) => GestureDetector(
+          onLongPress: () {},
+          child: Image.network(Constraints.IMAGE_BASE_URL + url,
+              fit: BoxFit.cover, errorBuilder: (BuildContext context,
+                  Object exception, StackTrace? stackTrace) {
+            return Image.asset(
+              "assets/images/splash_logo.png",
+              fit: BoxFit.cover,
+            );
+          }),
+        ),
+      );
+}
+
+class Igtv extends StatefulWidget {
+  final String? userId;
+  final User? userDetails;
+  const Igtv({Key? key, required this.userId, required this.userDetails})
+      : super(key: key);
+
+  @override
+  State<Igtv> createState() => _IgtvState();
+}
+
+class _IgtvState extends State<Igtv> {
+  List<UploadAudio> uploadedAudio = [];
+  bool isAudioLoading = true;
+
+  getAudios(String userId) async {
+    Response response = await Apis().getAudios(userId);
+
+    if (response.statusCode == 200) {
+      var data = jsonDecode(response.body);
+      print(response.body);
+      String res = data['res'];
+
+      if (res == "success") {
+        var re = data['data'] as List;
+        print(re.length);
+
+        if (mounted)
+          setState(() {
+            uploadedAudio =
+                re.map<UploadAudio>((e) => UploadAudio.fromJson(e)).toList();
+
+            isAudioLoading = false;
+          });
+      } else {
+        setState(() {
+          uploadedAudio = [];
+
+          isAudioLoading = false;
+        });
+      }
+    } else {}
+  }
+
+  @override
+  void initState() {
+    getAudios(widget.userId!);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: isAudioLoading
+          ? Center(
+              child: Text(
+                'Fetching Audios',
+                style: GoogleFonts.nunito(
+                    fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+            )
+          : uploadedAudio.length == 0
+              ? Center(
+                  child: Text(
+                  'No Audio Files ',
+                  style: GoogleFonts.nunito(
+                      fontWeight: FontWeight.bold, color: Colors.white),
+                ))
+              : GridView.count(
+                  shrinkWrap: true,
+                  crossAxisCount: 3,
+                  childAspectRatio: 1.0,
+                  children: uploadedAudio
+                      .map((e) => _createGridTileWidget(e.audioCaption!))
+                      .toList(),
+                ),
+    );
+  }
+
+  Widget _createGridTileWidget(String url) => Builder(
+        builder: (context) => GestureDetector(
+          onLongPress: () {},
+          child: Image.asset('assets/images/music.jpg', fit: BoxFit.cover,
+              errorBuilder: (BuildContext context, Object exception,
+                  StackTrace? stackTrace) {
+            return Image.asset(
+              "assets/images/splash_logo.png",
+              fit: BoxFit.cover,
+            );
+          }),
+        ),
+      );
 }

@@ -18,9 +18,13 @@ import 'package:qvid/BottomNavigation/Explore/search.dart';
 import 'package:qvid/BottomNavigation/MyProfile/my_profile_page.dart';
 import 'package:qvid/BottomNavigation/Notifications/notification_messages.dart';
 import 'package:qvid/Routes/routes.dart';
+import 'package:qvid/Screens/booking/all_celebrity_list.dart';
 import 'package:qvid/Screens/booking/booking.dart';
+import 'package:qvid/Screens/broadcast/broadcast_page.dart';
 import 'package:qvid/Screens/custom_appbar.dart';
+import 'package:qvid/Screens/directory/directory_list.dart';
 import 'package:qvid/Screens/post_list.dart';
+import 'package:qvid/Screens/user_profile.dart';
 import 'package:qvid/Theme/colors.dart';
 import 'package:flutter/services.dart';
 import 'package:qvid/apis/api.dart';
@@ -70,7 +74,6 @@ class _MyContainerState extends State<MyContainer> {
 
       loadCelebrityWishes();
       loadNewUser();
-      //loadCelebrityWishesh();
       getUserMatchPost(userId).then((list) => {
             setState(() {
               //postList = re.map<UserPost>((e) => UserPost.fromJson(e)).toList();
@@ -101,8 +104,12 @@ class _MyContainerState extends State<MyContainer> {
         backgroundColor: backgroundColor,
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.pushNamed(context, PageRoutes.broadcastPage,
-                arguments: userDetails!.id);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => BroadcastPage(
+                          userId: userDetails!.id,
+                        )));
           },
           backgroundColor: Colors.white,
           child: Image.asset(
@@ -143,7 +150,9 @@ class _MyContainerState extends State<MyContainer> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (_) => ProfileBaseScreen(userDetails: userDetails,)));
+                                    builder: (_) => ProfileBaseScreen(
+                                          userDetails: userDetails,
+                                        )));
                           },
                           child: CircleAvatar(
                             backgroundColor: Colors.white,
@@ -158,7 +167,9 @@ class _MyContainerState extends State<MyContainer> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (_) => ProfileBaseScreen(userDetails: userDetails,)));
+                                    builder: (_) => ProfileBaseScreen(
+                                          userDetails: userDetails,
+                                        )));
                           },
                           child: CircleAvatar(
                             backgroundColor: Colors.white,
@@ -362,8 +373,18 @@ class _MyContainerState extends State<MyContainer> {
                         itemBuilder: (_, index) {
                           return index == 4
                               ? GestureDetector(
-                                  onTap: () => Navigator.pushNamed(
-                                      context, PageRoutes.directory_screen),
+                                  onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (_) => DirectoryScreen(
+                                                categoryOfDirectory:
+                                                    bollywoodCreativeDirectory
+                                                        .where((element) =>
+                                                            element
+                                                                .userCateory !=
+                                                            null)
+                                                        .toList(),
+                                              ))),
                                   child: Container(
                                     width: 100,
                                     child: Column(
@@ -400,6 +421,7 @@ class _MyContainerState extends State<MyContainer> {
                                     child: Column(
                                       children: [
                                         CircleAvatar(
+                                          backgroundColor: Colors.grey,
                                           radius: 48,
                                           backgroundImage: NetworkImage(
                                               'https://media.istockphoto.com/photos/the-musicians-were-playing-rock-music-on-stage-there-was-an-audience-picture-id1319479588?b=1&k=20&m=1319479588&s=170667a&w=0&h=bunblYyTDA_vnXu-nY4x4oa7ke6aiiZKntZ5mfr-4aM='),
@@ -595,8 +617,15 @@ class _MyContainerState extends State<MyContainer> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () => Navigator.pushNamed(
-                                context, PageRoutes.allCelebrityList),
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => AllCelebrityList(
+                                            celbUser: userList!,
+                                            userId: userDetails!.id,
+                                          )));
+                            },
                             child: Padding(
                               padding: const EdgeInsets.only(right: 16.0),
                               child: Text(
@@ -624,9 +653,15 @@ class _MyContainerState extends State<MyContainer> {
                                       (BuildContext context, int index) {
                                     return index == 4
                                         ? GestureDetector(
-                                            onTap: () => Navigator.pushNamed(
+                                            onTap: () => Navigator.push(
                                                 context,
-                                                PageRoutes.allCelebrityList),
+                                                MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        AllCelebrityList(
+                                                          celbUser: userList!,
+                                                          userId:
+                                                              userDetails!.id,
+                                                        ))),
                                             child: Container(
                                               width: 100,
                                               child: Column(
@@ -660,10 +695,17 @@ class _MyContainerState extends State<MyContainer> {
                                           )
                                         : GestureDetector(
                                             onTap: () {
-                                              Navigator.pushNamed(context,
-                                                  PageRoutes.userProfilePage,
-                                                  arguments:
-                                                      userList![index].id);
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          UserProfilePage(
+                                                            celbDetails:
+                                                                userList![
+                                                                    index],
+                                                            userId:
+                                                                userDetails!.id,
+                                                          )));
                                             },
                                             child: WisheshList(
                                                     context1: context,
@@ -906,14 +948,7 @@ class _MyContainerState extends State<MyContainer> {
         });
         userList =
             re.map<CelebrityUser>((e) => CelebrityUser.fromJson(e)).toList();
-        return re.map<CelebrityUser>((e) => CelebrityUser.fromJson(e)).toList();
-
-        //return MySlider.fromJson(data['data'] as Map<String, dynamic>);
-        /* for (int i = 0; i < sliders.length; i++) {
-          MySlider slider = sliders[i]; 
-          sliderImage[i] = slider.image;
-        } */
-
+        return userList!;
       } else {
         print("error");
         setState(() {

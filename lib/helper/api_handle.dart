@@ -64,11 +64,7 @@ class ApiHandle {
         print(re.length);
 
         return re.map<UserVideos>((e) => UserVideos.fromJson(e)).toList();
-        //return MySlider.fromJson(data['data'] as Map<String, dynamic>);
-        /* for (int i = 0; i < sliders.length; i++) {
-          MySlider slider = sliders[i];
-          sliderImage[i] = slider.image;
-        } */
+        
 
       } else {
         print("error");

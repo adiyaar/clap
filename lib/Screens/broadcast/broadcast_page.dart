@@ -13,10 +13,14 @@ import 'package:qvid/Theme/colors.dart';
 import 'package:qvid/apis/api.dart';
 import 'package:qvid/model/user_categories.dart';
 import 'package:qvid/utils/static_list.dart' as sta;
+import 'package:csc_picker/csc_picker.dart';
 import 'package:qvid/utils/static_list.dart';
 import 'package:qvid/widget/toast.dart';
 
 class BroadcastPage extends StatefulWidget {
+  final String userId;
+  BroadcastPage({Key? key, required this.userId}) : super(key: key);
+
   @override
   _BroadcastPageState createState() => _BroadcastPageState();
 }
@@ -48,82 +52,165 @@ class _BroadcastPageState extends State<BroadcastPage> {
 
   @override
   Widget build(BuildContext context) {
-    var userId = ModalRoute.of(context)!.settings.arguments as String;
     return Scaffold(
-        appBar: AppBar(
-          systemOverlayStyle: SystemUiOverlayStyle(statusBarColor: buttonColor),
-          leading: GestureDetector(
-              onTap: () {
-                // Navigator.of(context).pop();
-                //  Navigator.of(context).pop();
-              },
-              child: GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Icon(Icons.arrow_back, color: buttonColor))),
-          title: Text(
-            "Create Broadcast",
-            style: TextStyle(color: buttonColor, fontWeight: FontWeight.bold),
-          ),
+      appBar: AppBar(
+        systemOverlayStyle: SystemUiOverlayStyle(statusBarColor: buttonColor),
+        leading: GestureDetector(
+            onTap: () {
+              // Navigator.of(context).pop();
+              //  Navigator.of(context).pop();
+            },
+            child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).pop();
+                },
+                child: Icon(Icons.arrow_back, color: buttonColor))),
+        title: Text(
+          "Create Broadcast",
+          style: TextStyle(color: buttonColor, fontWeight: FontWeight.bold),
         ),
-        body: Stack(children: [
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    margin: EdgeInsets.all(3),
-                    decoration: BoxDecoration(
-                        color: backgroundColor,
-                        border: Border.all(color: Colors.white),
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(10),
-                            bottomRight: Radius.circular(10))),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 5, right: 5),
-                      child: DropdownButtonFormField<dynamic>(
-                          //underline: SizedBox(),
-                          //value: tCountry,
-                          style: TextStyle(
-                              overflow: TextOverflow.ellipsis,
-                              color: Colors.white),
-                          isExpanded: true,
-                          icon: Icon(
-                            Icons.arrow_drop_down,
-                            color: Colors.white,
-                          ),
-                          dropdownColor: Colors.white,
-                          decoration: InputDecoration(
-                            hintText: "User category",
-                            contentPadding: EdgeInsets.all(5),
-                            hintStyle: TextStyle(color: Colors.white),
-                            border: InputBorder.none,
-                          ),
-                          items: sta.categoryList.map((String name) {
-                            return new DropdownMenuItem<dynamic>(
-                              value: name,
-                              child: Text(
-                                name,
-                                style: TextStyle(
-                                    color: Colors.grey.shade500,
-                                    overflow: TextOverflow.ellipsis,
-                                    fontSize: 16),
-                                maxLines: 1,
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (val) {
-                            print(val);
-                            //tMainCategory = val;
-                            setState(() {
-                              //    defaultName = val;
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CSCPicker(
+                ///Enable disable state dropdown [OPTIONAL PARAMETER]
+                showStates: true,
 
-                              categoryNameList.clear();
-                              fetchCategoriesName(val);
+                /// Enable disable city drop down [OPTIONAL PARAMETER]
+                showCities: true,
+
+                ///Enable (get flag with country name) / Disable (Disable flag) / ShowInDropdownOnly (display flag in dropdown only) [OPTIONAL PARAMETER]
+                flagState: CountryFlag.DISABLE,
+
+                ///Dropdown box decoration to style your dropdown selector [OPTIONAL PARAMETER] (USE with disabledDropdownDecoration)
+                dropdownDecoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    color: Colors.white,
+                    border: Border.all(color: Colors.grey.shade300, width: 1)),
+
+                ///Disabled Dropdown box decoration to style your dropdown selector [OPTIONAL PARAMETER]  (USE with disabled dropdownDecoration)
+                disabledDropdownDecoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    color: Colors.grey.shade300,
+                    border: Border.all(color: Colors.grey.shade300, width: 1)),
+
+                ///placeholders for dropdown search field
+                countrySearchPlaceholder: "Country",
+                stateSearchPlaceholder: "State",
+                citySearchPlaceholder: "City",
+
+                ///labels for dropdown
+                countryDropdownLabel: "*Country",
+                stateDropdownLabel: "*State",
+                cityDropdownLabel: "*City",
+
+                ///Default Country
+                defaultCountry: DefaultCountry.India,
+
+                ///Disable country dropdown (Note: use it with default country)
+                // disableCountry: true,
+
+                ///selected item style [OPTIONAL PARAMETER]
+                selectedItemStyle: TextStyle(
+                  color: Colors.black,
+                  fontSize: 14,
+                ),
+
+                ///DropdownDialog Heading style [OPTIONAL PARAMETER]
+                dropdownHeadingStyle: TextStyle(
+                    color: Colors.black,
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold),
+
+                ///DropdownDialog Item style [OPTIONAL PARAMETER]
+                dropdownItemStyle: TextStyle(
+                  color: Colors.black,
+                  fontSize: 14,
+                ),
+
+                ///Dialog box radius [OPTIONAL PARAMETER]
+                dropdownDialogRadius: 10.0,
+
+                ///Search bar radius [OPTIONAL PARAMETER]
+                searchBarRadius: 10.0,
+
+                ///triggers once country selected in dropdown
+                onCountryChanged: (value) {
+                  setState(() {
+                    ///store value in country variable
+                    tCountry = value;
+                  });
+                },
+
+                ///triggers once state selected in dropdown
+                onStateChanged: (value) {
+                  setState(() {
+                    ///store value in state variable
+                    tState = value!;
+                  });
+                },
+
+                ///triggers once city selected in dropdown
+                onCityChanged: (value) {
+                  setState(() {
+                    ///store value in city variable
+                    tCity = value!;
+                  });
+                },
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                margin: EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                    color: backgroundColor,
+                    border: Border.all(color: Colors.white),
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        bottomRight: Radius.circular(10))),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 5, right: 5),
+                  child: DropdownButtonFormField<dynamic>(
+                      //underline: SizedBox(),
+                      //value: tCountry,
+                      style: TextStyle(
+                          overflow: TextOverflow.ellipsis, color: Colors.white),
+                      isExpanded: true,
+                      icon: Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.white,
+                      ),
+                      dropdownColor: Colors.white,
+                      decoration: InputDecoration(
+                        hintText: "User category",
+                        contentPadding: EdgeInsets.all(5),
+                        hintStyle: TextStyle(color: Colors.white),
+                        border: InputBorder.none,
+                      ),
+                      items: sta.categoryList.map((String name) {
+                        return new DropdownMenuItem<dynamic>(
+                          value: name,
+                          child: Text(
+                            name,
+                            style: TextStyle(
+                                color: Colors.grey.shade500,
+                                overflow: TextOverflow.ellipsis,
+                                fontSize: 16),
+                            maxLines: 1,
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (val) {
+                        print(val);
+                        //tMainCategory = val;
+                        setState(() {
+                          //    defaultName = val;
+
+                          categoryNameList.clear();
+                          fetchCategoriesName(val);
 
 /*                               tGender = "";
                               //tCategory = "";
@@ -131,706 +218,279 @@ class _BroadcastPageState extends State<BroadcastPage> {
                               tBodyType = "";
                               tHairType = ""; */
 
-                              tMainCategory = val;
-                            });
-                          }),
-                    ),
+                          tMainCategory = val;
+                        });
+                      }),
+                ),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Visibility(
+                visible: tMainCategory.isNotEmpty ? true : false,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Text(
+                    "Choose Type of Broadcast",
+                    style: TextStyle(
+                        color: buttonColor, fontWeight: FontWeight.bold),
                   ),
-                  Visibility(
-                    visible: tMainCategory.isEmpty ? false : true,
-                    child: SizedBox(
-                      height: 10,
-                    ),
-                  ),
-                  Visibility(
-                    visible: tMainCategory.isEmpty ? false : true,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      margin: EdgeInsets.all(3),
-                      decoration: BoxDecoration(
-                          color: backgroundColor,
-                          border: Border.all(color: Colors.grey.shade400),
-                          borderRadius: BorderRadius.circular(5)),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 5, right: 5),
-                        child: DropdownButtonFormField<dynamic>(
-                          //underline: SizedBox(),
-                          //value: tCountry,
-                          icon: Icon(
-                            Icons.arrow_drop_down,
-                            color: Colors.white,
+                ),
+              ),
+              Visibility(
+                visible: tMainCategory.isNotEmpty ? true : false,
+                child: SizedBox(
+                  height: 50,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      Container(
+                        width: 100,
+                        child: ListTile(
+                          contentPadding: EdgeInsets.all(0),
+                          title: const Text(
+                            'Favourite',
+                            style: TextStyle(fontSize: 12),
                           ),
-                          dropdownColor: Colors.white,
-                          decoration: InputDecoration(
-                            hintText: "Gender",
-                            contentPadding: EdgeInsets.all(5),
-                            hintStyle: TextStyle(color: Colors.white),
-                            border: InputBorder.none,
-                          ),
-                          items: sta.gender.map((String name) {
-                            return new DropdownMenuItem<dynamic>(
-                              value: name,
-                              child: new Text(name,
-                                  style: TextStyle(
-                                      color: Colors.grey.shade500,
-                                      fontSize: 16)),
-                            );
-                          }).toList(),
-                          onChanged: (val) {
-                            print(val);
-
-                            setState(() {
-                              //    defaultName = val;
-                              tGender = val;
-
-                              categoryNameList.clear();
-                              fetchCategoriesName(
-                                  tMainCategory + "," + tGender);
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Visibility(
-                    visible: tMainCategory.isNotEmpty ? true : false,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      margin: EdgeInsets.all(3),
-                      decoration: BoxDecoration(
-                          color: backgroundColor,
-                          border: Border.all(color: Colors.white),
-                          borderRadius: BorderRadius.circular(5)),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 5, right: 5),
-                        child: DropdownButtonFormField<dynamic>(
-                          //underline: SizedBox(),
-                          //value: tCountry,hh
-                          isExpanded: true,
-                          icon: Icon(
-                            Icons.arrow_drop_down,
-                            color: Colors.white,
-                          ),
-                          dropdownColor: Colors.white,
-                          decoration: InputDecoration(
-                            hintText: "Category",
-                            contentPadding: EdgeInsets.all(5),
-                            hintStyle: TextStyle(color: Colors.white),
-                            border: InputBorder.none,
-                          ),
-                          items:
-                              categoryNameList.map((UserCategories category) {
-                            return new DropdownMenuItem<dynamic>(
-                              value: category.name,
-                              child: new Text(category.name,
-                                  style: TextStyle(
-                                      color: Colors.grey.shade500,
-                                      fontSize: 16)),
-                            );
-                          }).toList(),
-                          onChanged: (val) {
-                            print(val);
-                            //tCategory = val;
-                            setState(() {
-                              //    defaultName = val;
-                              tCategory = val;
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Visibility(
-                    visible:
-                        tMainCategory == "Artist" || tMainCategory == "Model"
-                            ? true
-                            : false,
-                    child: Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Divider(color: Colors.grey.shade300),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 20),
-                            child: Text(
-                              "Choose Age range",
-                              style: TextStyle(
-                                  color: buttonColor,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          RangeSlider(
-                            values: _currentAgeRange,
-                            min: 0,
-                            max: 100,
+                          horizontalTitleGap: 1,
+                          leading: Radio<String>(
+                            value: "Favourite",
+                            fillColor: MaterialStateColor.resolveWith(
+                                (states) => buttonColor),
                             activeColor: buttonColor,
-                            labels: RangeLabels(
-                              _currentAgeRange.start.round().toString(),
-                              _currentAgeRange.end.round().toString(),
-                            ),
-                            onChanged: (RangeValues values) {
+                            groupValue: sendType,
+                            onChanged: (value) {
                               setState(() {
-                                tAge =
-                                    "${values.start.toInt()}-${values.end.toInt()}";
-                                print(tAge);
-                                _currentAgeRange = values;
-                                print(_currentAgeRange);
+                                sendType = value!;
                               });
                             },
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                    "Start: ${_currentAgeRange.start.round().toString()}",
-                                    style: TextStyle(color: Colors.white)),
-                                Text(
-                                    "Up To: ${_currentAgeRange.end.round().toString()}",
-                                    style: TextStyle(color: Colors.white))
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Divider(color: Colors.grey.shade300),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Visibility(
-                    visible: tMainCategory.isNotEmpty && tAge.isNotEmpty
-                        ? true
-                        : false,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      margin: EdgeInsets.all(3),
-                      decoration: BoxDecoration(
-                          color: backgroundColor,
-                          border: Border.all(color: Colors.white),
-                          borderRadius: BorderRadius.circular(5)),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 5, right: 5),
-                        child: DropdownButtonFormField<dynamic>(
-                          //underline: SizedBox(),
-                          //value: tCountry,
-                          isExpanded: true,
-                          icon: Icon(
-                            Icons.arrow_drop_down,
-                            color: Colors.white,
-                          ),
-                          dropdownColor: Colors.white,
-                          decoration: InputDecoration(
-                            hintText: "Hair Type",
-                            hintStyle: TextStyle(color: Colors.white),
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.all(5),
-                          ),
-                          items: sta.hair.map((String name) {
-                            return new DropdownMenuItem<dynamic>(
-                              value: name,
-                              child: new Text(name,
-                                  style: TextStyle(
-                                      color: Colors.grey.shade500,
-                                      fontSize: 16)),
-                            );
-                          }).toList(),
-                          onChanged: (val) {
-                            print(val);
-                            tHairType = val;
-                            setState(() {
-                              //    defaultName = val;
-                              tHairType = val;
-                            });
-                          },
                         ),
                       ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Visibility(
-                    visible: tMainCategory.isNotEmpty && tHairType.isNotEmpty
-                        ? true
-                        : false,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      margin: EdgeInsets.all(3),
-                      decoration: BoxDecoration(
-                          color: backgroundColor,
-                          border: Border.all(color: Colors.white),
-                          borderRadius: BorderRadius.circular(5)),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 5, right: 5),
-                        child: DropdownButtonFormField<dynamic>(
-                          //underline: SizedBox(),
-                          //value: tCountry,
-                          isExpanded: true,
-                          icon: Icon(
-                            Icons.arrow_drop_down,
-                            color: Colors.white,
+                      Container(
+                        width: 115,
+                        child: ListTile(
+                          title: const Text('All',
+                              style: TextStyle(
+                                fontSize: 10,
+                              )),
+                          horizontalTitleGap: 1,
+                          leading: Radio<String>(
+                            value: "All",
+                            fillColor: MaterialStateColor.resolveWith(
+                                (states) => buttonColor),
+                            activeColor: buttonColor,
+                            groupValue: sendType,
+                            onChanged: (value) {
+                              setState(() {
+                                sendType = value!;
+                              });
+                            },
                           ),
-                          dropdownColor: Colors.white,
-                          decoration: InputDecoration(
-                            hintText: "Skin Color",
-                            hintStyle: TextStyle(color: Colors.white),
-                            contentPadding: EdgeInsets.all(5),
-                            border: InputBorder.none,
-                          ),
-                          items: sta.skinColor.map((String name) {
-                            return new DropdownMenuItem<dynamic>(
-                              value: name,
-                              child: new Text(name,
-                                  style: TextStyle(
-                                      color: Colors.grey.shade500,
-                                      fontSize: 16)),
-                            );
-                          }).toList(),
-                          onChanged: (val) {
-                            print(val);
-                            tSkinColor = val;
-                            setState(() {
-                              //    defaultName = val;
-                              tSkinColor = val;
-                            });
-                          },
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Visibility(
-                    visible:
-                        tMainCategory != "Creative ,Technician & Vendors" &&
-                                tSkinColor.isNotEmpty
-                            ? true
-                            : false,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      margin: EdgeInsets.all(3),
-                      decoration: BoxDecoration(
-                          color: backgroundColor,
-                          border: Border.all(color: Colors.white),
-                          borderRadius: BorderRadius.circular(5)),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 5, right: 5),
-                        child: DropdownButtonFormField<dynamic>(
-                          //underline: SizedBox(),
-                          //value: tCountry,
-                          isExpanded: true,
-                          icon: Icon(
-                            Icons.arrow_drop_down,
-                            color: Colors.white,
-                          ),
-                          dropdownColor: Colors.white,
-                          decoration: InputDecoration(
-                            hintText: "Body Type",
-                            hintStyle: TextStyle(color: Colors.white),
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.all(5),
-                          ),
-                          items: sta.bodyType.map((String name) {
-                            return new DropdownMenuItem<dynamic>(
-                              value: name,
-                              child: new Text(name,
-                                  style: TextStyle(
-                                      color: Colors.grey.shade500,
-                                      fontSize: 16)),
-                            );
-                          }).toList(),
-                          onChanged: (val) {
-                            print(val);
-                            tBodyType = val;
-                            setState(() {
-                              //    defaultName = val;
-                              tBodyType = val;
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: TextFormField(
-                        controller: _city,
-                        style: TextStyle(color: Colors.white),
-                        keyboardType: TextInputType.text,
-                        decoration: InputDecoration(
-                          contentPadding: EdgeInsets.all(15),
-                          hintText: "City",
-                          counterText: "",
-                          hintStyle: TextStyle(color: Colors.grey.shade500),
-                          focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: mainColor),
-                              borderRadius: BorderRadius.circular(5)),
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5),
-                              borderSide: BorderSide(color: disabledTextColor)),
-                        )),
-                  ),
-                  SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: TextFormField(
-                        controller: _state,
-                        style: TextStyle(color: Colors.white),
-                        keyboardType: TextInputType.text,
-                        decoration: InputDecoration(
-                          contentPadding: EdgeInsets.all(15),
-                          hintText: "State",
-                          counterText: "",
-                          hintStyle: TextStyle(color: Colors.grey.shade500),
-                          focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: mainColor),
-                              borderRadius: BorderRadius.circular(5)),
-                          enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(5),
-                              borderSide: BorderSide(color: disabledTextColor)),
-                        )),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(5.0),
-                    child: Container(
-                      margin: EdgeInsets.all(3),
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                          color: backgroundColor,
-                          border: Border.all(color: Colors.white),
-                          borderRadius: BorderRadius.circular(5)),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 5, right: 5),
-                        child: DropdownButtonFormField<dynamic>(
-                          //underline: SizedBox(),
-                          //value: tCountry,
-                          icon: Icon(
-                            Icons.arrow_drop_down,
-                            color: Colors.white,
-                          ),
-                          style: TextStyle(color: Colors.white),
-                          dropdownColor: Colors.white,
-                          decoration: InputDecoration(
-                            hintText: "Country",
-                            hintStyle: TextStyle(color: Colors.white),
-                            contentPadding: EdgeInsets.all(5),
-                            border: InputBorder.none,
-                          ),
-                          items: ["India"].map((String name) {
-                            return new DropdownMenuItem<dynamic>(
-                              value: defaultName,
-                              child: new Text(defaultName,
-                                  style: TextStyle(
-                                      color: Colors.grey.shade500,
-                                      fontSize: 16)),
-                            );
-                          }).toList(),
-                          onChanged: (val) {
-                            print(val);
-                            tCountry = val;
-                            setState(() {
-                              defaultName = val;
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Visibility(
-                    visible: tMainCategory.isNotEmpty ? true : false,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: Text(
-                        "Choose Type of Broadcast",
-                        style: TextStyle(
-                            color: buttonColor, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: tMainCategory.isNotEmpty ? true : false,
-                    child: SizedBox(
-                      height: 50,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          Container(
-                            width: 100,
-                            child: ListTile(
-                              contentPadding: EdgeInsets.all(0),
-                              title: const Text(
-                                'Favourite',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              horizontalTitleGap: 1,
-                              leading: Radio<String>(
-                                value: "Favourite",
-                                fillColor: MaterialStateColor.resolveWith(
-                                    (states) => buttonColor),
-                                activeColor: buttonColor,
-                                groupValue: sendType,
-                                onChanged: (value) {
-                                  setState(() {
-                                    sendType = value!;
-                                  });
-                                },
-                              ),
-                            ),
-                          ),
-                          Container(
-                            width: 115,
-                            child: ListTile(
-                              title: const Text('All',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                  )),
-                              horizontalTitleGap: 1,
-                              leading: Radio<String>(
-                                value: "All",
-                                fillColor: MaterialStateColor.resolveWith(
-                                    (states) => buttonColor),
-                                activeColor: buttonColor,
-                                groupValue: sendType,
-                                onChanged: (value) {
-                                  setState(() {
-                                    sendType = value!;
-                                  });
-                                },
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 5.0, top: 10, bottom: 10),
-                    child: Text("What Type of info you Broadcast",
-                        style: TextStyle(
-                            color: buttonColor, fontWeight: FontWeight.bold)),
-                  ),
-                  Visibility(
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      margin: EdgeInsets.all(3),
-                      decoration: BoxDecoration(
-                          color: backgroundColor,
-                          border: Border.all(color: Colors.white),
-                          borderRadius: BorderRadius.circular(5)),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 5, right: 5),
-                        child: DropdownButtonFormField<dynamic>(
-                          //underline: SizedBox(),
-                          //value: tCountry,
-                          value: tBroadcastType,
-                          isExpanded: true,
-                          icon: Icon(
-                            Icons.arrow_drop_down,
-                            color: Colors.white,
-                          ),
-                          dropdownColor: Colors.white,
-                          decoration: InputDecoration(
-                            hintText: "Choose Broadcast Type",
-                            hintStyle: TextStyle(color: Colors.white),
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.all(5),
-                          ),
-                          items: chooseType.map((String name) {
-                            return new DropdownMenuItem<dynamic>(
-                              value: name,
-                              child: new Text(name,
-                                  style: TextStyle(
-                                      color: Colors.grey.shade500,
-                                      fontSize: 16)),
-                            );
-                          }).toList(),
-                          onChanged: (val) {
-                            print(val);
-                            tBroadcastType = val;
-                            setState(() {
-                              //    defaultName = val;
-                              tBroadcastType = val;
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Visibility(
-                    visible: tBroadcastType == "Attach File" ? true : false,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width,
-                      margin: EdgeInsets.all(3),
-                      decoration: BoxDecoration(
-                          color: cardColor,
-                          border: Border.all(color: Colors.black38),
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(10),
-                              bottomRight: Radius.circular(10))),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 5, right: 5),
-                        child: DropdownButtonFormField<dynamic>(
-                          //underline: SizedBox(),
-                          //value: tCountry,
-
-                          isExpanded: true,
-                          icon: Icon(
-                            Icons.arrow_drop_down,
-                            color: Colors.white,
-                          ),
-                          dropdownColor: Colors.white,
-                          decoration: InputDecoration(
-                            hintText: "Choose File Type",
-                            contentPadding: EdgeInsets.all(5),
-                            border: InputBorder.none,
-                          ),
-                          items: ["Pdf", "Doc", "Audio", "Video"]
-                              .map((String name) {
-                            return new DropdownMenuItem<dynamic>(
-                              value: name,
-                              child: new Text(name,
-                                  style: TextStyle(
-                                      color: Colors.grey.shade500,
-                                      fontSize: 16)),
-                            );
-                          }).toList(),
-                          onChanged: (val) {
-                            print(val);
-
-                            setState(() {
-                              //    defaultName = val;
-                              tFileType = val;
-                            });
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Visibility(
-                    visible: tBroadcastType == "Description" ? false : true,
-                    child: Container(
-                      height: 70,
-                      padding: EdgeInsets.all(10),
-                      decoration:
-                          BoxDecoration(border: Border.all(color: Colors.grey)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            isSelectedFile == false
-                                ? "Choose File"
-                                : "File Selected",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          GestureDetector(
-                              onTap: () {
-                                loadFile();
-                              },
-                              child: Icon(Icons.upload,
-                                  size: 30, color: Colors.blue)),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Visibility(
-                    visible: tBroadcastType == "Description" ? true : false,
-                    child: Container(
-                      height: 100,
-                      child: TextFormField(
-                          controller: _description,
-                          maxLines: 100,
-                          style: TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                            counterText: "",
-                            hintText: "Write Description",
-                            hintStyle: TextStyle(
-                                fontSize: 14, color: Colors.grey.shade500),
-                            focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: mainColor),
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(10),
-                                    bottomRight: Radius.circular(10))),
-                            enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(10),
-                                    bottomRight: Radius.circular(10)),
-                                borderSide:
-                                    BorderSide(color: disabledTextColor)),
-                          )),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      if (valide()) {
-                        showDialog(
-                            context: context,
-                            builder: (context) => FutureProgressDialog(
-                                broadCast(
-                                    userId,
-                                    tMainCategory,
-                                    tGender,
-                                    tCategory,
-                                    tAge,
-                                    tCountry,
-                                    _state.text,
-                                    _city.text,
-                                    sendType,
-                                    _description.text,
-                                    isSelectedFile == true
-                                        ? selectedFile
-                                        : null)));
-                      }
-                    },
-                    child: Container(
-                        padding: EdgeInsets.all(15),
-                        alignment: Alignment.center,
-                        width: MediaQuery.of(context).size.width,
-                        child: Text(
-                          "Send",
-                          style: TextStyle(fontSize: 16, color: Colors.white),
-                        ),
-                        decoration: BoxDecoration(
-                            color: buttonColor,
-                            borderRadius: BorderRadius.circular(5))),
-                  ),
-                ],
+                ),
               ),
-            ),
+              Padding(
+                padding: const EdgeInsets.only(left: 5.0, top: 10, bottom: 10),
+                child: Text("What Type of info you Broadcast",
+                    style: TextStyle(
+                        color: buttonColor, fontWeight: FontWeight.bold)),
+              ),
+              Visibility(
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  margin: EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                      color: backgroundColor,
+                      border: Border.all(color: Colors.white),
+                      borderRadius: BorderRadius.circular(5)),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 5, right: 5),
+                    child: DropdownButtonFormField<dynamic>(
+                      //underline: SizedBox(),
+                      //value: tCountry,
+                      value: tBroadcastType,
+                      isExpanded: true,
+                      icon: Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.white,
+                      ),
+                      dropdownColor: Colors.white,
+                      decoration: InputDecoration(
+                        hintText: "Choose Broadcast Type",
+                        hintStyle: TextStyle(color: Colors.white),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.all(5),
+                      ),
+                      items: chooseType.map((String name) {
+                        return new DropdownMenuItem<dynamic>(
+                          value: name,
+                          child: new Text(name,
+                              style: TextStyle(
+                                  color: Colors.grey.shade500, fontSize: 16)),
+                        );
+                      }).toList(),
+                      onChanged: (val) {
+                        print(val);
+                        tBroadcastType = val;
+                        setState(() {
+                          //    defaultName = val;
+                          tBroadcastType = val;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Visibility(
+                visible: tBroadcastType == "Attach File" ? true : false,
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  margin: EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                      color: cardColor,
+                      border: Border.all(color: Colors.black38),
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          bottomRight: Radius.circular(10))),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 5, right: 5),
+                    child: DropdownButtonFormField<dynamic>(
+                      //underline: SizedBox(),
+                      //value: tCountry,
+
+                      isExpanded: true,
+                      icon: Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.white,
+                      ),
+                      dropdownColor: Colors.white,
+                      decoration: InputDecoration(
+                        hintText: "Choose File Type",
+                        contentPadding: EdgeInsets.all(5),
+                        border: InputBorder.none,
+                      ),
+                      items:
+                          ["Pdf", "Doc", "Audio", "Video"].map((String name) {
+                        return new DropdownMenuItem<dynamic>(
+                          value: name,
+                          child: new Text(name,
+                              style: TextStyle(
+                                  color: Colors.grey.shade500, fontSize: 16)),
+                        );
+                      }).toList(),
+                      onChanged: (val) {
+                        print(val);
+
+                        setState(() {
+                          //    defaultName = val;
+                          tFileType = val;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Visibility(
+                visible: tBroadcastType == "Description" ? false : true,
+                child: Container(
+                  height: 70,
+                  padding: EdgeInsets.all(10),
+                  decoration:
+                      BoxDecoration(border: Border.all(color: Colors.grey)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        isSelectedFile == false
+                            ? "Choose File"
+                            : "File Selected",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      GestureDetector(
+                          onTap: () {
+                            loadFile();
+                          },
+                          child:
+                              Icon(Icons.upload, size: 30, color: Colors.blue)),
+                    ],
+                  ),
+                ),
+              ),
+              Visibility(
+                visible: tBroadcastType == "Description" ? true : false,
+                child: Container(
+                  height: 100,
+                  child: TextFormField(
+                      controller: _description,
+                      maxLines: 100,
+                      style: TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        counterText: "",
+                        hintText: "Write Description",
+                        hintStyle: TextStyle(
+                            fontSize: 14, color: Colors.grey.shade500),
+                        focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: mainColor),
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                bottomRight: Radius.circular(10))),
+                        enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(10),
+                                bottomRight: Radius.circular(10)),
+                            borderSide: BorderSide(color: disabledTextColor)),
+                      )),
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              GestureDetector(
+                onTap: () {
+                  if (valide()) {
+                    showDialog(
+                        context: context,
+                        builder: (context) => FutureProgressDialog(broadCast(
+                            widget.userId,
+                            tMainCategory,
+                            tGender,
+                            tCategory,
+                            tAge,
+                            tCountry,
+                            _state.text,
+                            _city.text,
+                            sendType,
+                            _description.text,
+                            isSelectedFile == true ? selectedFile : null)));
+                  }
+                },
+                child: Container(
+                    padding: EdgeInsets.all(15),
+                    alignment: Alignment.center,
+                    width: MediaQuery.of(context).size.width,
+                    child: Text(
+                      "Send",
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                    decoration: BoxDecoration(
+                        color: buttonColor,
+                        borderRadius: BorderRadius.circular(5))),
+              ),
+            ],
           ),
-          isLoading == true
-              ? Align(
-                  alignment: Alignment.center,
-                  child: SpinKitFadingCircle(color: buttonColor))
-              : Container()
-        ]));
+        ),
+      ),
+    );
   }
 
   Future<List<UserCategories>> loadCategies(String categoryName) async {

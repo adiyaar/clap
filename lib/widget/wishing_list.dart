@@ -94,32 +94,7 @@ class WisheshList {
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, color: Colors.white),
             ),
-            /* Visibility(
-              visible: false,
-              child: GestureDetector(
-                onTap: () {
-                  bookNow(userId, user.id!);
-                  /* showDialog(
-                      context: context1,
-                      builder: (context) =>
-                          FutureProgressDialog()); */
-                },
-                child: Container(
-                  margin: EdgeInsets.only(left: 10, right: 10, top: 5),
-                  padding: EdgeInsets.all(5),
-                  alignment: Alignment.center,
-                  width: 100,
-                  height: 30,
-                  child: Text(
-                    "Book Now",
-                    style: TextStyle(fontSize: 14, color: Colors.white),
-                  ),
-                  decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(20)),
-                ),
-              ),
-            ), */
+          
           ],
         ),
       ));

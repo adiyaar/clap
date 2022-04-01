@@ -53,8 +53,9 @@ dependencies:
   dropdown_search: ^1.0.4
   flutter_beautiful_popup: ^1.5.0
   flutter_ffmpeg: ^0.4.2
+  csc_picker: ^0.2.6
   comment_tree: any
-
+  transparent_image:
   dio:
   flutter_parsed_text_field: any
   blinking_text: ^1.0.1+2

@@ -6,6 +6,7 @@ import 'package:qvid/BottomNavigation/Home/report_reel.dart';
 import 'package:qvid/BottomNavigation/MyProfile/my_profile_page.dart';
 import 'package:qvid/BottomNavigation/MyProfile/video_option.dart';
 import 'package:qvid/BottomNavigation/Notifications/notification_messages.dart';
+import 'package:qvid/Screens/HomeScreen.dart';
 import 'package:qvid/Screens/applied_details.dart';
 import 'package:qvid/Screens/auth/basic_profile_details.dart';
 import 'package:qvid/Screens/auth/choice_talent_interst.dart';
@@ -26,7 +27,6 @@ import 'package:qvid/Screens/chat/chat_details.dart';
 import 'package:qvid/Screens/chat/conversation_screen.dart';
 import 'package:qvid/Screens/chat/search_chat_user.dart';
 import 'package:qvid/Screens/directory/directory_list.dart';
-import 'package:qvid/Screens/dummy_container_screen.dart';
 import 'package:qvid/Screens/newuser/new_user_full_view.dart';
 import 'package:qvid/Screens/post/add_post_screen.dart';
 import 'package:qvid/Screens/post_full_view.dart';
@@ -72,7 +72,7 @@ class PageRoutes {
   static const String add_post = "add_post";
   static const String search_user = "search_user";
   static const String avaliable_categories = "avaliable_categories";
-  static const String directory_screen = "directory_screen";
+  // static const String directory_screen = "directory_screen";
   static const String setting_page = "setting_screen";
   static const String booking_history = "booking_history";
   static const String testimonial = "testimonial";
@@ -104,7 +104,6 @@ class PageRoutes {
       //postInfoPage: (context) => PostInfo(),
 
       videoOptionPage: (context) => VideoOptionPage(),
-      
 
       mycontainer: (context) => MyContainer(),
       allPostList: (context) => AllPostList(),
@@ -122,18 +121,18 @@ class PageRoutes {
       login_screen: (context) => LoginScreen(),
       choose_music: (context) => ChooseMusic(),
       add_post: (context) => AddPost(),
-      userProfilePage: (context) => UserProfilePage(),
+      // userProfilePage: (context) => UserProfilePage(),
       search_user: (context) => SearchUsers(),
       avaliable_categories: (context) => AvaliableCategoryList(),
-      directory_screen: (context) => DirectoryScreen(),
+      // directory_screen: (context) => DirectoryScreen(),
       setting_page: (context) => SettingPage(),
       booking_history: (context) => BookingHistory(),
 
       show_persional_info: (context) => ShowPersonalInfo(data: {}),
       search_page: (context) => SearchPage(),
-      
-      broadcastPage: (context) => BroadcastPage(),
-      allCelebrityList: (context) => AllCelebrityList(),
+
+      // broadcastPage: (context) => BroadcastPage(),
+      // allCelebrityList: (context) => AllCelebrityList(),
       wishlistUsers: (context) => WishlistUsers(),
       reportOnProfile: (context) => ReportOnProfile(),
       workshop: (context) => WorkshopPage(),

@@ -6,7 +6,7 @@ import 'package:qvid/BottomNavigation/MyProfile/my_profile_page.dart';
 //import 'package:qvid/Routes/routes.dart';
 import 'package:qvid/BottomNavigation/Notifications/notification_messages.dart';
 //import 'package:qvid/Routes/routes.dart';
-import 'package:qvid/Screens/dummy_container_screen.dart';
+
 import 'package:qvid/Theme/colors.dart';
 
 // class BottomNavigation extends StatefulWidget {

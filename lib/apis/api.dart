@@ -16,6 +16,35 @@ class Apis {
     return await http.post(url, body: {"mobile": "$mobile", "flag": "Login"});
   }
 
+  //add service of a celebrity
+  Future<http.Response> addCelbServices(
+      String title, String description, String price, String userId) async {
+    var url = Uri.parse(Constraints.MANAGE_URL);
+
+    return await http.post(url, body: {
+      "title": title,
+      "flag": "add_service_list",
+      "description": description,
+      "price": price,
+      "user_id": userId
+    });
+  }
+
+
+  Future<http.Response> getCelbService(
+       String userId) async {
+    var url = Uri.parse(Constraints.MANAGE_URL);
+
+    return await http.post(url, body: {
+      
+      "flag": "get_service_list",
+      
+      "user_id": userId
+    });
+  }
+
+
+
   //otp verification
   Future<http.Response> verifyOtp(String mobile, String otp) async {
     var url = Uri.parse(Constraints.BASE_URL);
@@ -33,10 +62,13 @@ class Apis {
         .post(url, body: {"mobile": "$mobile", "flag": "ResendOtp"});
   }
 
-  Future<http.Response> getCount(String countOf,String videoId) async {
+  Future<http.Response> getCount(String countOf, String videoId) async {
     var url = Uri.parse(Constraints.MANAGE_URL);
-    return await http
-        .post(url, body: {"video_id": videoId, "flag": "UpdateVideoCount","type": countOf });
+    return await http.post(url, body: {
+      "video_id": videoId,
+      "flag": "UpdateVideoCount",
+      "type": countOf
+    });
   }
 
   //update persional details
@@ -619,6 +651,8 @@ class Apis {
 
   //book celebrity wishesh
 
+
+
   Future<http.Response> bookCelebrity(String userId, String cellId,
       String language, String duration, String amount) async {
     var url = Uri.parse(Constraints.DATA_URL);
@@ -639,6 +673,15 @@ class Apis {
     return await http
         .post(url, body: {"user_id": userId, "flag": "MyCelBookings"});
   }
+
+// new booking celb
+  Future<http.Response> bookcelb(String userId,String serviceId) async {
+    var url = Uri.parse(Constraints.DATA_URL);
+    return await http
+        .post(url, body: {"user_id": userId, "flag": "MyCelBookings","service_id": serviceId});
+  }
+
+
 
 //get mybooking
 

@@ -157,6 +157,8 @@ class _CategoryUserState extends State<CategoryUser> {
             ),
             GestureDetector(
               onTap: () {
+
+                
                 Navigator.pushNamed(
                   context,
                   PageRoutes.personal_info,

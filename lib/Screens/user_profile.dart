@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:ui';
 
 import 'package:animation_wrappers/animation_wrappers.dart';
 import 'package:animation_wrappers/Animations/faded_slide_animation.dart';
@@ -952,19 +953,41 @@ class _UserProfilePageState extends State<UserProfilePage> {
         });
   }
 
+  Future addToFav() async {
+    Response resp =
+        await Apis().addWishList(widget.userId, completeCelbProfile!.id);
+    if (resp.statusCode == 200) {
+      var response = jsonDecode(resp.body);
+      String res = response['res'];
+      String msg = response['msg'];
+
+      if (res == "success") {
+        MyToast(message: 'Added To Your Favourites').toast;
+        log(msg);
+      } else {
+        MyToast(message: 'Something Went Wrong! Please Retry').toast;
+        log(msg);
+      }
+    } else {
+      MyToast(
+              message:
+                  'Something Wrong with the server. Please try after some time')
+          .toast;
+    }
+  }
+
   Future getServiceDetails(String userId) async {
     Response response = await Apis().getCelbService(userId);
-    print('h');
+
     if (response.statusCode == 200) {
       var decodedResponse = jsonDecode(response.body);
-      print('h1');
+
       String res = decodedResponse['res'];
       String msg = decodedResponse['msg'];
 
       if (res == "success") {
         var tempList = decodedResponse['data'] as List;
 
-        print(tempList);
         setState(() {
           celbService = tempList
               .map<ServiceList>((e) => ServiceList.fromJson(e))
@@ -992,366 +1015,533 @@ class _UserProfilePageState extends State<UserProfilePage> {
     super.initState();
   }
 
+  double rating = 3.0;
+  double rating1 = 3.0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text('View Profile',
-              style: GoogleFonts.nunito(fontWeight: FontWeight.bold)),
-          leading: IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: Icon(Icons.arrow_back_ios_new)),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, PageRoutes.reportOnProfile,
-                      arguments: widget.celbDetails.id);
-                },
-                icon: Icon(Icons.report))
-          ],
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              CircleAvatar(
-                backgroundColor: Colors.grey.shade300,
-                radius: 55,
-                backgroundImage: CachedNetworkImageProvider(
-                    con.Constraints.IMAGE_BASE_URL + widget.celbDetails.image!),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          showModalBottomSheet(
+              context: context,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
               ),
-              SizedBox(
-                height: 10,
-              ),
-              Center(
-                child: Text(widget.celbDetails.name!.toUpperCase(),
-                    style: GoogleFonts.nunito(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 23,
-                        color: Colors.white)),
-              ),
-              completeCelbProfile != null
-                  ? Center(
-                      child: Text(completeCelbProfile!.userCategoryName,
-                          style: GoogleFonts.nunito(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              color: Colors.grey)),
-                    )
-                  : Center(
-                      child: Text('',
-                          style: GoogleFonts.nunito(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              color: Colors.grey)),
+              clipBehavior: Clip.antiAliasWithSaveLayer,
+              builder: (_) => BackdropFilter(
+                    filter: ImageFilter.blur(
+                      sigmaX: 2.0,
+                      sigmaY: 2.0,
                     ),
-              SizedBox(
-                height: 10,
-              ),
-              completeCelbProfile == null
-                  ? SizedBox()
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            completeCelbProfile!.instagramLink == ''
-                                ? MyToast(message: 'No Instagram Link Found')
-                                    .toast
-                                : MyToast(message: 'Opening').toast;
-                          },
-                          child: CachedNetworkImage(
-                            imageUrl:
-                                'https://cdn-icons-png.flaticon.com/128/174/174855.png',
-                            height: 20,
-                            width: 20,
+                    child: Container(
+                        height: MediaQuery.of(context).size.height / 1.5,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.black,
                           ),
+                          color: Colors.black,
                         ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            completeCelbProfile!.facebookLink == ''
-                                ? MyToast(message: 'No Facebook Link Found')
-                                    .toast
-                                : MyToast(message: 'Opening').toast;
-                          },
-                          child: CachedNetworkImage(
-                            imageUrl:
-                                'https://cdn-icons-png.flaticon.com/128/5968/5968764.png',
-                            height: 20,
-                            width: 20,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            completeCelbProfile!.youtubeLink == ''
-                                ? MyToast(message: 'No Youtube Link Found')
-                                    .toast
-                                : MyToast(message: 'Opening').toast;
-                          },
-                          child: CachedNetworkImage(
-                            imageUrl:
-                                'https://cdn-icons-png.flaticon.com/128/174/174883.png',
-                            height: 20,
-                            width: 20,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            completeCelbProfile!.twitterLink == ''
-                                ? MyToast(message: 'No Twitter Link Found')
-                                    .toast
-                                : MyToast(message: 'Opening').toast;
-                          },
-                          child: CachedNetworkImage(
-                            imageUrl:
-                                'https://cdn-icons-png.flaticon.com/128/733/733579.png',
-                            height: 20,
-                            width: 20,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            completeCelbProfile!.telegramLink == ''
-                                ? MyToast(message: 'No Telegram Link Found')
-                                    .toast
-                                : MyToast(message: 'Opening').toast;
-                          },
-                          child: CachedNetworkImage(
-                            imageUrl:
-                                'https://cdn-icons-png.flaticon.com/128/5968/5968804.png',
-                            height: 20,
-                            width: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-              SizedBox(
-                height: 40,
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Text('My Services',
-                      style: GoogleFonts.nunito(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: Colors.white)),
-                ),
-              ),
-              SizedBox(
-                height: 30,
-              ),
-              serviceLoading == true
-                  ? Center(
-                      child: CircularProgressIndicator.adaptive(),
-                    )
-                  : celbService.length == 0
-                      ? Center(
-                          child: Text('No Service Found',
-                              style: GoogleFonts.nunito(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 22,
-                              )),
-                        )
-                      : ListView.separated(
-                          separatorBuilder: (context, index) => SizedBox(
-                                height: 15,
-                              ),
-                          shrinkWrap: true,
-                          itemCount: celbService.length,
-                          itemBuilder: (context, index) {
-                            return InkWell(
-                              onTap: () async {
-                                await showModalBottomSheet(
-                                    context: context,
-                                    builder: (_) => Container(
-                                          color: Colors.black,
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Center(
-                                                  child: Text(
-                                                      'Proceed with Booking',
-                                                      style: GoogleFonts.nunito(
-                                                          color: Colors.white,
-                                                          fontSize: 23,
-                                                          fontWeight: FontWeight
-                                                              .bold))),
-                                              SizedBox(
-                                                height: 30,
-                                              ),
-                                              Center(
-                                                child: Padding(
-                                                  padding: const EdgeInsets
-                                                          .symmetric(
-                                                      horizontal: 8.0),
-                                                  child: Text(
-                                                    'You are Booking ${widget.celbDetails.name} for ${celbService[index].title} for Rs ${celbService[index].price}',
-                                                    style: GoogleFonts.nunito(
-                                                        color: Colors.white,
-                                                        fontSize: 18),
-                                                    textAlign: TextAlign.center,
-                                                  ),
-                                                ),
-                                              ),
-                                              SizedBox(height: 50),
-                                              Center(
-                                                child: GestureDetector(
-                                                  onTap: () async {
-                                                    Response response =
-                                                        await Apis().bookcelb(
-                                                            widget.userId,
-                                                            celbService[index]
-                                                                .serviceId!);
-                                                    if (response.statusCode ==
-                                                        200) {
-                                                      var decodeResponse =
-                                                          jsonDecode(
-                                                              response.body);
-
-                                                      String res =
-                                                          decodeResponse['res'];
-                                                      if (res == 'success') {
-                                                        Navigator.pop(context);
-                                                        MyToast(
-                                                                message:
-                                                                    'Booked Successfully')
-                                                            .toast;
-                                                      } else {
-                                                        Navigator.pop(context);
-                                                        MyToast(
-                                                                message:
-                                                                    'Could not book')
-                                                            .toast;
-                                                      }
-                                                    }
-                                                    // if (_mobileNumber.text.trim().length < 10) {
-                                                    //   MyToast(message: 'Please Enter A valid mobile number')
-                                                    //       .toast;
-                                                    // } else {
-                                                    //   Response response =
-                                                    //       await Apis().userLogin(_mobileNumber.text.trim());
-
-                                                    //   if (response.statusCode == 200) {
-                                                    //     var decodedResponse = jsonDecode(response.body);
-                                                    //     String res = decodedResponse['res'];
-                                                    //     String msg = decodedResponse['msg'];
-
-                                                    //     if (res == "success") {
-                                                    //       String userType = decodedResponse['user_type'];
-                                                    //       Future.delayed(Duration(microseconds: 1), () {
-                                                    //         Navigator.pushNamed(context, PageRoutes.otp_screen,
-                                                    //             arguments: {
-                                                    //               "mobile": _mobileNumber.text.trim(),
-                                                    //               "user_type": userType
-                                                    //             });
-                                                    //       });
-                                                    //     } else {
-                                                    //       MyToast(message: msg).toast;
-                                                    //     }
-                                                    //   } else {
-                                                    //     MyToast(message: 'Server Error Occured').toast;
-                                                    //   }
-                                                    // }
-                                                  },
-                                                  child: Container(
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width /
-                                                            1.2,
-                                                    height: 60.0,
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              16),
-                                                    ),
-                                                    child: Center(
-                                                      child: Text(
-                                                        "Continue",
-                                                        style: GoogleFonts.nunito(
-                                                            textStyle: TextStyle(
-                                                                fontSize: 20,
-                                                                color: Colors
-                                                                    .black,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold)),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ));
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 30,
+                            ),
+                            Text('Rate Your Celebrity',
+                                style: GoogleFonts.nunito(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 23)),
+                            SizedBox(height: 40),
+                            Text(
+                              'Co operation',
+                              style: GoogleFonts.nunito(color: Colors.white),
+                            ),
+                            SizedBox(height: 10),
+                            StatefulBuilder(
+                              builder: (BuildContext context, mystate) {
+                                return StarRating(
+                                  rating: rating,
+                                  onRatingChanged: (rating) =>
+                                      mystate(() => this.rating = rating),
+                                );
+                              },
+                            ),
+                            SizedBox(height: 20),
+                            Text(
+                              'Skills',
+                              style: GoogleFonts.nunito(color: Colors.white),
+                            ),
+                            SizedBox(height: 10),
+                            StatefulBuilder(
+                              builder: (BuildContext context, secondstate) {
+                                return StarRating(
+                                  rating: rating1,
+                                  onRatingChanged: (rating) =>
+                                      secondstate(() => this.rating1 = rating),
+                                );
+                              },
+                            ),
+                            SizedBox(height: 30),
+                            GestureDetector(
+                              onTap: () {
+                                MyToast(message: 'Rated Successfully').toast;
+                                Navigator.pop(context);
                               },
                               child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 12),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(celbService[index].title!,
-                                            style: GoogleFonts.nunito(
-                                                fontSize: 18,
-                                                color: Colors.white)),
-                                        Text(
-                                            '(${celbService[index].descriptio})',
-                                            style: GoogleFonts.nunito(
-                                                fontSize: 18,
-                                                color: Colors.grey)),
-                                      ],
-                                    ),
-                                    Text('Rs ${celbService[index].price}',
-                                        style: GoogleFonts.nunito(
-                                            fontSize: 18, color: Colors.white))
-                                  ],
+                                width: MediaQuery.of(context).size.width / 1.2,
+                                height: 60.0,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    "Rate",
+                                    style: GoogleFonts.nunito(
+                                        textStyle: TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold)),
+                                  ),
                                 ),
                               ),
-                            );
-                          }),
-            ],
-          ),
+                            )
+                          ],
+                        )),
+                  ));
+        },
+        icon: Icon(
+          Icons.star,
+          color: Colors.black,
         ),
-        floatingActionButton: FloatingActionButton.extended(
-            icon: Icon(Icons.send),
-            backgroundColor: Colors.redAccent,
-            elevation: 20,
-            onPressed: () {
-              ChatUser user = ChatUser(
-                  id: completeCelbProfile!.id,
-                  name: completeCelbProfile!.name,
-                  image: completeCelbProfile!.image);
-              Navigator.push(
+        label: Text(
+          'Rate',
+          style: TextStyle(color: Colors.black),
+        ),
+        backgroundColor: Colors.amber,
+      ),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text('View Profile',
+            style: GoogleFonts.nunito(fontWeight: FontWeight.bold)),
+        leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: Icon(Icons.arrow_back_ios_new)),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, PageRoutes.reportOnProfile,
+                    arguments: widget.celbDetails.id);
+              },
+              icon: Icon(Icons.report)),
+          IconButton(
+              onPressed: () {
+                addToFav();
+                Navigator.pushNamed(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => ChatScreen(
-                            receiver: user,
-                          )));
-            },
-            label: Text('Chat')));
+                  PageRoutes.wishlistUsers,
+                );
+              },
+              icon: Icon(Icons.favorite_outline))
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            CircleAvatar(
+              backgroundColor: Colors.grey.shade300,
+              radius: 55,
+              backgroundImage: CachedNetworkImageProvider(
+                  con.Constraints.IMAGE_BASE_URL + widget.celbDetails.image!),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(widget.celbDetails.name!.toUpperCase(),
+                      style: GoogleFonts.nunito(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 23,
+                          color: Colors.white)),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Icon(
+                    Icons.verified,
+                    color: Colors.blue.shade600,
+                  )
+                ],
+              ),
+            ),
+            completeCelbProfile != null
+                ? Center(
+                    child: Text(completeCelbProfile!.userCategoryName,
+                        style: GoogleFonts.nunito(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            color: Colors.grey)),
+                  )
+                : Center(
+                    child: Text('',
+                        style: GoogleFonts.nunito(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            color: Colors.grey)),
+                  ),
+            SizedBox(
+              height: 10,
+            ),
+            completeCelbProfile == null
+                ? SizedBox()
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          completeCelbProfile!.instagramLink == ''
+                              ? MyToast(message: 'No Instagram Link Found')
+                                  .toast
+                              : MyToast(message: 'Opening').toast;
+                        },
+                        child: CachedNetworkImage(
+                          imageUrl:
+                              'https://cdn-icons-png.flaticon.com/128/174/174855.png',
+                          height: 20,
+                          width: 20,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          completeCelbProfile!.facebookLink == ''
+                              ? MyToast(message: 'No Facebook Link Found').toast
+                              : MyToast(message: 'Opening').toast;
+                        },
+                        child: CachedNetworkImage(
+                          imageUrl:
+                              'https://cdn-icons-png.flaticon.com/128/5968/5968764.png',
+                          height: 20,
+                          width: 20,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          completeCelbProfile!.youtubeLink == ''
+                              ? MyToast(message: 'No Youtube Link Found').toast
+                              : MyToast(message: 'Opening').toast;
+                        },
+                        child: CachedNetworkImage(
+                          imageUrl:
+                              'https://cdn-icons-png.flaticon.com/128/174/174883.png',
+                          height: 20,
+                          width: 20,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          completeCelbProfile!.twitterLink == ''
+                              ? MyToast(message: 'No Twitter Link Found').toast
+                              : MyToast(message: 'Opening').toast;
+                        },
+                        child: CachedNetworkImage(
+                          imageUrl:
+                              'https://cdn-icons-png.flaticon.com/128/733/733579.png',
+                          height: 20,
+                          width: 20,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          completeCelbProfile!.telegramLink == ''
+                              ? MyToast(message: 'No Telegram Link Found').toast
+                              : MyToast(message: 'Opening').toast;
+                        },
+                        child: CachedNetworkImage(
+                          imageUrl:
+                              'https://cdn-icons-png.flaticon.com/128/5968/5968804.png',
+                          height: 20,
+                          width: 20,
+                        ),
+                      ),
+                    ],
+                  ),
+            SizedBox(
+              height: 40,
+            ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text('My Services',
+                    style: GoogleFonts.nunito(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        color: Colors.white)),
+              ),
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            serviceLoading == true
+                ? Center(
+                    child: CircularProgressIndicator.adaptive(),
+                  )
+                : celbService.length == 0
+                    ? Center(
+                        child: Text('No Service Found',
+                            style: GoogleFonts.nunito(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 22,
+                            )),
+                      )
+                    : ListView.separated(
+                        separatorBuilder: (context, index) => SizedBox(
+                              height: 15,
+                            ),
+                        shrinkWrap: true,
+                        itemCount: celbService.length,
+                        itemBuilder: (context, index) {
+                          return InkWell(
+                            onTap: () async {
+                              await showModalBottomSheet(
+                                  context: context,
+                                  builder: (_) => Container(
+                                        color: Colors.black,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Center(
+                                                child: Text(
+                                                    'Proceed with Booking',
+                                                    style: GoogleFonts.nunito(
+                                                        color: Colors.white,
+                                                        fontSize: 23,
+                                                        fontWeight:
+                                                            FontWeight.bold))),
+                                            SizedBox(
+                                              height: 30,
+                                            ),
+                                            Center(
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8.0),
+                                                child: Text(
+                                                  'You are Booking ${widget.celbDetails.name} for ${celbService[index].title} for Rs ${celbService[index].price}',
+                                                  style: GoogleFonts.nunito(
+                                                      color: Colors.white,
+                                                      fontSize: 18),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                            ),
+                                            SizedBox(height: 50),
+                                            Center(
+                                              child: GestureDetector(
+                                                onTap: () async {
+                                                  Response response =
+                                                      await Apis().bookcelb(
+                                                          widget.userId,
+                                                          celbService[index]
+                                                              .serviceId!);
+                                                  if (response.statusCode ==
+                                                      200) {
+                                                    var decodeResponse =
+                                                        jsonDecode(
+                                                            response.body);
+
+                                                    String res =
+                                                        decodeResponse['res'];
+                                                    if (res == 'success') {
+                                                      Navigator.pop(context);
+                                                      MyToast(
+                                                              message:
+                                                                  'Booked Successfully')
+                                                          .toast;
+                                                    } else {
+                                                      Navigator.pop(context);
+                                                      MyToast(
+                                                              message:
+                                                                  'Could not book')
+                                                          .toast;
+                                                    }
+                                                  }
+                                                  // if (_mobileNumber.text.trim().length < 10) {
+                                                  //   MyToast(message: 'Please Enter A valid mobile number')
+                                                  //       .toast;
+                                                  // } else {
+                                                  //   Response response =
+                                                  //       await Apis().userLogin(_mobileNumber.text.trim());
+
+                                                  //   if (response.statusCode == 200) {
+                                                  //     var decodedResponse = jsonDecode(response.body);
+                                                  //     String res = decodedResponse['res'];
+                                                  //     String msg = decodedResponse['msg'];
+
+                                                  //     if (res == "success") {
+                                                  //       String userType = decodedResponse['user_type'];
+                                                  //       Future.delayed(Duration(microseconds: 1), () {
+                                                  //         Navigator.pushNamed(context, PageRoutes.otp_screen,
+                                                  //             arguments: {
+                                                  //               "mobile": _mobileNumber.text.trim(),
+                                                  //               "user_type": userType
+                                                  //             });
+                                                  //       });
+                                                  //     } else {
+                                                  //       MyToast(message: msg).toast;
+                                                  //     }
+                                                  //   } else {
+                                                  //     MyToast(message: 'Server Error Occured').toast;
+                                                  //   }
+                                                  // }
+                                                },
+                                                child: Container(
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width /
+                                                      1.2,
+                                                  height: 60.0,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            16),
+                                                  ),
+                                                  child: Center(
+                                                    child: Text(
+                                                      "Continue",
+                                                      style: GoogleFonts.nunito(
+                                                          textStyle: TextStyle(
+                                                              fontSize: 20,
+                                                              color:
+                                                                  Colors.black,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold)),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ));
+                            },
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 12),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(celbService[index].title!,
+                                          style: GoogleFonts.nunito(
+                                              fontSize: 18,
+                                              color: Colors.white)),
+                                      Text('(${celbService[index].descriptio})',
+                                          style: GoogleFonts.nunito(
+                                              fontSize: 18,
+                                              color: Colors.grey)),
+                                    ],
+                                  ),
+                                  Text('Rs ${celbService[index].price}',
+                                      style: GoogleFonts.nunito(
+                                          fontSize: 18, color: Colors.white))
+                                ],
+                              ),
+                            ),
+                          );
+                        }),
+          ],
+        ),
+      ),
+      // floatingActionButton: FloatingActionButton.extended(
+      //     icon: Icon(Icons.send),
+      //     backgroundColor: Colors.redAccent,
+      //     elevation: 20,
+      //     onPressed: () {
+      //       // ChatUser user = ChatUser(
+      //       //     id: completeCelbProfile!.id,
+      //       //     name: completeCelbProfile!.name,
+      //       //     image: completeCelbProfile!.image);
+      //       // Navigator.push(
+      //       //     context,
+      //       //     MaterialPageRoute(
+      //       //         builder: (context) => ChatScreen(
+      //       //               receiver: user,
+      //       //             )));
+      //     },
+      //     label: Text('Chat'))
+    );
+  }
+}
+
+typedef void RatingChangeCallback(double rating);
+
+class StarRating extends StatelessWidget {
+  final int starCount;
+  final double rating;
+  final RatingChangeCallback onRatingChanged;
+  final Color color;
+
+  StarRating(
+      {this.starCount = 5,
+      this.rating = .0,
+      required this.onRatingChanged,
+      this.color = Colors.amber});
+
+  Widget buildStar(BuildContext context, int index) {
+    Icon icon;
+    if (index >= rating) {
+      icon = new Icon(
+        Icons.star_border,
+        color: Theme.of(context).buttonColor,
+      );
+    } else if (index > rating - 1 && index < rating) {
+      icon = new Icon(
+        Icons.star_half,
+        color: color,
+      );
+    } else {
+      icon = new Icon(
+        Icons.star,
+        color: color,
+      );
+    }
+    return new InkResponse(
+      onTap:
+          onRatingChanged == null ? null : () => onRatingChanged(index + 1.0),
+      child: icon,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children:
+            new List.generate(starCount, (index) => buildStar(context, index)));
   }
 }

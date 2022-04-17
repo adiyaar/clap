@@ -132,7 +132,7 @@ class _CategoryUserState extends State<CategoryUser> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Instagram Influencer',
+                            'Influencer',
                             style: GoogleFonts.nunito(
                                 fontSize: 19,
                                 fontWeight: FontWeight.bold,
@@ -157,8 +157,6 @@ class _CategoryUserState extends State<CategoryUser> {
             ),
             GestureDetector(
               onTap: () {
-
-                
                 Navigator.pushNamed(
                   context,
                   PageRoutes.personal_info,
@@ -184,7 +182,7 @@ class _CategoryUserState extends State<CategoryUser> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Bollywood Celebrity',
+                            'Bollywood Creative Directory',
                             style: GoogleFonts.nunito(
                                 fontSize: 19,
                                 fontWeight: FontWeight.bold,

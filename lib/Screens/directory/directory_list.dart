@@ -18,6 +18,8 @@ import 'package:qvid/model/user.dart';
 import 'package:qvid/model/user_categories.dart';
 import 'package:qvid/widget/toast.dart';
 
+import 'directory_category_person.dart';
+
 // class DirectoryScreen extends StatefulWidget {
 //   DirectoryScreen({Key? key}) : super(key: key);
 
@@ -470,7 +472,9 @@ import 'package:qvid/widget/toast.dart';
 
 class DirectoryScreen extends StatefulWidget {
   final List<DirectoryUser> categoryOfDirectory;
-  DirectoryScreen({Key? key, required this.categoryOfDirectory})
+  final String userId;
+  DirectoryScreen(
+      {Key? key, required this.categoryOfDirectory, required this.userId})
       : super(key: key);
 
   @override
@@ -481,55 +485,60 @@ class _DirectoryScreenState extends State<DirectoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(Icons.arrow_back_ios_new)),
-        centerTitle: true,
-        title: Text('Bollywood Directory',
-            style:
-                GoogleFonts.nunito(fontWeight: FontWeight.bold, fontSize: 21)),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            GridView.builder(
-                itemCount: widget.categoryOfDirectory.length,
-                shrinkWrap: true,
-                physics: ScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    childAspectRatio: 0.75,
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 5.0,
-                    crossAxisSpacing: 5.0),
-                itemBuilder: (context, i) {
-                  return Container(
-                    height: 150,
-                    child: Column(
-                      children: [
-                        ClipOval(
-                          child: CachedNetworkImage(
-                              imageUrl:
-                                  'https://media.istockphoto.com/photos/the-musicians-were-playing-rock-music-on-stage-there-was-an-audience-picture-id1319479588?b=1&k=20&m=1319479588&s=170667a&w=0&h=bunblYyTDA_vnXu-nY4x4oa7ke6aiiZKntZ5mfr-4aM='),
-                        ),
-                        SizedBox(
-                          height: 12,
-                        ),
-                        Text(widget.categoryOfDirectory[i].userCateory!,
-                            textAlign: TextAlign.center,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 2,
-                            style: GoogleFonts.nunito(
-                                fontSize: 14,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold))
-                      ],
-                    ),
-                  );
-                })
-          ],
+        appBar: AppBar(
+          leading: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(Icons.arrow_back_ios_new)),
+          centerTitle: true,
+          title: Text('Bollywood Directory',
+              style: GoogleFonts.nunito(
+                  fontWeight: FontWeight.bold, fontSize: 21)),
         ),
-      ),
-    );
+        body: GridView.builder(
+            itemCount: widget.categoryOfDirectory.length,
+            shrinkWrap: true,
+            physics: BouncingScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                childAspectRatio: 0.75,
+                crossAxisCount: 3,
+                mainAxisSpacing: 5.0,
+                crossAxisSpacing: 5.0),
+            itemBuilder: (context, i) {
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => UserListFromDirectory(
+                              categoryId: widget.categoryOfDirectory[i].id!,
+                              categoryName:
+                                  widget.categoryOfDirectory[i].userCateory!,
+                              userId: widget.userId)));
+                },
+                child: Container(
+                  height: 150,
+                  child: Column(
+                    children: [
+                      ClipOval(
+                        child: CachedNetworkImage(
+                            imageUrl:
+                                'https://media.istockphoto.com/photos/the-musicians-were-playing-rock-music-on-stage-there-was-an-audience-picture-id1319479588?b=1&k=20&m=1319479588&s=170667a&w=0&h=bunblYyTDA_vnXu-nY4x4oa7ke6aiiZKntZ5mfr-4aM='),
+                      ),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      Text(widget.categoryOfDirectory[i].userCateory!,
+                          textAlign: TextAlign.center,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                          style: GoogleFonts.nunito(
+                              fontSize: 14,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold))
+                    ],
+                  ),
+                ),
+              );
+            }));
   }
 }

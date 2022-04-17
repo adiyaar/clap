@@ -234,7 +234,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 ),
               ),
               Container(
-                height: MediaQuery.of(context).size.height,
+                height: double.infinity,
                 width: MediaQuery.of(context).size.width,
                 child: Column(
                   children: [
@@ -261,7 +261,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               fontSize: 12)),
                     ),
                     SizedBox(
-                      height: MediaQuery.of(context).size.height / 6,
+                      height: MediaQuery.of(context).size.height / 8,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,

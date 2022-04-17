@@ -120,12 +120,12 @@ class Apis {
     var url = Uri.parse(Constraints.BASE_URL);
     print("hellosdsds");
     return await http.post(url, body: {
-      "id": "$id",
-      "name": "$name",
-      "email": "$email",
-      "gender": "$gender",
-      "dob": "$dob",
-      "language": "$language",
+      "id": "$id", // 
+      "name": "$name", //
+      "email": "$email", // 
+      "gender": "$gender", //
+      "dob": "$dob", //
+      "language": "$language", 
       "skin_color": "$skinColor",
       "hair_style": "$hairStyle",
       "hair_color": "$hairColor",
@@ -792,9 +792,7 @@ class Apis {
       ..fields['type_broadcast'] = typeOfBroadcast
       ..fields['description'] = description;
 
-    // ..files.add(http.MultipartFile.fromBytes(
-    //contentType: MediaType('application', '/*'),
-    //filename: uploadFile.path.split("/").last)
+    
 
     var streamedResponse = await request.send();
     return await http.Response.fromStream(streamedResponse);

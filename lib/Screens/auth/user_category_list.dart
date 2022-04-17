@@ -14,6 +14,8 @@ import 'package:qvid/widget/category_list.dart';
 import 'package:qvid/widget/toast.dart';
 
 class AvaliableCategoryList extends StatefulWidget {
+  final String catname;
+  AvaliableCategoryList({Key? key, required this.catname}) : super(key: key);
   @override
   State<AvaliableCategoryList> createState() => _AvaliableCategoryListState();
 }

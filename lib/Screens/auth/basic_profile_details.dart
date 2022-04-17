@@ -4,9 +4,11 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:future_progress_dialog/future_progress_dialog.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:image_cropper/image_cropper.dart';
@@ -67,20 +69,18 @@ class _BasicProfileState extends State<BasicProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: cardColor,
       appBar: AppBar(
-        systemOverlayStyle: SystemUiOverlayStyle(statusBarColor: buttonColor),
         leading: GestureDetector(
             onTap: () {
               Navigator.of(context).pop();
             },
             child: Icon(
-              Icons.arrow_back,
-              color: buttonColor,
+              Icons.arrow_back_ios_new,
+              color: Colors.white,
             )),
-        title: Text("Basic Profile Details",
-            style:
-                TextStyle(color: buttonColor, fontWeight: FontWeight.normal)),
+        title: Text("Finish Your Registration",
+            style: GoogleFonts.nunito(
+                color: Colors.white, fontWeight: FontWeight.bold)),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -127,28 +127,6 @@ class _BasicProfileState extends State<BasicProfile> {
               SizedBox(
                 height: 20,
               ),
-              Visibility(
-                visible: false,
-                child: TextField(
-                  controller: _priceForShoot,
-                  decoration: InputDecoration(
-                    hintText: "Price for 30 to 60 sec video",
-                    hintStyle: TextStyle(color: Colors.grey.shade600),
-                    alignLabelWithHint: true,
-                    labelText: "Enter Price ",
-                    labelStyle: TextStyle(color: disabledTextColor),
-                    enabledBorder: const OutlineInputBorder(
-                      borderSide:
-                          const BorderSide(color: Colors.grey, width: 0.0),
-                    ),
-                    focusedBorder: const OutlineInputBorder(
-                      borderSide:
-                          const BorderSide(color: Colors.grey, width: 0.0),
-                    ),
-                  ),
-                  keyboardType: TextInputType.number,
-                ),
-              ),
               SizedBox(
                 height: 20,
               ),
@@ -159,14 +137,13 @@ class _BasicProfileState extends State<BasicProfile> {
                     maxLines: 100,
                     decoration: InputDecoration(
                       hintText: "Enter Bio",
-                      hintStyle: TextStyle(color: Colors.white),
+                      hintStyle: GoogleFonts.nunito(color: Colors.white),
                       alignLabelWithHint: true,
-                      labelText: "Enter Bio",
                       counter: Text(
                         "${counterText.length.toString()}/1000",
-                        style: TextStyle(color: Colors.red),
+                        style: GoogleFonts.nunito(
+                            color: Colors.white, fontWeight: FontWeight.bold),
                       ),
-                      labelStyle: TextStyle(color: disabledTextColor),
                       enabledBorder: const OutlineInputBorder(
                         borderSide:
                             const BorderSide(color: Colors.grey, width: 0.0),
@@ -188,8 +165,6 @@ class _BasicProfileState extends State<BasicProfile> {
               ),
               GestureDetector(
                 onTap: () {
-                  /* Navigator.pushNamedAndRemoveUntil(
-                      context, PageRoutes.bottomNavigation, (route) => false); */
                   if (valid()) {
                     showDialog(
                         context: context,
@@ -204,11 +179,15 @@ class _BasicProfileState extends State<BasicProfile> {
                     width: MediaQuery.of(context).size.width,
                     child: Text(
                       "Next",
-                      style: TextStyle(fontSize: 16, color: Colors.white),
+                      style: GoogleFonts.nunito(
+                          fontSize: 16,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold),
                     ),
                     decoration: BoxDecoration(
-                        color: buttonColor,
-                        borderRadius: BorderRadius.circular(5))),
+                        color: Colors.white,
+                        border: Border.all(color: Colors.white),
+                        borderRadius: BorderRadius.circular(12))),
               ),
             ],
           ),
@@ -267,12 +246,11 @@ class _BasicProfileState extends State<BasicProfile> {
       // String userType = response['user_type'];
       if (res == "success") {
         Future.delayed(Duration(microseconds: 1), () async {
-          //Navigator.of(context).popUntil(ModalRoute.withName(PageRoutes.bottomNavigation));
           bool result =
               await MyPrefManager.prefInstance().addData("New", "Yes");
           Navigator.pushNamedAndRemoveUntil(
             context,
-            PageRoutes.bottomNavigation,
+            PageRoutes.mycontainer,
             (route) => false,
           );
           MyToast(message: msg).toast;
@@ -292,8 +270,8 @@ class _BasicProfileState extends State<BasicProfile> {
           CropAspectRatioPreset.square,
         ],
         androidUiSettings: AndroidUiSettings(
-            toolbarTitle: 'Cropper',
-            toolbarColor: Colors.deepOrange,
+            toolbarTitle: 'Crop Your Image',
+            toolbarColor: Colors.black,
             toolbarWidgetColor: Colors.white,
             initAspectRatio: CropAspectRatioPreset.original,
             lockAspectRatio: false),

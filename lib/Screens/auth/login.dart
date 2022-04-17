@@ -16,12 +16,7 @@ import 'package:qvid/Routes/routes.dart';
 import 'package:qvid/apis/api.dart';
 import 'package:qvid/widget/toast.dart';
 
-GoogleSignIn _googleSignIn = GoogleSignIn(
-  scopes: <String>[
-    'email',
-    'https://www.googleapis.com/auth/contacts.readonly',
-  ],
-);
+GoogleSignIn _googleSignIn = GoogleSignIn();
 
 // class LoginScreen extends StatefulWidget {
 //   @override

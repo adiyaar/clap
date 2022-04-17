@@ -136,7 +136,7 @@ class _BasicProfileRegistrationState extends State<BasicProfileRegistration> {
                           context: context,
                           initialDate: DateTime.now(),
                           firstDate: DateTime(
-                              2000), //DateTime.now() - not to allow to choose before today.
+                              1900), //DateTime.now() - not to allow to choose before today.
                           lastDate: DateTime.now());
 
                       if (pickedDate != null) {

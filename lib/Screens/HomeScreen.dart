@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'dart:ui';
 
@@ -22,6 +23,7 @@ import 'package:qvid/Screens/booking/all_celebrity_list.dart';
 import 'package:qvid/Screens/booking/booking.dart';
 import 'package:qvid/Screens/broadcast/broadcast_page.dart';
 import 'package:qvid/Screens/custom_appbar.dart';
+import 'package:qvid/Screens/directory/directory_category_person.dart';
 import 'package:qvid/Screens/directory/directory_list.dart';
 import 'package:qvid/Screens/post_list.dart';
 import 'package:qvid/Screens/user_profile.dart';
@@ -31,17 +33,22 @@ import 'package:qvid/apis/api.dart';
 import 'package:qvid/helper/api_handle.dart';
 import 'package:qvid/helper/my_preference.dart';
 import 'package:qvid/model/celebrity_user.dart';
+import 'package:qvid/model/chat_user.dart';
 import 'package:qvid/model/directory_user.dart';
 import 'package:qvid/model/slider.dart';
 import 'package:qvid/model/user.dart';
 import 'package:qvid/model/user_post.dart';
 import 'package:qvid/utils/constaints.dart' as con;
+
 import 'package:qvid/widget/homepage_shimmer_design.dart';
 import 'package:qvid/widget/toast.dart';
 import 'package:qvid/widget/wishing_list.dart';
 import 'package:shimmer/shimmer.dart';
 
+import 'chat/conversation_screen.dart';
+
 List<String> carouselImages = [];
+List<ChatUser> userChats = []; // get UserChats
 
 class MyContainer extends StatefulWidget {
   @override
@@ -99,6 +106,7 @@ class _MyContainerState extends State<MyContainer> {
         statusBarBrightness:
             Brightness.light //or set color with: Color(0xFF0000FF)
         ));
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: backgroundColor,
@@ -265,8 +273,11 @@ class _MyContainerState extends State<MyContainer> {
               style: GoogleFonts.nunito(fontWeight: FontWeight.bold)),
           actions: [
             GestureDetector(
-              onTap: () =>
-                  Navigator.pushNamed(context, PageRoutes.conversation_screen),
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => ConversationChatsScreen(
+                          userChats: userChats, userId: userDetails!.id))),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Image.asset('assets/images/message.png'),
@@ -384,6 +395,7 @@ class _MyContainerState extends State<MyContainer> {
                                                                 .userCateory !=
                                                             null)
                                                         .toList(),
+                                                      userId: userDetails!.id,
                                               ))),
                                   child: Container(
                                     width: 100,
@@ -417,26 +429,43 @@ class _MyContainerState extends State<MyContainer> {
                               : Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 8.0),
-                                  child: Container(
-                                    child: Column(
-                                      children: [
-                                        CircleAvatar(
-                                          backgroundColor: Colors.grey,
-                                          radius: 48,
-                                          backgroundImage: NetworkImage(
-                                              'https://media.istockphoto.com/photos/the-musicians-were-playing-rock-music-on-stage-there-was-an-audience-picture-id1319479588?b=1&k=20&m=1319479588&s=170667a&w=0&h=bunblYyTDA_vnXu-nY4x4oa7ke6aiiZKntZ5mfr-4aM='),
-                                        ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                        Text(
-                                            bollywoodCreativeDirectory[index]
-                                                .userCateory!,
-                                            style: GoogleFonts.nunito(
-                                                fontSize: 14,
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold))
-                                      ],
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (_) => UserListFromDirectory(
+                                                  categoryId:
+                                                      bollywoodCreativeDirectory[
+                                                              index]
+                                                          .id!,
+                                                  categoryName:
+                                                      bollywoodCreativeDirectory[
+                                                              index]
+                                                          .userCateory!,
+                                                  userId: userDetails!.id)));
+                                    },
+                                    child: Container(
+                                      child: Column(
+                                        children: [
+                                          CircleAvatar(
+                                            backgroundColor: Colors.grey,
+                                            radius: 48,
+                                            backgroundImage: NetworkImage(
+                                                'https://media.istockphoto.com/photos/the-musicians-were-playing-rock-music-on-stage-there-was-an-audience-picture-id1319479588?b=1&k=20&m=1319479588&s=170667a&w=0&h=bunblYyTDA_vnXu-nY4x4oa7ke6aiiZKntZ5mfr-4aM='),
+                                          ),
+                                          SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text(
+                                              bollywoodCreativeDirectory[index]
+                                                  .userCateory!,
+                                              style: GoogleFonts.nunito(
+                                                  fontSize: 14,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold))
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 );
@@ -928,6 +957,26 @@ class _MyContainerState extends State<MyContainer> {
         userId = user.id;
         userDetails = userDet;
       });
+
+      Response responseofChat = await Apis().getChatUserList(userDetails!.id);
+
+      if (responseofChat.statusCode == 200) {
+        var data = jsonDecode(responseofChat.body);
+        String res = data['res'];
+
+        if (res == "success") {
+          var chatList = data['data'] as List;
+
+          setState(() {
+            userChats =
+                chatList.map<ChatUser>((e) => ChatUser.fromJson(e)).toList();
+          });
+        } else {
+          setState(() {
+            userChats = [];
+          });
+        }
+      }
     }
   }
 
@@ -941,8 +990,7 @@ class _MyContainerState extends State<MyContainer> {
       String msg = data['msg'];
       if (res == "success") {
         var re = data['data'] as List;
-        print("sdsd");
-        print(re.length);
+
         setState(() {
           isLoading = false;
         });
@@ -950,7 +998,6 @@ class _MyContainerState extends State<MyContainer> {
             re.map<CelebrityUser>((e) => CelebrityUser.fromJson(e)).toList();
         return userList!;
       } else {
-        print("error");
         setState(() {
           isLoading = false;
         });
@@ -973,8 +1020,6 @@ class _MyContainerState extends State<MyContainer> {
       String msg = data['msg'];
       if (res == "success") {
         var re = data['data'] as List;
-        print("sdsd");
-        print(re.length);
 
         if (mounted)
           setState(() {

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:future_progress_dialog/future_progress_dialog.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 import 'package:qvid/BottomNavigation/Home/comment_sheet.dart';
 import 'package:qvid/Routes/routes.dart';
@@ -54,20 +55,15 @@ class _BroadcastPageState extends State<BroadcastPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        systemOverlayStyle: SystemUiOverlayStyle(statusBarColor: buttonColor),
         leading: GestureDetector(
             onTap: () {
-              // Navigator.of(context).pop();
-              //  Navigator.of(context).pop();
+              Navigator.of(context).pop();
             },
-            child: GestureDetector(
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
-                child: Icon(Icons.arrow_back, color: buttonColor))),
+            child: Icon(Icons.arrow_back_ios_new, color: Colors.white)),
         title: Text(
           "Create Broadcast",
-          style: TextStyle(color: buttonColor, fontWeight: FontWeight.bold),
+          style: GoogleFonts.nunito(
+              color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
       body: Padding(
@@ -76,101 +72,13 @@ class _BroadcastPageState extends State<BroadcastPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CSCPicker(
-                ///Enable disable state dropdown [OPTIONAL PARAMETER]
-                showStates: true,
-
-                /// Enable disable city drop down [OPTIONAL PARAMETER]
-                showCities: true,
-
-                ///Enable (get flag with country name) / Disable (Disable flag) / ShowInDropdownOnly (display flag in dropdown only) [OPTIONAL PARAMETER]
-                flagState: CountryFlag.DISABLE,
-
-                ///Dropdown box decoration to style your dropdown selector [OPTIONAL PARAMETER] (USE with disabledDropdownDecoration)
-                dropdownDecoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    color: Colors.white,
-                    border: Border.all(color: Colors.grey.shade300, width: 1)),
-
-                ///Disabled Dropdown box decoration to style your dropdown selector [OPTIONAL PARAMETER]  (USE with disabled dropdownDecoration)
-                disabledDropdownDecoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    color: Colors.grey.shade300,
-                    border: Border.all(color: Colors.grey.shade300, width: 1)),
-
-                ///placeholders for dropdown search field
-                countrySearchPlaceholder: "Country",
-                stateSearchPlaceholder: "State",
-                citySearchPlaceholder: "City",
-
-                ///labels for dropdown
-                countryDropdownLabel: "*Country",
-                stateDropdownLabel: "*State",
-                cityDropdownLabel: "*City",
-
-                ///Default Country
-                defaultCountry: DefaultCountry.India,
-
-                ///Disable country dropdown (Note: use it with default country)
-                // disableCountry: true,
-
-                ///selected item style [OPTIONAL PARAMETER]
-                selectedItemStyle: TextStyle(
-                  color: Colors.black,
-                  fontSize: 14,
-                ),
-
-                ///DropdownDialog Heading style [OPTIONAL PARAMETER]
-                dropdownHeadingStyle: TextStyle(
-                    color: Colors.black,
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold),
-
-                ///DropdownDialog Item style [OPTIONAL PARAMETER]
-                dropdownItemStyle: TextStyle(
-                  color: Colors.black,
-                  fontSize: 14,
-                ),
-
-                ///Dialog box radius [OPTIONAL PARAMETER]
-                dropdownDialogRadius: 10.0,
-
-                ///Search bar radius [OPTIONAL PARAMETER]
-                searchBarRadius: 10.0,
-
-                ///triggers once country selected in dropdown
-                onCountryChanged: (value) {
-                  setState(() {
-                    ///store value in country variable
-                    tCountry = value;
-                  });
-                },
-
-                ///triggers once state selected in dropdown
-                onStateChanged: (value) {
-                  setState(() {
-                    ///store value in state variable
-                    tState = value!;
-                  });
-                },
-
-                ///triggers once city selected in dropdown
-                onCityChanged: (value) {
-                  setState(() {
-                    ///store value in city variable
-                    tCity = value!;
-                  });
-                },
-              ),
               Container(
                 width: MediaQuery.of(context).size.width,
                 margin: EdgeInsets.all(3),
                 decoration: BoxDecoration(
                     color: backgroundColor,
                     border: Border.all(color: Colors.white),
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(10),
-                        bottomRight: Radius.circular(10))),
+                    borderRadius: BorderRadius.circular(12.0)),
                 child: Padding(
                   padding: const EdgeInsets.only(left: 5, right: 5),
                   child: DropdownButtonFormField<dynamic>(
@@ -187,7 +95,7 @@ class _BroadcastPageState extends State<BroadcastPage> {
                       decoration: InputDecoration(
                         hintText: "User category",
                         contentPadding: EdgeInsets.all(5),
-                        hintStyle: TextStyle(color: Colors.white),
+                        hintStyle: GoogleFonts.nunito(color: Colors.white),
                         border: InputBorder.none,
                       ),
                       items: sta.categoryList.map((String name) {
@@ -204,11 +112,7 @@ class _BroadcastPageState extends State<BroadcastPage> {
                         );
                       }).toList(),
                       onChanged: (val) {
-                        print(val);
-                        //tMainCategory = val;
                         setState(() {
-                          //    defaultName = val;
-
                           categoryNameList.clear();
                           fetchCategoriesName(val);
 
@@ -224,40 +128,41 @@ class _BroadcastPageState extends State<BroadcastPage> {
                 ),
               ),
               SizedBox(
-                width: 10,
+                height: 10,
               ),
               Visibility(
                 visible: tMainCategory.isNotEmpty ? true : false,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 10),
                   child: Text(
-                    "Choose Type of Broadcast",
-                    style: TextStyle(
-                        color: buttonColor, fontWeight: FontWeight.bold),
+                    "Choose the type of BroadCast",
+                    style: GoogleFonts.nunito(
+                        color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
+              
               Visibility(
                 visible: tMainCategory.isNotEmpty ? true : false,
                 child: SizedBox(
                   height: 50,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        width: 100,
+                        width: 150,
                         child: ListTile(
-                          contentPadding: EdgeInsets.all(0),
-                          title: const Text(
+                          title: Text(
                             'Favourite',
-                            style: TextStyle(fontSize: 12),
+                            style: GoogleFonts.nunito(
+                                color: Colors.white, fontSize: 13),
                           ),
                           horizontalTitleGap: 1,
                           leading: Radio<String>(
                             value: "Favourite",
                             fillColor: MaterialStateColor.resolveWith(
-                                (states) => buttonColor),
-                            activeColor: buttonColor,
+                                (states) => Colors.white),
+                            activeColor: Colors.white,
                             groupValue: sendType,
                             onChanged: (value) {
                               setState(() {
@@ -268,18 +173,19 @@ class _BroadcastPageState extends State<BroadcastPage> {
                         ),
                       ),
                       Container(
-                        width: 115,
+                        width: 150,
                         child: ListTile(
-                          title: const Text('All',
-                              style: TextStyle(
-                                fontSize: 10,
-                              )),
+                          title: Text(
+                            'Everyone',
+                            style: GoogleFonts.nunito(
+                                color: Colors.white, fontSize: 13),
+                          ),
                           horizontalTitleGap: 1,
                           leading: Radio<String>(
                             value: "All",
                             fillColor: MaterialStateColor.resolveWith(
-                                (states) => buttonColor),
-                            activeColor: buttonColor,
+                                (states) => Colors.white),
+                            activeColor: Colors.white,
                             groupValue: sendType,
                             onChanged: (value) {
                               setState(() {
@@ -293,12 +199,16 @@ class _BroadcastPageState extends State<BroadcastPage> {
                   ),
                 ),
               ),
+              SizedBox(height: 10),
               Padding(
-                padding: const EdgeInsets.only(left: 5.0, top: 10, bottom: 10),
-                child: Text("What Type of info you Broadcast",
-                    style: TextStyle(
-                        color: buttonColor, fontWeight: FontWeight.bold)),
+                padding: const EdgeInsets.only(
+                  left: 10.0,
+                ),
+                child: Text("BroadCast Type",
+                    style: GoogleFonts.nunito(
+                        color: Colors.white, fontWeight: FontWeight.bold)),
               ),
+              SizedBox(height: 10),
               Visibility(
                 child: Container(
                   width: MediaQuery.of(context).size.width,
@@ -466,7 +376,7 @@ class _BroadcastPageState extends State<BroadcastPage> {
                             tGender,
                             tCategory,
                             tAge,
-                            tCountry,
+                            'India',
                             _state.text,
                             _city.text,
                             sendType,

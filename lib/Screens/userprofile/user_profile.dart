@@ -242,17 +242,17 @@ class _UserProfileState extends State<UserProfile> {
                                     padding: const EdgeInsets.only(right: 10),
                                     child: GestureDetector(
                                       onTap: () {
-                                        ChatUser user = ChatUser(
-                                            id: newUserList[index].id,
-                                            name: newUserList[index].name,
-                                            image: newUserList[index].image);
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    ChatScreen(
-                                                      receiver: user,
-                                                    )));
+                                        // ChatUser user = ChatUser(
+                                        //     id: newUserList[index].id,
+                                        //     name: newUserList[index].name,
+                                        //     image: newUserList[index].image);
+                                        // Navigator.push(
+                                        //     context,
+                                        //     MaterialPageRoute(
+                                        //         builder: (context) =>
+                                        //             ChatScreen(
+                                        //               receiver: user,
+                                        //             )));
                                       },
                                       child: Card(
                                         color: Colors.green,

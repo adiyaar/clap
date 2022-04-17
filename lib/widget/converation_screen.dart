@@ -22,12 +22,12 @@ class _ConversationScreenState extends State<ConversationScreen> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ChatScreen(
-                      receiver: widget.user,
-                    )));
+        // Navigator.push(
+        //     context,
+        //     MaterialPageRoute(
+        //         builder: (context) => ChatScreen(
+        //               receiver: widget.user,
+        //             )));
       },
       child: Padding(
         padding: EdgeInsets.all(8.0),

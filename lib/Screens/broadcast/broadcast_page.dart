@@ -37,6 +37,8 @@ class _BroadcastPageState extends State<BroadcastPage> {
       tFileType = "";
 
   String sendType = "All";
+  String defaultGen = "Male";
+
   String tBroadcastType = "Description";
   bool isLoading = false;
   String tCountry = "", tState = "", tCity = "";
@@ -45,6 +47,7 @@ class _BroadcastPageState extends State<BroadcastPage> {
   final TextEditingController _description = TextEditingController();
   final TextEditingController _city = TextEditingController();
   final TextEditingController _state = TextEditingController();
+  final TextEditingController _age = TextEditingController();
   bool isSelectedFile = false;
   File? selectedFile;
   RangeValues _currentAgeRange = const RangeValues(17, 25);
@@ -72,6 +75,132 @@ class _BroadcastPageState extends State<BroadcastPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              TextField(
+                controller: _state, // enter name
+                keyboardAppearance: Brightness.dark,
+                keyboardType: TextInputType.name,
+                cursorColor: Color(0xffC7C7C7),
+                style: GoogleFonts.nunito(color: Colors.white),
+                toolbarOptions: ToolbarOptions(paste: true, cut: true),
+                decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                      borderSide:
+                          const BorderSide(color: Colors.white, width: 1.0),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    hintText: 'Enter the state',
+                    hintStyle: GoogleFonts.nunito(
+                        textStyle: TextStyle(
+                            fontSize: 15,
+                            color: Color(0xffFF929292),
+                            fontWeight: FontWeight.w700))),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              TextField(
+                controller: _city, // enter name
+                keyboardAppearance: Brightness.dark,
+                keyboardType: TextInputType.name,
+                cursorColor: Color(0xffC7C7C7),
+                style: GoogleFonts.nunito(color: Colors.white),
+                toolbarOptions: ToolbarOptions(paste: true, cut: true),
+                decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                      borderSide:
+                          const BorderSide(color: Colors.white, width: 1.0),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    hintText: 'Enter the City',
+                    hintStyle: GoogleFonts.nunito(
+                        textStyle: TextStyle(
+                            fontSize: 15,
+                            color: Color(0xffFF929292),
+                            fontWeight: FontWeight.w700))),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              TextField(
+                controller: _age, // enter name
+                keyboardAppearance: Brightness.dark,
+                keyboardType: TextInputType.name,
+                cursorColor: Color(0xffC7C7C7),
+                style: GoogleFonts.nunito(color: Colors.white),
+                toolbarOptions: ToolbarOptions(paste: true, cut: true),
+                decoration: InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                      borderSide:
+                          const BorderSide(color: Colors.white, width: 1.0),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    hintText: 'Enter the Age',
+                    hintStyle: GoogleFonts.nunito(
+                        textStyle: TextStyle(
+                            fontSize: 15,
+                            color: Color(0xffFF929292),
+                            fontWeight: FontWeight.w700))),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              SizedBox(
+                height: 50,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      width: 150,
+                      child: ListTile(
+                        title: Text(
+                          'Male',
+                          style: GoogleFonts.nunito(
+                              color: Colors.white, fontSize: 13),
+                        ),
+                        horizontalTitleGap: 1,
+                        leading: Radio<String>(
+                          value: "Male",
+                          fillColor: MaterialStateColor.resolveWith(
+                              (states) => Colors.white),
+                          activeColor: Colors.white,
+                          groupValue: defaultGen,
+                          onChanged: (value) {
+                            setState(() {
+                              tGender = value!;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 150,
+                      child: ListTile(
+                        title: Text(
+                          'Female',
+                          style: GoogleFonts.nunito(
+                              color: Colors.white, fontSize: 13),
+                        ),
+                        horizontalTitleGap: 1,
+                        leading: Radio<String>(
+                          value: "All",
+                          fillColor: MaterialStateColor.resolveWith(
+                              (states) => Colors.white),
+                          activeColor: Colors.white,
+                          groupValue: defaultGen,
+                          onChanged: (value) {
+                            setState(() {
+                              tGender = value!;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
               Container(
                 width: MediaQuery.of(context).size.width,
                 margin: EdgeInsets.all(3),
@@ -93,7 +222,7 @@ class _BroadcastPageState extends State<BroadcastPage> {
                       ),
                       dropdownColor: Colors.white,
                       decoration: InputDecoration(
-                        hintText: "User category",
+                        hintText: "Select your user category",
                         contentPadding: EdgeInsets.all(5),
                         hintStyle: GoogleFonts.nunito(color: Colors.white),
                         border: InputBorder.none,
@@ -141,7 +270,6 @@ class _BroadcastPageState extends State<BroadcastPage> {
                   ),
                 ),
               ),
-              
               Visibility(
                 visible: tMainCategory.isNotEmpty ? true : false,
                 child: SizedBox(
@@ -351,19 +479,15 @@ class _BroadcastPageState extends State<BroadcastPage> {
                             fontSize: 14, color: Colors.grey.shade500),
                         focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: mainColor),
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10),
-                                bottomRight: Radius.circular(10))),
+                            borderRadius: BorderRadius.circular(12.0)),
                         enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10),
-                                bottomRight: Radius.circular(10)),
+                            borderRadius: BorderRadius.circular(12.0),
                             borderSide: BorderSide(color: disabledTextColor)),
                       )),
                 ),
               ),
               SizedBox(
-                height: 10,
+                height: 20,
               ),
               GestureDetector(
                 onTap: () {
@@ -375,7 +499,7 @@ class _BroadcastPageState extends State<BroadcastPage> {
                             tMainCategory,
                             tGender,
                             tCategory,
-                            tAge,
+                            _age.text,
                             'India',
                             _state.text,
                             _city.text,
@@ -390,11 +514,11 @@ class _BroadcastPageState extends State<BroadcastPage> {
                     width: MediaQuery.of(context).size.width,
                     child: Text(
                       "Send",
-                      style: TextStyle(fontSize: 16, color: Colors.white),
+                      style: TextStyle(fontSize: 16, color: Colors.black),
                     ),
                     decoration: BoxDecoration(
-                        color: buttonColor,
-                        borderRadius: BorderRadius.circular(5))),
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12))),
               ),
             ],
           ),

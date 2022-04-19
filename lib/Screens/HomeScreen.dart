@@ -16,6 +16,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 import 'package:lottie/lottie.dart';
 import 'package:qvid/BottomNavigation/Explore/search.dart';
+import 'package:qvid/BottomNavigation/Home/home_page.dart';
+import 'package:qvid/BottomNavigation/MyProfile/booking/mybooking.dart';
 import 'package:qvid/BottomNavigation/MyProfile/my_profile_page.dart';
 import 'package:qvid/BottomNavigation/Notifications/notification_messages.dart';
 import 'package:qvid/Routes/routes.dart';
@@ -26,6 +28,7 @@ import 'package:qvid/Screens/custom_appbar.dart';
 import 'package:qvid/Screens/directory/directory_category_person.dart';
 import 'package:qvid/Screens/directory/directory_list.dart';
 import 'package:qvid/Screens/post_list.dart';
+import 'package:qvid/Screens/shortFilm.dart';
 import 'package:qvid/Screens/user_profile.dart';
 import 'package:qvid/Theme/colors.dart';
 import 'package:flutter/services.dart';
@@ -222,19 +225,30 @@ class _MyContainerState extends State<MyContainer> {
                     title: Text('My Bookings',
                         style: GoogleFonts.nunito(
                             fontWeight: FontWeight.w700, fontSize: 17)),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => MyBooking()));
+                    },
                   ),
                   ListTile(
                     title: Text('Short Films',
                         style: GoogleFonts.nunito(
                             fontWeight: FontWeight.w700, fontSize: 17)),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ShortFilmPage()));
+                    },
                   ),
                   ListTile(
                     title: Text('Reels',
                         style: GoogleFonts.nunito(
                             fontWeight: FontWeight.w700, fontSize: 17)),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => HomePage()));
+                    },
                   ),
                   ListTile(
                     title: Text('Notifications',
@@ -395,7 +409,7 @@ class _MyContainerState extends State<MyContainer> {
                                                                 .userCateory !=
                                                             null)
                                                         .toList(),
-                                                      userId: userDetails!.id,
+                                                userId: userDetails!.id,
                                               ))),
                                   child: Container(
                                     width: 100,

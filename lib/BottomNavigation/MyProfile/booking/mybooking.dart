@@ -33,11 +33,11 @@ class _MyBookingState extends State<MyBooking> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: lightColor,
+        backgroundColor: Colors.black,
         appBar: AppBar(
-          brightness: Brightness.light,
-          systemOverlayStyle: SystemUiOverlayStyle(statusBarColor: buttonColor),
-          iconTheme: IconThemeData(color: Colors.black),
+          leading: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(Icons.arrow_back_ios_new)),
           title: Text(
             "Your Booking History",
             style: TextStyle(color: Colors.white),

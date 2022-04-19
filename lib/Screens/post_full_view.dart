@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:future_progress_dialog/future_progress_dialog.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 import 'package:qvid/Routes/routes.dart';
 import 'package:qvid/Theme/colors.dart';
@@ -34,16 +35,17 @@ class _PostFullViewDetailsState extends State<PostFullViewDetails> {
   Widget build(BuildContext context) {
     var userPost = ModalRoute.of(context)!.settings.arguments as UserPost;
     return SafeArea(
-      top: true,
-      bottom: true,
-      left: true,
-      right: true,
       child: Scaffold(
           appBar: AppBar(
-            iconTheme: IconThemeData(color: Colors.white),
+            leading: IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: Icon(Icons.arrow_back_ios_new)),
             title: Text(
-              "JOBS",
-              style: TextStyle(color: Colors.white, fontSize: 15),
+              "View Detail",
+              style: GoogleFonts.nunito(
+                  color: Colors.white,
+                  fontSize: 21,
+                  fontWeight: FontWeight.bold),
             ),
           ),
           body: Stack(children: [
@@ -61,6 +63,7 @@ class _PostFullViewDetailsState extends State<PostFullViewDetails> {
                             children: [
                               Container(
                                 width: MediaQuery.of(context).size.width,
+                                color: Colors.black,
                                 child: userPost.image == null
                                     ? Image.asset(
                                         'assets/user/user1.png',
@@ -68,7 +71,7 @@ class _PostFullViewDetailsState extends State<PostFullViewDetails> {
                                     : Image.network(
                                         Constraints.IMAGE_BASE_URL +
                                             userPost.image!,
-                                        fit: BoxFit.fill,
+                                        fit: BoxFit.scaleDown,
                                       ),
                               ),
                               Align(
@@ -86,296 +89,262 @@ class _PostFullViewDetailsState extends State<PostFullViewDetails> {
                                   },
                                   child: Container(
                                       child: userPost.isWishlistStatus == false
-                                          ? Padding(
-                                              padding:
-                                                  const EdgeInsets.all(5.0),
-                                              child: Icon(
-                                                Icons.favorite,
-                                                color: Colors.grey.shade500,
-                                                size: 30,
-                                              ),
+                                          ? Icon(
+                                              Icons.favorite,
+                                              color: Colors.grey.shade500,
+                                              size: 30,
                                             )
-                                          : Padding(
-                                              padding:
-                                                  const EdgeInsets.all(5.0),
-                                              child: Icon(Icons.favorite,
-                                                  color: Colors.red, size: 30),
-                                            )),
+                                          : Icon(Icons.favorite,
+                                              color: Colors.red, size: 30)),
                                 ),
                               )
                             ],
                           )),
                     ),
                   ),
-                  Padding(
-                      padding: const EdgeInsets.only(left: 5.0, right: 5),
-                      child: Card(
-                          color: cardColor,
-                          child: Container(
-                              height: 100,
-                              padding: EdgeInsets.only(left: 10),
-                              width: MediaQuery.of(context).size.width,
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    SizedBox(
-                                      height: 5,
-                                    ),
-                                    Text("Recruiter Info",
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.blue.shade500)),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Text("Name: ${userPost.userName}",
-                                        style: TextStyle(
-                                            fontSize: 14, color: Colors.white)),
-                                    SizedBox(
-                                      height: 5,
-                                    ),
-                                    Text("Email: ${userPost.userEmail}",
-                                        style: TextStyle(
-                                            fontSize: 14, color: Colors.white)),
-                                  ])))),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 5.0, right: 5),
-                    child: Card(
-                      color: cardColor,
-                      child: Container(
-                        height: 100,
-                        padding: EdgeInsets.only(left: 10),
-                        width: MediaQuery.of(context).size.width,
-                        child: Column(
+                  Container(
+                      height: 100,
+                      padding: EdgeInsets.only(left: 10),
+                      width: MediaQuery.of(context).size.width,
+                      child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(
                               height: 5,
                             ),
-                            Text("Job Basic Info",
+                            Text("Recruiter Info",
+                                style: GoogleFonts.nunito(
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold)),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Text("Name: ${userPost.userName}",
                                 style: TextStyle(
-                                    fontSize: 16, color: Colors.blue.shade500)),
+                                    fontSize: 14, color: Colors.white)),
                             SizedBox(
                               height: 5,
                             ),
-                            Text("${userPost.postName}",
+                            Text("Email: ${userPost.userEmail}",
                                 style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white)),
-                            SizedBox(
-                              height: 3,
-                            ),
-                            Text("Gender: ${userPost.gender}",
-                                style: TextStyle(
-                                    fontSize: 12, color: Colors.white)),
-                            SizedBox(
-                              height: 3,
-                            ),
-                            Text("Age: ${userPost.age}",
-                                style: TextStyle(
-                                    fontSize: 10, color: Colors.white)),
-                            SizedBox(
-                              height: 3,
-                            ),
-                            Text("${userPost.postLocation}",
-                                style: TextStyle(
-                                    fontSize: 10, color: Colors.white)),
-                          ],
+                                    fontSize: 14, color: Colors.white)),
+                          ])),
+                  Divider(
+                    color: Colors.white,
+                    thickness: 2,
+                  ),
+                  Container(
+                    height: 100,
+                    padding: EdgeInsets.only(left: 10),
+                    width: MediaQuery.of(context).size.width,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 5,
                         ),
-                      ),
+                        Text("Job Basic Info",
+                            style: GoogleFonts.nunito(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold)),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text("${userPost.postName}",
+                            style:
+                                TextStyle(fontSize: 14, color: Colors.white)),
+                        SizedBox(
+                          height: 3,
+                        ),
+                        Text("Gender: ${userPost.gender}",
+                            style:
+                                TextStyle(fontSize: 12, color: Colors.white)),
+                        SizedBox(
+                          height: 3,
+                        ),
+                        Text("Age: ${userPost.age}",
+                            style:
+                                TextStyle(fontSize: 10, color: Colors.white)),
+                        SizedBox(
+                          height: 3,
+                        ),
+                        Text("${userPost.postLocation}",
+                            style:
+                                TextStyle(fontSize: 10, color: Colors.white)),
+                      ],
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 5, right: 5),
-                    child: Card(
-                      color: cardColor,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5)),
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        padding: EdgeInsets.all(10),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("Job Description",
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.blue.shade500)),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Text("${userPost.postDescription}",
-                                  style: TextStyle(
-                                      fontSize: 12, color: Colors.white)),
-                              SizedBox(
-                                height: 3,
-                              ),
-                            ]),
-                      ),
-                    ),
+                  Divider(
+                    color: Colors.white,
+                    thickness: 2,
                   ),
-                  Padding(
-                    padding: EdgeInsets.all(5),
-                    child: Card(
-                      color: cardColor,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5)),
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        width: MediaQuery.of(context).size.width,
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    padding: EdgeInsets.all(10),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Job Description",
+                              style: GoogleFonts.nunito(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold)),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Text("${userPost.postDescription}",
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.white)),
+                          SizedBox(
+                            height: 3,
+                          ),
+                        ]),
+                  ),
+                  Divider(
+                    color: Colors.white,
+                    thickness: 2,
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(10),
+                    width: MediaQuery.of(context).size.width,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Job Requirement",
+                              style: GoogleFonts.nunito(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold)),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text("Job Requirement",
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.blue.shade500)),
-                              SizedBox(
-                                height: 5,
+                              Expanded(
+                                child: Text("Langauge:",
+                                    style: TextStyle(
+                                        fontSize: 12, color: Colors.white)),
                               ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Text("Langauge:",
+                              Expanded(
+                                  child: Text("${userPost.language}",
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.white))),
+                            ],
+                          ),
+                          SizedBox(height: 5),
+                          Visibility(
+                            visible: userPost.performingSkills!.isEmpty
+                                ? false
+                                : true,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text("Performing Skills:",
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.white)),
+                                ),
+                                Expanded(
+                                    child: Text("${userPost.performingSkills}",
                                         style: TextStyle(
-                                            fontSize: 12, color: Colors.white)),
-                                  ),
-                                  Expanded(
-                                      child: Text("${userPost.language}",
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.white))),
-                                ],
-                              ),
-                              SizedBox(height: 5),
-                              Visibility(
-                                visible: userPost.performingSkills!.isEmpty
-                                    ? false
-                                    : true,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text("Performing Skills:",
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.white)),
-                                    ),
-                                    Expanded(
-                                        child: Text(
-                                            "${userPost.performingSkills}",
-                                            style: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.white))),
-                                  ],
+                                            fontSize: 12,
+                                            color: Colors.white))),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Visibility(
+                            visible:
+                                userPost.postLocation!.isEmpty ? false : true,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text("Actor Location:",
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.white)),
                                 ),
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Visibility(
-                                visible: userPost.postLocation!.isEmpty
-                                    ? false
-                                    : true,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text("Actor Location:",
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.white)),
-                                    ),
-                                    Expanded(
-                                        child: Text("${userPost.postLocation}",
-                                            style: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.white))),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Visibility(
-                                visible: userPost.nationality!.isEmpty
-                                    ? false
-                                    : true,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text("Nationality:",
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.white)),
-                                    ),
-                                    Expanded(
-                                        child: Text("${userPost.nationality}",
-                                            style: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.white))),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Text("Experience:",
+                                Expanded(
+                                    child: Text("${userPost.postLocation}",
                                         style: TextStyle(
-                                            fontSize: 12, color: Colors.white)),
-                                  ),
-                                  Expanded(
-                                    child: Text(
-                                        userPost.experience == "Yes"
-                                            ? "Experience Required "
-                                            : "Not required",
-                                        style: TextStyle(
-                                            fontSize: 12, color: Colors.white)),
-                                  )
-                                ],
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              Visibility(
-                                visible: userPost.postType == "Artist" ||
-                                        userPost.postType == "Model"
-                                    ? true
-                                    : false,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text("Requires Audition:",
-                                          style: TextStyle(
-                                              fontSize: 12,
-                                              color: Colors.white)),
-                                    ),
-                                    Expanded(
-                                        child: Text(
-                                            "${userPost.requiresAudition}",
-                                            style: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.white))),
-                                  ],
+                                            fontSize: 12,
+                                            color: Colors.white))),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Visibility(
+                            visible:
+                                userPost.nationality!.isEmpty ? false : true,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text("Nationality:",
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.white)),
                                 ),
+                                Expanded(
+                                    child: Text("${userPost.nationality}",
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.white))),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text("Experience:",
+                                    style: TextStyle(
+                                        fontSize: 12, color: Colors.white)),
                               ),
-                            ]),
-                      ),
-                    ),
+                              Expanded(
+                                child: Text(
+                                    userPost.experience == "Yes"
+                                        ? "Experience Required "
+                                        : "Not required",
+                                    style: TextStyle(
+                                        fontSize: 12, color: Colors.white)),
+                              )
+                            ],
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Visibility(
+                            visible: userPost.postType == "Artist" ||
+                                    userPost.postType == "Model"
+                                ? true
+                                : false,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text("Requires Audition:",
+                                      style: TextStyle(
+                                          fontSize: 12, color: Colors.white)),
+                                ),
+                                Expanded(
+                                    child: Text("${userPost.requiresAudition}",
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.white))),
+                              ],
+                            ),
+                          ),
+                        ]),
                   ),
                   Visibility(
                     visible: userPost.postType == "Artist" ||
@@ -674,7 +643,11 @@ class _PostFullViewDetailsState extends State<PostFullViewDetails> {
                             child: Container(
                               margin: EdgeInsets.all(10),
                               alignment: Alignment.center,
-                              child: Text("Share"),
+                              child: Text("Share",
+                                  style: GoogleFonts.nunito(
+                                      fontSize: 16,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold)),
                               decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(5)),
@@ -699,13 +672,13 @@ class _PostFullViewDetailsState extends State<PostFullViewDetails> {
                               margin: EdgeInsets.all(10),
                               padding: EdgeInsets.all(10),
                               alignment: Alignment.center,
-                              child: Text(
-                                "Apply",
-                                style: TextStyle(
-                                    fontSize: 14, color: Colors.white),
-                              ),
+                              child: Text("Apply",
+                                  style: GoogleFonts.nunito(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold)),
                               decoration: BoxDecoration(
-                                  color: buttonColor,
+                                  color: Colors.grey.shade900,
                                   borderRadius: BorderRadius.circular(5))),
                         ),
                       ),
